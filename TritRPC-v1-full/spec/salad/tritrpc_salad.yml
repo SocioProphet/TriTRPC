@@ -1,0 +1,159 @@
+
+$namespaces:
+  hg: https://example.org/hg#
+  trpc: https://example.org/trpc#
+
+$graph:
+- name: Vertex
+  type: record
+  jsonldPredicate:
+    _id: hg:Vertex
+  fields:
+    vid:
+      type: string
+      jsonldPredicate: "@id"
+    label:
+      type:
+        - "null"
+        - string
+      jsonldPredicate: hg:label
+    attr:
+      type:
+        type: map
+        values: string
+      jsonldPredicate: hg:attr
+
+- name: Hyperedge
+  type: record
+  jsonldPredicate:
+    _id: hg:Hyperedge
+  fields:
+    eid:
+      type: string
+      jsonldPredicate: "@id"
+    members:
+      type:
+        type: array
+        items: string
+      jsonldPredicate:
+        _id: hg:hasVertex
+        _type: "@id"
+    weight:
+      type:
+        - "null"
+        - long
+      jsonldPredicate: hg:weight
+    attr:
+      type:
+        type: map
+        values: string
+      jsonldPredicate: hg:attr
+
+- name: HGOp
+  type: enum
+  symbols:
+    - AddVertex
+    - AddHyperedge
+    - RemoveVertex
+    - RemoveHyperedge
+    - QueryNeighbors
+    - GetSubgraph
+
+- name: HGRequest
+  type: record
+  fields:
+    op: HGOp
+    vertex:
+      type: ["null", "Vertex"]
+      jsonldPredicate: hg:vertex
+    edge:
+      type: ["null", "Hyperedge"]
+      jsonldPredicate: hg:edge
+    vid:
+      type: ["null", "string"]
+      jsonldPredicate: hg:vid
+    eid:
+      type: ["null", "string"]
+      jsonldPredicate: hg:eid
+    k:
+      type: ["null", "int"]
+      jsonldPredicate: hg:k
+
+- name: HGResponse
+  type: record
+  fields:
+    ok: boolean
+    err: ["null","string"]
+    vertices:
+      type:
+        type: array
+        items: Vertex
+    edges:
+      type:
+        type: array
+        items: Hyperedge
+
+- name: Trace
+  type: record
+  fields:
+    trace_id: string
+    span_id: string
+    parent_span_id: ["null","string"]
+
+- name: PoE
+  type: record
+  fields:
+    schema_id: string
+    context_id: string
+    payload_digest:
+      type: bytes
+    method: string
+    timestamp: long
+    signer: string
+
+# Stream chunks (union)
+- name: HGStreamOpen
+  type: record
+  fields:
+    trace: Trace
+    req_bytes: bytes
+
+- name: HGStreamData
+  type: record
+  fields:
+    trace: Trace
+    chunk_index: int
+    resp_bytes: bytes
+
+- name: HGStreamClose
+  type: record
+  fields:
+    poe_bytes:
+      type: ["null","bytes"]
+
+- name: HGStreamChunk
+  type: ["HGStreamOpen","HGStreamData","HGStreamClose"]
+
+
+# Nested stream chunk types (no raw bytes)
+- name: HGStreamOpenN
+  type: record
+  fields:
+    trace: Trace
+    request: HGRequest
+
+- name: HGStreamDataN
+  type: record
+  fields:
+    trace: Trace
+    chunk_index: int
+    response: HGResponse
+
+- name: HGStreamCloseN
+  type: record
+  fields:
+    poe:
+      type: ["null","PoE"]
+
+- name: HGStreamChunkN
+  type: ["HGStreamOpenN","HGStreamDataN","HGStreamCloseN"]

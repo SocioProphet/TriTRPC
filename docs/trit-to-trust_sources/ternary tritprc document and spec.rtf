@@ -1,0 +1,1085 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 .SFNS-Semibold;\f1\fnil\fcharset0 .SFNS-Regular;\f2\fnil\fcharset0 HelveticaNeue-Bold;
+\f3\fnil\fcharset0 .SFNS-RegularItalic;\f4\fnil\fcharset0 .AppleSystemUIFontMonospaced-Regular;\f5\froman\fcharset0 TimesNewRomanPSMT;
+\f6\fswiss\fcharset0 Helvetica;\f7\fmodern\fcharset0 Courier;}
+{\colortbl;\red255\green255\blue255;\red14\green14\blue14;\red151\green0\blue126;\red0\green0\blue0;
+\red20\green0\blue196;\red111\green90\blue30;\red181\green0\blue19;}
+{\*\expandedcolortbl;;\cssrgb\c6700\c6700\c6700;\cssrgb\c66667\c5098\c56863;\csgray\c0;
+\cssrgb\c10980\c0\c81176;\cssrgb\c51373\c42353\c15686;\cssrgb\c76863\c10196\c8627;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs44 \cf2 Why Binary Streams Prevail (and a Hypothetical Ternary \'93TritRPC\'94)
+\f1\b0\fs28 \
+\
+
+\f2\b In modern computing and RPC frameworks, binary (base-2) data streams are universal.
+\f1\b0  This is no accident: it reflects deep practical realities of hardware and engineering. Below we break down why binary won out, examine analogous multi-level tricks in current tech, sketch a hypothetical base-3 \'93TritRPC\'94 for illustration, and highlight the theoretical allure of ternary logic.\
+\
+
+\f0\b\fs34 The Overwhelming Practical Hurdle: Why Binary Won
+\f1\b0\fs28 \
+\
+Ultimately, 
+\f3\i hardware
+\f1\i0  dictates why everything is binary. Modern digital electronics are built on 
+\f2\b transistors
+\f1\b0  using CMOS logic, which behave like near-perfect on/off switches. They naturally support two stable states (on = 1, off = 0), and it\'92s 
+\f2\b much easier to make components with two stable states than three
+\f1\b0  :\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f2\b Simplicity and Reliability:
+\f1\b0  A CMOS transistor in logic circuits is either 
+\f2\b ON
+\f1\b0  (conducting, representing \'911\'92) or 
+\f2\b OFF
+\f1\b0  (non-conducting, \'910\'92). These two states are 
+\f2\b stable, low-power, and noise-resistant
+\f1\b0 . Using binary \'93bits\'94 kept early computer hardware simple and reliable . By contrast, a stable third state (e.g. a precise half-on voltage) is an engineering nightmare. Any analog intermediate level would be 
+\f3\i highly sensitive
+\f1\i0  to noise, temperature, and voltage drift, undermining reliability.\
+	\'95	
+\f2\b The \'93Forbidden Zone\'94:
+\f1\b0  In CMOS logic, the transition region between fully on and off is unstable and power-hungry. A transistor that is half-on will draw significant current (both the pull-up and pull-down networks partly conduct), wasting energy as heat. Designing circuits to idle in a mid-level state would be 
+\f2\b inefficient and difficult to control
+\f1\b0 . Essentially, there\'92s no convenient third \'93rail\'94 for logic that doesn\'92t incur huge costs in power and circuit complexity.\
+\
+These hardware factors created an overwhelming inertia in favor of binary. The entire ecosystem \'96 CPU gates, memory cells, and even communication protocols \'96 was built on robust two-state logic. Overcoming this with ternary would require a 
+\f3\i revolutionary
+\f1\i0  new device offering an order-of-magnitude (10\'d7) benefit to justify breaking from the binary standard. So far, ternary devices haven\'92t shown such a payoff, and binary remains the Goldilocks solution.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs34 \cf2 Closest Analogues in Modern Tech: Multi-Level Signaling
+\f1\b0\fs28 \
+\
+Interestingly, some 
+\f2\b physical signaling techniques
+\f1\b0  use more than two voltage levels per symbol \'96 but crucially, they still interface with binary computers. For example, high-speed Ethernet links and Wi-Fi use 
+\f2\b multi-level modulation
+\f1\b0  to boost data rates. A scheme like 
+\f2\b PAM-4
+\f1\b0  (Pulse Amplitude Modulation with 4 levels) encodes 
+\f3\i 2 bits per symbol
+\f1\i0  by using four distinct voltage levels :\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f2\b How it works:
+\f1\b0  Each voltage level represents a 2-bit pattern: for instance, in PAM-4 we might map Level_0 = 
+\f4 00
+\f1 , Level_1 = 
+\f4 01
+\f1 , Level_2 = 
+\f4 10
+\f1 , Level_3 = 
+\f4 11
+\f1 . This doubles the data throughput 
+\f3\i per clock
+\f1\i0  because one symbol carries 2 bits (instead of 1 in binary NRZ encoding). Likewise, modern Wi-Fi uses QAM constellations (e.g. 16-QAM, 64-QAM) where combinations of amplitude and phase encode multiple bits per carrier wave.\
+	\'95	
+\f2\b But still binary at heart:
+\f1\b0  These multi-level signals are purely a 
+\f2\b physical layer optimization
+\f1\b0 . The receiver (e.g. your network card) immediately decodes each multi-level symbol back into a standard binary bit stream before passing it up to any software or RPC layer. The computer\'92s logic still only understands 1s and 0s. In other words, the wire might momentarily carry more than two voltage states, but 
+\f3\i the information ultimately becomes bits
+\f1\i0 . The same is true in storage: NAND flash memory with 
+\f2\b TLC
+\f1\b0  (Triple-Level Cell) stores 3 bits in one cell by distinguishing 8 charge levels , and QLC (Quad-Level Cell) uses 16 levels for 4 bits. These analog tricks increase density, but internally error-correcting controllers ensure the output is still a stream of binary data.\
+\
+In summary, no mainstream 
+\f2\b computing system
+\f1\b0  uses ternary logic throughout. Where we do see multi-level encodings, they serve as efficiency hacks at the analog transmission/storage layer, not as ternary computation. The hardware always converts the data back to binary because the logic circuits themselves remain binary.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs34 \cf2 Sketch of a Hypothetical \'93TritRPC\'94 Framework
+\f1\b0\fs28 \
+\
+For the sake of argument, 
+\f2\b imagine
+\f1\b0  we had a true ternary computer that processes trits (-1, 0, +1). What might a serialization/RPC format look like in base-3? It turns out it could closely mirror something like Protocol Buffers, just with a different number system. Let\'92s use 
+\f2\b balanced ternary
+\f1\b0  digits \'96 say 
+\f4 \cf2 N
+\f1 \cf2  for -1, 
+\f4 \cf2 Z
+\f1 \cf2  for 0, and 
+\f4 \cf2 P
+\f1 \cf2  for +1 \'96 because balanced ternary elegantly handles negatives without a separate sign bit . We\'92ll outline two key components of a made-up 
+\f3\i \'93TritRPC\'94
+\f1\i0 :\
+\pard\tqr\tx260\tx420\li420\fi-420\sl324\slmult1\sb240\partightenfactor0
+
+\f5 \cf2 	1.	
+\f2\b Basic Encoding \'96 Varint\uc0\u7488  (Variable-length Trits):
+\f1\b0  In binary ProtoBuf, integers are encoded as 
+\f3\i \cf2 varints
+\f1\i0 \cf2  where each byte uses 7 bits for value and 1 bit as a \'93continue\'94 flag. In our ternary version, we can use a similar scheme with trits. For example, use the most significant trit of each tryte (a group of ternary digits) as a continuation flag: say 
+\f4 \cf2 P
+\f1 \cf2  or 
+\f4 \cf2 N
+\f1 \cf2  in that position means \'93more trits follow\'94, and 
+\f4 \cf2 Z
+\f1 \cf2  means \'93stop here\'94.\
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f3\i Encoding the number 5:
+\f1\i0  In balanced ternary, 5 is represented as 
+\f4 \cf2 PNN
+\f1 \cf2  (because $5 = 1 \\cdot 3^2 + (-1) \\cdot 3^1 + (-1) \\cdot 3^0 = 9 - 3 - 1$). This fits in one tryte, so we mark it as the final chunk with a leading 
+\f4 \cf2 Z
+\f1 \cf2 . 
+\f2\b Wire format:
+\f1\b0  
+\f4 \cf2 Z P N N
+\f1 \cf2  (a four-trit sequence).\
+	\'95	
+\f3\i Encoding the number 13:
+\f1\i0  In balanced ternary, 13 is 
+\f4 \cf2 PPP
+\f1 \cf2  ($13 = 1\\cdot9 + 1\\cdot3 + 1\\cdot1$). We again only need one group, so the wire representation is 
+\f4 \cf2 Z P P P
+\f1 \cf2 .\
+(In practice, just like binary varints, larger numbers would span multiple groups of trits with 
+\f4 \cf2 P/N
+\f1 \cf2  flags indicating continuation.)\
+\pard\tqr\tx260\tx420\li420\fi-420\sl324\slmult1\sb240\partightenfactor0
+
+\f5 \cf2 	2.	
+\f2\b Message Structure \'96 Tagged Fields:
+\f1\b0  The message would be a series of fields with headers, analogous to ProtoBuf\'92s field tags. Each field tag would combine the field number and type (but now encoded in base-3). For instance, consider a message:
+\f6\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f7\fs28 \cf3 message \cf4 User \{\
+    string name = \cf5 1\cf4 ;\
+    int32  points = \cf5 2\cf4 ;\
+\}
+\f6\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 Suppose we want to encode 
+\f4 \cf2 User\{name="Al", points=5\}
+\f1 \cf2  in TritRPC:\
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f2\b Field 1 (name):
+\f1\b0  Field number 1, type=string. In a ProtoBuf-like scheme, we might assign a type code (say 
+\f4 \cf2 PZ
+\f1 \cf2  for \'93string\'94). The field tag in base-3 could be the field number (1, which is 
+\f4 \cf2 1
+\f1 \cf2  in ternary) combined with type code, yielding something like 
+\f4 \cf2 PZZ
+\f1 \cf2  (this is a hypothetical encoding for illustration). Next comes the length of the string. \'93Al\'94 is 2 characters, so we encode 2 as 
+\f4 \cf2 Z P N
+\f1 \cf2  (ternary 2 = $2_\{10\} = 2_\{3\}$, represented here as 
+\f4 \cf2 PN
+\f1 \cf2  with a 
+\f4 \cf2 Z
+\f1 \cf2  terminator). Then the UTF-8 bytes of \'93Al\'94 would be represented in ternary form (each byte would be converted to a couple of trytes). 
+\f2\b On the wire
+\f1\b0 , the field would look like: 
+\f4 \cf2 [Tag: PZZ] [Length: Z P N] [Payload: (ternary data for "A" and "l")]
+\f1 \cf2 .\
+	\'95	
+\f2\b Field 2 (points):
+\f1\b0  Field number 2, type=varint. In our scheme, maybe the type code for a varint is 
+\f4 \cf2 ZZ
+\f1 \cf2 . The field tag for field 2 would then be something like 
+\f4 \cf2 PNZZ
+\f1 \cf2 . The value 5 is encoded as the varint\uc0\u7488  
+\f4 \cf2 Z P N N
+\f1 \cf2  (from above). 
+\f2\b On the wire:
+\f1\b0  
+\f4 \cf2 [Tag: PNZZ] [Value: Z P N N]
+\f1 \cf2 .\
+The overall message stream is just these field segments concatenated. Notably, the 
+\f3\i structure
+\f1\i0  (field tags, lengths, values) is conceptually the same as binary ProtoBuf \'96 we\'92ve just swapped out bits for trits. This exercise shows that if ternary computers existed, our RPC/serialization frameworks would look remarkably similar to today\'92s, only the numeric base underneath changes.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs34 \cf2 The Theoretical Kicker: Why Base 3 at All?
+\f1\b0\fs28 \
+\
+If binary is so dominant, why even ponder ternary? Information theory provides an intriguing answer: 
+\f2\b base-e (~2.718) is the mathematically optimal radix
+\f1\b0  for encoding numbers in terms of efficiency, and 3 is the nearest integer to 
+\f3\i e
+\f1\i0 . In fact, a ternary digit (trit) carries about 
+\f2\b log\uc0\u8322 3 \u8776  1.585 bits
+\f1\b0  of information . In theory, that means a ternary system could be slightly more information-dense than a binary one. A 64-trit number, for example, can represent a larger range than a 64-bit number (it\'92s equivalent to ~101.4 bits) .\
+\
+Historically, this led to some experimentation with ternary computers. Notably, the Soviet 
+\f2\b Setun
+\f1\b0  computer (1958) used balanced ternary logic. It was reported to have some advantages like lower power usage and cheaper circuits. However, those benefits were not big enough to overcome the sheer momentum of binary technology (and Setun was eventually left behind by binary machines). The complexity of building reliable ternary hardware outweighed the marginal gains in efficiency .\
+\
+
+\f2\b In conclusion,
+\f1\b0  binary won because it hit the sweet spot between simplicity and functionality. Our entire digital world \'96 from logic gates to RPC protocols \'96 is built on that robust foundation of 1s and 0s. While ternary computing is elegant in theory and may see niche use (or a revival if new tech makes it viable), any \'93trinary RPC\'94 would require a fundamentally different hardware paradigm. Until then, binary streams remain the practical choice for virtually all engineering purposes.\
+\
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+\
+End-to-end sketch for a 
+\f2\b TritRPC
+\f1\b0  that cleanly bridges binary (classical), trinary (native ternary), and qutrit (quantum) channels, while staying compatible with Avro/JSON-LD/SALAD semantics and Kafka-style messaging.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+\cf2 \
+I\'92m giving you: a wire format, packing rules, schema linkage, service/method naming, example messages, and channel negotiation. Then I self-critique and list refinements.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f6\fs24 \cf0 \
+\uc0\u11835 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \
+
+\f0\b\fs44 TritRPC v0.1 \'97 minimal spec
+\f1\b0\fs28 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs34 \cf2 0) Design goals (what this solves)
+\f1\b0\fs28 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f2\b Dual world consistency:
+\f1\b0  One canonical trit stream that packs deterministically into bytes (for today\'92s hardware) and maps 1-to-1 to qutrit symbols (for quantum or future ternary links).\
+	\'95	
+\f2\b Schema/semantics first:
+\f1\b0  Avro is the schema authority; JSON-LD 
+\f4 @context
+\f1  supplies semantic meaning. We bind both into the envelope so knowledge systems retain identity + meaning.\
+	\'95	
+\f2\b Transport agnostic:
+\f1\b0  Same message can traverse Kafka (bytes), local IPC/MQ, direct ternary PHY, or qutrit rails \'97 without re-schematizing.\
+	\'95	
+\f2\b Deterministic signing/hashing:
+\f1\b0  Canonicalization is independent of transport mode.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f6\fs24 \cf0 \
+\uc0\u11835 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs34 \cf2 1) Envelope & preamble
+\f1\b0\fs28 \
+\
+
+\f2\b Frame layout (logical trits)
+\f6\b0\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f7\fs28 \cf4 [ MAGIC ][ VER ][ MODE ][ FLAGS ][ SCHEMA-ID ][ CONTEXT-ID ][ PAYLOAD ]
+\f6\fs24 \cf0 \
+\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+
+\f1\fs28 \cf2 	\'95	
+\f2\b MAGIC:
+\f1\b0  9 trits: literal base-3 digits for \'93TritRPC\'94. (Byte mode uses its packed bytes; see \'a73.)\
+	\'95	
+\f2\b VER:
+\f1\b0  2 trits (0..8 \uc0\u8594  major 0..8). Start with 1.\
+	\'95	
+\f2\b MODE:
+\f1\b0  1 trit:\
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	0 = 
+\f2\b B2
+\f1\b0  (binary transport): payload is the canonical trit stream, packed via TritPack243 to bytes.\
+	\'95	1 = 
+\f2\b B3
+\f1\b0  (raw trit transport): payload carried as trits (native ternary link).\
+	\'95	2 = 
+\f2\b Q3
+\f1\b0  (qutrit transport): trits mapped to |0\uc0\u9002 , |1\u9002 , |2\u9002  computational basis.\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f2\b FLAGS:
+\f1\b0  3 trits bitfield (still ternary digits, interpreted as bits 0/1 only for now):\
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	f0: AEAD present (0/1)\
+	\'95	f1: compression present (0/1)\
+	\'95	f2: reserved\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f2\b SCHEMA-ID:
+\f1\b0  81 trits (\uc0\u8776 128 bits of entropy): multicodec of 
+\f2\b SHA3-256(Avro-schema-canonical-form)
+\f1\b0 , represented as trits (see \'a73 for packing).\
+	\'95	
+\f2\b CONTEXT-ID:
+\f1\b0  81 trits: multicodec of 
+\f2\b SHA3-256(JSON-LD @context canonical)
+\f1\b0 .\
+	\'95	
+\f2\b PAYLOAD:
+\f1\b0  TritRPC message body (fields), AEAD tag (if f0=1) is appended as length-delimited field at the end (so the canonical trit stream that\'92s authenticated includes everything before the tag).\
+\
+\pard\tx860\tx1420\tx1980\tx2540\tx3100\tx3660\tx4220\tx4780\tx5340\tx5900\tx6460\tx7020\li300\sl324\slmult1\partightenfactor0
+\cf2 Why two IDs? 
+\f2\b Avro
+\f1\b0  ensures structural validation; 
+\f2\b JSON-LD
+\f1\b0  locks semantic meaning (SALAD/JSON-LD alignment), which you emphasized for knowledge systems.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f6\fs24 \cf0 \
+\uc0\u11835 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs34 \cf2 2) Message body / wire types
+\f1\b0\fs28 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs30 \cf2 2.1 Field tag
+\f1\b0\fs28 \cf2 \
+\
+We generalize protobuf\'92s idea to base-9:
+\f6\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f7\fs28 \cf4 tag = field_number * \cf5 9\cf4  + wire_type   (encoded as base-\cf5 9\cf4  varint; see \'a7\cf5 2.2\cf4 )
+\f6\fs24 \cf0 \
+\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+
+\f1\fs28 \cf2 	\'95	
+\f2\b wire_type
+\f1\b0  \uc0\u8712  [0..8] (base-9 friendly). Start with:\
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	0 = 
+\f2\b varint-u
+\f1\b0  (unsigned, base-9 varint)\
+	\'95	1 = 
+\f2\b varint-b
+\f1\b0  (signed 
+\f2\b balanced ternary
+\f1\b0  integer)\
+	\'95	2 = 
+\f2\b len
+\f1\b0  (length-delimited: bytes, strings, embedded msgs, Avro blocks)\
+	\'95	3 = 
+\f2\b fixed-27
+\f1\b0   (exactly 27 trits; handy for small fixed IDs)\
+	\'95	4 = 
+\f2\b fixed-54
+\f1\b0 \
+	\'95	5..8 = reserved (floats/decimals/logical types future)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs30 \cf2 2.2 Varint over trits (\'93TLEB3\'94)
+\f1\b0\fs28 \cf2 \
+\
+A compact continuation scheme using 
+\f2\b tritlets
+\f1\b0  (3 trits each):\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Layout per 
+\f2\b tritlet
+\f1\b0 : 
+\f4 [C][P1][P0]
+\f1 \
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f4 \cf2 C
+\f1 \cf2  (continuation): 2=more tritlets follow; 0=end (1 reserved).\
+	\'95	
+\f4 \cf2 (P1,P0)
+\f1 \cf2  encodes a base-3 digit in 
+\f2\b [0..8]
+\f1\b0  as 
+\f4 \cf2 v = P1*3 + P0
+\f1 \cf2 .\
+	\'95	Digits are 
+\f2\b little-endian base-9
+\f1\b0 .\
+	\'95	Example: decimal 10 \uc0\u8594  base-9 digits 
+\f4 \cf2 11
+\f1 \cf2  \uc0\u8594  two tritlets.\
+\
+This gives a clean, native base-9 varint that aligns with our field tags and meshes with ternary logic.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs30 \cf2 2.3 Signed ints (balanced ternary)
+\f1\b0\fs28 \cf2 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Represent integers in 
+\f2\b balanced ternary
+\f1\b0  (digits \uc0\u8712  \{\u8722 1,0,+1\}).\
+	\'95	Wire maps digit values with 
+\f2\b offset +1
+\f1\b0  to unbalanced trits 
+\f4 \{0,1,2\}
+\f1  for transport:\
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f4 \cf2 \uc0\u8722 1\u8594 0
+\f1 \cf2 , 
+\f4 \cf2 0\uc0\u8594 1
+\f1 \cf2 , 
+\f4 \cf2 +1\uc0\u8594 2
+\f1 \cf2 .\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Then emit as 
+\f2\b length-delimited digit stream
+\f1\b0  using TLEB3 for 
+\f2\b length
+\f1\b0  followed by raw trits (or pack to base-9 digits as a varint if you prefer). The 
+\f2\b wire_type=1
+\f1\b0  distinguishes this from unsigned varints.\
+\
+\pard\tx860\tx1420\tx1980\tx2540\tx3100\tx3660\tx4220\tx4780\tx5340\tx5900\tx6460\tx7020\li300\sl324\slmult1\partightenfactor0
+\cf2 Why balanced ternary? It makes signed magnitude natural (no ZigZag), matches ternary arithmetic, and is friendlier to qutrit rails.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs30 \cf2 2.4 Length-delimited
+\f1\b0\fs28 \cf2 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f2\b len
+\f1\b0  = TLEB3 (base-9 varint)\
+	\'95	
+\f2\b payload
+\f1\b0  = that many 
+\f2\b bytes
+\f1\b0  (for strings/opaque blobs) 
+\f3\i or
+\f1\i0  
+\f2\b trits
+\f1\b0  (for embedded TritRPC messages). The 
+\f2\b field\'92s Avro logical type
+\f1\b0  determines which one it is, see \'a74.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f6\fs24 \cf0 \
+\uc0\u11835 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs34 \cf2 3) Canonical byte packing (B2 mode)
+\f1\b0\fs28 \
+\
+We need one exact way to turn any trit stream into bytes and back, 
+\f2\b without ambiguity
+\f1\b0 .\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs30 \cf2 3.1 TritPack243
+\f1\b0\fs28 \cf2 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f2\b Rule:
+\f1\b0  Pack 
+\f2\b 5 trits
+\f1\b0  (base-3 number in [0..242]) into 
+\f2\b 1 byte
+\f1\b0  (
+\f4 0..242
+\f1 ).\
+	\'95	
+\f2\b Terminator for partials:
+\f1\b0  If the final group has 
+\f2\b k \uc0\u8712  \{1..4\}
+\f1\b0  trits, emit:\
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	One 
+\f2\b marker byte
+\f1\b0  
+\f4 \cf2 243 + (k\uc0\u8722 1)
+\f1 \cf2  (i.e., 243..246),\
+	\'95	Then 
+\f2\b one data byte
+\f1\b0  carrying the base-3 value of those k trits (0..(3^k\uc0\u8722 1)).\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f2\b No padding
+\f1\b0 , no other markers. Bytes 
+\f2\b 247..255
+\f1\b0  are invalid in canonical form.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f2\b \cf2 Why this?
+\f1\b0  Deterministic, compact, invertible; and it lets us hash/sign the 
+\f2\b same bytes
+\f1\b0  regardless of transport.\
+
+\f2\b Hashing/signing:
+\f1\b0  compute AEAD and/or SHA3-256 on the 
+\f2\b TritPack243 bytes
+\f1\b0  (the canonical representation).\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f6\fs24 \cf0 \
+\uc0\u11835 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs34 \cf2 4) Schema integration (Avro + JSON-LD)
+\f1\b0\fs28 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f2\b Authority:
+\f1\b0  Avro remains the on-disk/registry schema; SALAD/JSON-LD define semantics.\
+	\'95	
+\f2\b Binding:
+\f1\b0 \
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f4 \cf2 SCHEMA-ID
+\f1 \cf2  := SHA3-256(Avro canonical form).\
+	\'95	
+\f4 \cf2 CONTEXT-ID
+\f1 \cf2  := SHA3-256(JSON-LD context canonicalized).\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f2\b Logical types (examples):
+\f1\b0 \
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f4 \cf2 \{"type":"bytes","logicalType":"trits"\}
+\f1 \cf2  \uc0\u8594  field content is a 
+\f2\b trit
+\f1\b0  sequence (embedded TritRPC or balanced trits).\
+	\'95	
+\f4 \cf2 \{"type":"bytes","logicalType":"tryte256"\}
+\f1 \cf2  \uc0\u8594  fixed 256 trits (packs to 52 bytes via TritPack243 + tail marker).\
+	\'95	
+\f4 \cf2 \{"type":"long","logicalType":"balancedTernary"\}
+\f1 \cf2  \uc0\u8594  encode with wire_type=1.\
+	\'95	Use Avro unions as usual; the wire type is a transport detail.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f2\b \cf2 Kafka bridge:
+\f1\b0  The 
+\f2\b Kafka value
+\f1\b0  is the TritPack243 byte array of the entire TritRPC frame.\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f2\b Schema Registry
+\f1\b0  key can include 
+\f4 SCHEMA-ID
+\f1  and 
+\f4 CONTEXT-ID
+\f1  so readers can resolve both structure and semantics.\
+	\'95	
+\f2\b Local IPC/MQ
+\f1\b0  mirrors Kafka topic naming; the envelope ensures consistent meaning across transports.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f6\fs24 \cf0 \
+\uc0\u11835 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs34 \cf2 5) Service & method naming
+\f1\b0\fs28 \
+\
+
+\f2\b Service descriptor
+\f1\b0  (meta, not on every frame):\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f4 service_name
+\f1 : length-delimited UTF-8\
+	\'95	
+\f4 method_name
+\f1 : length-delimited UTF-8\
+	\'95	
+\f4 request_schema_id
+\f1 , 
+\f4 response_schema_id
+\f1 : 81-trit identifiers (as in header)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f2\b \cf2 On the wire
+\f1\b0 , each 
+\f2\b request/response
+\f1\b0  includes a 
+\f2\b Method-ID
+\f1\b0  field:\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Field 
+\f4 1
+\f1  (wire_type=len): method name (or a stable numeric ID via varint)\
+	\'95	The 
+\f2\b payload
+\f1\b0  after that field is the Avro-conformant message encoded with TritRPC wire rules.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f6\fs24 \cf0 \
+\uc0\u11835 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs34 \cf2 6) Example: Calc.Add(a:int, b:int) -> sum:int
+\f1\b0\fs28 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs30 \cf2 6.1 Avro schema (request)
+\f6\b0\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f7\fs28 \cf4 \{\
+  \cf6 "type"\cf4 : \cf7 "record"\cf4 ,\
+  \cf6 "name"\cf4 : \cf7 "AddRequest"\cf4 ,\
+  \cf6 "namespace"\cf4 : \cf7 "calc.v1"\cf4 ,\
+  \cf6 "fields"\cf4 : [\
+    \{\cf6 "name"\cf4 :\cf7 "a"\cf4 ,\cf6 "type"\cf4 :\{\cf6 "type"\cf4 :\cf7 "long"\cf4 ,\cf6 "logicalType"\cf4 :\cf7 "balancedTernary"\cf4 \}\},\
+    \{\cf6 "name"\cf4 :\cf7 "b"\cf4 ,\cf6 "type"\cf4 :\{\cf6 "type"\cf4 :\cf7 "long"\cf4 ,\cf6 "logicalType"\cf4 :\cf7 "balancedTernary"\cf4 \}\}\
+  ]\
+\}
+\f6\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f2\b\fs28 \cf2 Response
+\f1\b0  has one field 
+\f4 \cf2 sum
+\f1 \cf2  with the same logical type.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs30 \cf2 6.2 Field tags
+\f1\b0\fs28 \cf2 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f4 a
+\f1 : field_number=1, wire_type=1 (varint-b) \uc0\u8594  
+\f4 tag = 1*9 + 1 = 10
+\f1  (base-9 
+\f4 11
+\f1 )\
+	\'95	
+\f4 b
+\f1 : field_number=2, wire_type=1 \uc0\u8594  
+\f4 tag = 19
+\f1  (base-9 
+\f4 21
+\f1 )\
+	\'95	
+\f4 sum
+\f1 : field_number=1, wire_type=1 in the response\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs30 \cf2 6.3 Balanced ternary values
+\f1\b0\fs28 \cf2 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f4 a = 12
+\f1 \
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	base-3: 
+\f4 \cf2 110
+\f1 \cf2  \uc0\u8594  balanced digits: 
+\f4 \cf2 + + 0
+\f1 \cf2  (from 3\'b2..3\uc0\u8304 )\
+	\'95	transport digits (offset+1): 
+\f4 \cf2 2 2 1
+\f1 \cf2  (trits)\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f4 b = 5
+\f1 \
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	base-3: 
+\f4 \cf2 12
+\f1 \cf2  \uc0\u8594  balanced: 
+\f4 \cf2 + \uc0\u8722  \u8722 
+\f1 \cf2  (weights 9,3,1 \uc0\u8594  9\u8722 3\u8722 1=5)\
+	\'95	transport: 
+\f4 \cf2 2 0 0
+\f1 \cf2 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f2\b \cf2 Encoding for each balanced integer (wire_type=1):
+\f1\b0 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Length (
+\f2\b count of trits
+\f1\b0 ) via 
+\f2\b TLEB3
+\f1\b0  (here 3 trits \uc0\u8594  a single tritlet with C=0 and digit=3)\
+	\'95	Then those trits in 
+\f2\b little-endian
+\f1\b0  (least-significant digit first) or big-endian \'97 pick one; 
+\f2\b spec says big-endian
+\f1\b0  for human readability.\
+\
+\pard\tx860\tx1420\tx1980\tx2540\tx3100\tx3660\tx4220\tx4780\tx5340\tx5900\tx6460\tx7020\li300\sl324\slmult1\partightenfactor0
+\cf2 In practice we\'92d provide the exact TLEB3 digit breakdown + TritPack243 example bytes as test vectors in a reference doc.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f6\fs24 \cf0 \
+\uc0\u11835 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs34 \cf2 7) Security & integrity
+\f1\b0\fs28 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f2\b AEAD:
+\f1\b0  Apply AEAD (e.g., XChaCha20-Poly1305) to the 
+\f2\b canonical TritPack243 bytes
+\f1\b0  of the entire frame excluding the AEAD tag field itself. Include 
+\f4 SCHEMA-ID
+\f1 , 
+\f4 CONTEXT-ID
+\f1 , 
+\f4 MODE
+\f1 , and 
+\f4 FLAGS
+\f1  so transport upgrades cannot be replayed/misinterpreted.\
+	\'95	
+\f2\b Signatures:
+\f1\b0  For non-repudiation, sign the 
+\f2\b same canonical byte string
+\f1\b0  (deterministic).\
+	\'95	
+\f2\b Compression:
+\f1\b0  If 
+\f4 FLAGS.compression=1
+\f1 , compress the 
+\f2\b PAYLOAD
+\f1\b0  (not the preamble) 
+\f3\i before
+\f1\i0  AEAD. LZ4/Zstd on bytes; on B3/Q3 links, you still compress the byte form (pack \uc0\u8594  compress \u8594  AEAD).\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f6\fs24 \cf0 \
+\uc0\u11835 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs34 \cf2 8) Quantum (Q3) bridge
+\f1\b0\fs28 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f2\b Symbol map:
+\f1\b0  trit 
+\f4 0,1,2
+\f1  \uc0\u8596  qutrit 
+\f4 |0\uc0\u9002 ,|1\u9002 ,|2\u9002 
+\f1 .\
+	\'95	
+\f2\b Framing:
+\f1\b0  Keep the same logical frame: MAGIC..CONTEXT-ID..PAYLOAD, just transmitted as qutrit sequences.\
+	\'95	
+\f2\b Error-correction:
+\f1\b0  Use a ternary stabilizer code or Reed\'96Solomon over GF(3^m) at the link layer. TritRPC is agnostic; link layer returns a reliable trit stream.\
+	\'95	
+\f2\b Interop:
+\f1\b0  Gateways do pure relays: 
+\f2\b Q3 \uc0\u8644  B3 \u8644  B2
+\f1\b0  using the canonical TritPack243 for B2 edges. No semantic loss, no re-schematization.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f6\fs24 \cf0 \
+\uc0\u11835 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs34 \cf2 9) Knowledge systems & storage
+\f1\b0\fs28 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f2\b Semantics preserved:
+\f1\b0  Since 
+\f4 CONTEXT-ID
+\f1  binds a JSON-LD 
+\f4 @context
+\f1 , any store (graph DB, doc store, columnar lake) can reconstruct meaning, not just shape.\
+	\'95	
+\f2\b Avro blocks:
+\f1\b0  For high-volume ingestion (e.g., Kafka), you can embed 
+\f2\b Avro Object Container
+\f1\b0  blocks as 
+\f2\b len-delimited
+\f1\b0  fields. TritRPC doesn\'92t fight Avro; it standardizes the outer transport and signing with ternary-friendly internals.\
+	\'95	
+\f2\b Indexing:
+\f1\b0  Index on 
+\f4 (SCHEMA-ID, CONTEXT-ID, service, method)
+\f1 ; optionally index the first N balanced-ternary numeric fields in their 
+\f2\b balanced form
+\f1\b0  to support ternary-native analytics.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f6\fs24 \cf0 \
+\uc0\u11835 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \
+
+\f0\b\fs44 Operational details you can ship
+\f1\b0\fs28 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs34 \cf2 A) Handshake / capability negotiation
+\f1\b0\fs28 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Client sends a small 
+\f2\b HELLO
+\f1\b0  frame with supported 
+\f4 MODE
+\f1 s (e.g., 
+\f4 \{B2,B3,Q3\}
+\f1 ) and AEAD suites.\
+	\'95	Server chooses 
+\f4 MODE
+\f1  and suite; echoes choice. Both sides then fix the parameters.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs34 \cf2 B) Error model
+\f1\b0\fs28 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Use a reserved 
+\f4 service_name="tritrpc.control"
+\f1  with methods 
+\f4 Error
+\f1 , 
+\f4 Ping
+\f1 , 
+\f4 Close
+\f1 .\
+	\'95	Standard error fields: 
+\f4 code
+\f1  (varint-u), 
+\f4 message
+\f1  (len), optional 
+\f4 details
+\f1  (embedded TritRPC).\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\b\fs34 \cf2 C) Topic strategy (Kafka + local IPC)
+\f1\b0\fs28 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f2\b Topic key:
+\f1\b0  
+\f4 service.method
+\f1  (e.g., 
+\f4 calc.v1.Add
+\f1 ); partition by method or chosen key.\
+	\'95	
+\f2\b Value:
+\f1\b0  entire TritRPC frame in 
+\f2\b B2
+\f1\b0  bytes (TritPack243).\
+	\'95	
+\f2\b Local IPC:
+\f1\b0  mirror topic and frame shape; use Unix domain sockets, NATS, or ZeroMQ. The envelope keeps meaning identical across layers.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f6\fs24 \cf0 \
+\uc0\u11835 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \
+
+\f0\b\fs44 Minimal worked bytes (shape, not full numeric dump)
+\f1\b0\fs28 \
+\
+For 
+\f4 \cf2 Calc.Add(12,5)
+\f1 \cf2  request (B2 mode):
+\f6\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f7\fs28 \cf4 MAGIC+VER+MODE+FLAGS          \uc0\u8594  bytes via TritPack243\
+SCHEMA-ID (\cf5 81\cf4  trits)          \uc0\u8594  packs to \cf5 18\cf4  full bytes + \cf5 1\cf4  tail marker + \cf5 1\cf4  tail byte\
+CONTEXT-ID (\cf5 81\cf4  trits)         \uc0\u8594  same\
+Field tag \cf3 for\cf4  a (tag=\cf5 10\cf4 )      \uc0\u8594  TLEB3 \u8594  bytes\
+len(trits of a)=\cf5 3\cf4              \uc0\u8594  TLEB3 \u8594  bytes\
+digits(a)= [ +, +, \cf5 0\cf4  ]        \uc0\u8594  [\cf5 2\cf4 ,\cf5 2\cf4 ,\cf5 1\cf4 ] trits \uc0\u8594  packed\
+Field tag \cf3 for\cf4  b (tag=\cf5 19\cf4 )      \uc0\u8594  TLEB3 \u8594  bytes\
+len(trits of b)=\cf5 3\cf4              \uc0\u8594  TLEB3 \u8594  bytes\
+digits(b)= [ +, \uc0\u8722 , \u8722  ]        \u8594  [\cf5 2\cf4 ,\cf5 0\cf4 ,\cf5 0\cf4 ] trits \uc0\u8594  packed\
+(optional AEAD tag)           \uc0\u8594  len-delimited field at end
+\f6\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 A test-vector doc would list the exact byte hex. The rules above make that deterministic.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f6\fs24 \cf0 \
+\uc0\u11835 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \
+
+\f0\b\fs44 Why this cleanly bridges binary \uc0\u8596  trinary \u8596  qutrit
+\f1\b0\fs28 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f2\b Single canonical trit stream
+\f1\b0  everywhere.\
+	\'95	
+\f2\b B2
+\f1\b0  is just the canonical trit stream 
+\f2\b TritPack243
+\f1\b0 -compressed into bytes; signatures and AEAD are over that canonical byte form \'97 so B2/B3/Q3 are provably equivalent.\
+	\'95	
+\f2\b Balanced ternary
+\f1\b0  for signed numbers fits ternary hardware and maps naturally to qutrits; on binary boxes we merely pack/unpack deterministically.\
+	\'95	
+\f2\b Avro + JSON-LD
+\f1\b0  binding keeps structure and meaning stable so your semantic/knowledge layers remain intact across transports.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f6\fs24 \cf0 \
+\uc0\u11835 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \
+
+\f0\b\fs44 Self-critique & recommended refinements
+\f1\b0\fs28 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f2\b \cf2 What\'92s strong:
+\f1\b0 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Canonicalization (TritPack243 + TLEB3) is simple and deterministic.\
+	\'95	Balanced ternary for signed ints removes ZigZag oddities and aligns with trinary/qutrit logic.\
+	\'95	Avro/JSON-LD binding respects your SALAD/Avro/JSON-LD stack and Kafka mirroring.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f2\b \cf2 What to tighten next (I recommend doing all of these):
+\f1\b0 \
+\pard\tqr\tx260\tx420\li420\fi-420\sl324\slmult1\sb240\partightenfactor0
+
+\f5 \cf2 	1.	
+\f2\b Publish precise test vectors
+\f1\b0 \
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	For at least 10 messages (ints, strings, nested records, arrays, maps).\
+	\'95	Include: raw trits, packed bytes, AEAD inputs/outputs, SHA3 digests.\
+\pard\tqr\tx260\tx420\li420\fi-420\sl324\slmult1\sb240\partightenfactor0
+
+\f5 \cf2 	2.	
+\f2\b Finalize endianness
+\f1\b0  for balanced-ternary digit order (spec currently says big-endian for human readability; lock it and add MUST/SHOULD language).\
+
+\f5 	3.	
+\f2\b Float/decimal/logical types
+\f1\b0 \
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Define wire_type mappings for IEEE-754 via length-delimited bytes (preserve exact bit layout) and an optional 
+\f2\b ternary fixed-point
+\f1\b0  format for native ternary hardware.\
+\pard\tqr\tx260\tx420\li420\fi-420\sl324\slmult1\sb240\partightenfactor0
+
+\f5 \cf2 	4.	
+\f2\b Error-correction profile for Q3
+\f1\b0 \
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Choose a default ternary stabilizer or RS(3^m) profile; specify frame CRC before AEAD for fast drop on corrupted frames.\
+\pard\tqr\tx260\tx420\li420\fi-420\sl324\slmult1\sb240\partightenfactor0
+
+\f5 \cf2 	5.	
+\f2\b Avro union discrimination
+\f1\b0 \
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Add a small ternary 
+\f2\b union tag
+\f1\b0  convention (base-9 varint index first, then the chosen branch field).\
+\pard\tqr\tx260\tx420\li420\fi-420\sl324\slmult1\sb240\partightenfactor0
+
+\f5 \cf2 	6.	
+\f2\b Schema & context catalogs
+\f1\b0 \
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Define a multibase string for 
+\f4 \cf2 SCHEMA-ID
+\f1 \cf2 /
+\f4 \cf2 CONTEXT-ID
+\f1 \cf2  (e.g., 
+\f4 \cf2 mbase:trit:
+\f1 \cf2 ) for human tooling, plus a registry discovery routine.\
+\pard\tqr\tx260\tx420\li420\fi-420\sl324\slmult1\sb240\partightenfactor0
+
+\f5 \cf2 	7.	
+\f2\b Backpressure & streaming RPC
+\f1\b0 \
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Add chunked length-delimited segments with rolling AEAD (like HTTP/2 DATA frames) for large payloads.\
+\pard\tqr\tx260\tx420\li420\fi-420\sl324\slmult1\sb240\partightenfactor0
+
+\f5 \cf2 	8.	
+\f2\b Reference SerDes
+\f1\b0 \
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Implement 
+\f4 \cf2 tritpack243
+\f1 \cf2 , 
+\f4 \cf2 tleB3
+\f1 \cf2 , balanced-ternary conversions, and Avro bindings in Rust/Go/Python; expose Kafka serializers/deserializers.\
+\pard\tqr\tx260\tx420\li420\fi-420\sl324\slmult1\sb240\partightenfactor0
+
+\f5 \cf2 	9.	
+\f2\b Spec formalization
+\f1\b0 \
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Write an I-D style document: ABNF-like for trit streams, state machines for MODE transitions, and full security considerations.\
+\
+If you want, I\'92ll draft the 
+\f2\b test vectors
+\f1\b0  and a 
+\f2\b Rust reference
+\f1\b0  SerDes next, plus a minimal 
+\f2\b Kafka serializer
+\f1\b0  and an 
+\f2\b Avro logicalType plugin
+\f1\b0  for 
+\f4 \cf2 balancedTernary
+\f1 \cf2  and 
+\f4 \cf2 trits
+\f1 \cf2 .}

@@ -1,0 +1,984 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 .SFNS-Regular;\f1\fnil\fcharset0 HelveticaNeue-Bold;\f2\fswiss\fcharset0 Helvetica;
+\f3\fnil\fcharset0 .SFNS-Semibold;\f4\fnil\fcharset0 AppleSymbols;\f5\fnil\fcharset0 .SFNS-RegularItalic;
+\f6\fnil\fcharset0 .AppleSystemUIFontMonospaced-Regular;\f7\fmodern\fcharset0 Courier;\f8\fnil\fcharset0 LucidaGrande-Bold;
+\f9\fnil\fcharset0 .SFNS-Bold;\f10\fnil\fcharset0 Menlo-Regular;\f11\froman\fcharset0 TimesNewRomanPSMT;
+}
+{\colortbl;\red255\green255\blue255;\red14\green14\blue14;\red0\green0\blue0;\red111\green90\blue30;
+\red181\green0\blue19;\red135\green5\blue129;\red20\green0\blue196;\red151\green0\blue126;\red13\green100\blue1;
+}
+{\*\expandedcolortbl;;\cssrgb\c6700\c6700\c6700;\csgray\c0;\cssrgb\c51373\c42353\c15686;
+\cssrgb\c76863\c10196\c8627;\cssrgb\c60784\c13725\c57647;\cssrgb\c10980\c0\c81176;\cssrgb\c66667\c5098\c56863;\cssrgb\c0\c45490\c0;
+}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 Got it\'97let\'92s ground the whole design in 
+\f1\b Avro
+\f0\b0  (not Protobuf) and make Avro the schema \'93source of truth,\'94 with JSON-LD/SALAD for semantics. I\'92ll give you two compatible implementation paths, then a full worked example, resolution/evolution rules, and Kafka/Schema-Registry fit. I\'92ll also include a short self-critique + refinements at the end.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\fs24 \cf0 \
+
+\f0 \uc0\u11835 
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs44 \cf2 TritRPC for Avro: A Spec Sketch
+\f0\b0\fs28 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs34 \cf2 0) Goals (Avro-first)
+\f0\b0\fs28 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f1\b \cf2 Avro is authoritative
+\f0\b0 \cf2 : structure, defaults, evolution, and resolution follow Avro specs.\
+	\'95	
+\f1\b \cf2 JSON-LD/SALAD
+\f0\b0 \cf2  binds semantics; we carry a context hash alongside the Avro schema hash.\
+	\'95	
+\f1\b \cf2 One canonical trit stream
+\f0\b0 \cf2  that round-trips across:\
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f1\b B2
+\f0\b0  (binary transport): trit stream packed into bytes\
+	\'95	
+\f1\b B3
+\f0\b0  (native ternary transport): raw trits\
+	\'95	
+\f1\b Q3
+\f0\b0  (qutrit rail): trits mapped to |0
+\f4 \uc0\u10217 
+\f0 ,|1
+\f4 \uc0\u10217 
+\f0 ,|2
+\f4 \uc0\u10217 
+\f0 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f1\b \cf2 Deterministic canonicalization
+\f0\b0 \cf2  for hashing/signing, independent of transport.\
+	\'95	
+\f1\b \cf2 Kafka-compatible
+\f0\b0 \cf2 : value is bytes (B2), keyed by Avro Schema ID (+ JSON-LD Context ID).\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\fs24 \cf0 \
+
+\f0 \uc0\u11835 
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs34 \cf2 1) Two Avro-Compatible Encodings (choose one or support both)
+\f0\b0\fs28 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs30 \cf2 Path A \'97 Avro Binary-in-TritRPC (ABT)
+\f0\b0\fs28 \cf2 \
+\
+Keep Avro\'92s 
+\f1\b existing binary encoding
+\f0\b0  for the payload, unchanged. TritRPC provides the envelope, IDs, AEAD, and byte/trit bridging.\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f1\b \cf2 Pros
+\f0\b0 \cf2 : 100% Avro-compatible; use stock Avro libraries; minimal risk.\
+	\'95	
+\f1\b \cf2 Cons
+\f0\b0 \cf2 : You don\'92t get ternary-native arithmetic internally (it\'92s still Avro\'92s zigzag varints, byte order, etc.).\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\b \cf2 How it works
+\f0\b0 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Envelope header has MAGIC/VER/MODE/FLAGS + IDs (below).\
+	\'95	
+\f1\b \cf2 PAYLOAD
+\f0\b0 \cf2  is the 
+\f1\b \cf2 Avro Binary Encoding (ABE)
+\f0\b0 \cf2  of the datum, verbatim bytes.\
+	\'95	For 
+\f1\b \cf2 B2
+\f0\b0 \cf2  mode, we can either:\
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	store the Avro bytes as-is, or\
+	\'95	(optionally) wrap them inside the canonical TritPack243 block so all modes share identical canonicalization rules.\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	For 
+\f1\b \cf2 B3/Q3
+\f0\b0 \cf2  modes, we 
+\f1\b \cf2 must
+\f0\b0 \cf2  pack: ABE bytes \uc0\u8594  trits using 
+\f1\b \cf2 TritPack243
+\f0\b0 \cf2  (so the raw channel carries trits/qutrits).\
+\
+\pard\tx860\tx1420\tx1980\tx2540\tx3100\tx3660\tx4220\tx4780\tx5340\tx5900\tx6460\tx7020\li300\sl324\slmult1\partightenfactor0
+\cf2 In Path A, Avro\'92s binary is king; TritRPC is a thin, secure, transport-agnostic envelope.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\fs24 \cf0 \
+
+\f0 \uc0\u11835 
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs30 \cf2 Path B \'97 Avro-T3 (native ternary encoding with Avro semantics)
+\f0\b0\fs28 \cf2 \
+\
+Define a 
+\f1\b ternary-native encoding
+\f0\b0  that respects Avro\'92s 
+\f5\i \cf2 semantics
+\f0\i0 \cf2  and 
+\f5\i \cf2 resolution rules
+\f0\i0 \cf2  but swaps in ternary-friendly primitives (balanced ternary integers, a base-9 varint, etc.). Useful if you want a truly trit-native payload.\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f1\b \cf2 Pros
+\f0\b0 \cf2 : Native ternary integers, clean mapping to qutrit rails, less impedance.\
+	\'95	
+\f1\b \cf2 Cons
+\f0\b0 \cf2 : You must implement a new codec (encoder/decoder), though schema/resolve logic still comes from Avro.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\b \cf2 How it works
+\f0\b0 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Keep Avro types and resolution rules intact (records, arrays, maps, unions, etc.).\
+	\'95	Replace primitive encodings with ternary equivalents:\
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f6 int
+\f0 , 
+\f6 long
+\f0 : 
+\f1\b balanced-ternary
+\f0\b0  varints (
+\f6 varint-bt
+\f0 )\
+	\'95	
+\f6 bytes
+\f0 , 
+\f6 string
+\f0 : length as ternary varint; payload bytes as-is; strings as UTF-8 bytes (to avoid inventing \'93trit-UTF\'94)\
+	\'95	
+\f6 boolean
+\f0 : single 
+\f1\b trit
+\f0\b0 : 
+\f6 0
+\f0 =false, 
+\f6 2
+\f0 =true (reserve 
+\f6 1
+\f0  for future/NA)\
+	\'95	
+\f6 float
+\f0 , 
+\f6 double
+\f0 : length-delimited IEEE bit patterns as bytes (so values are bit-exact), or optional ternary fixed-point logical type\
+	\'95	
+\f6 fixed
+\f0 : exact length, opaque bytes\
+	\'95	
+\f6 enum
+\f0 : index as ternary varint\
+	\'95	
+\f6 array
+\f0 /
+\f6 map
+\f0 : block counts as ternary varints; match Avro\'92s block framing\
+	\'95	
+\f6 union
+\f0 : member index as ternary varint; then the member value\
+\
+\pard\tx860\tx1420\tx1980\tx2540\tx3100\tx3660\tx4220\tx4780\tx5340\tx5900\tx6460\tx7020\li300\sl324\slmult1\partightenfactor0
+\cf2 In Path B, you get ternary-native payloads while remaining fully 
+\f5\i \cf2 Avro-semantics-compatible
+\f0\i0 \cf2 . A resolver can still do reader/writer schema evolution exactly the Avro way.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\fs24 \cf0 \
+
+\f0 \uc0\u11835 
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs34 \cf2 2) TritRPC Envelope (Avro-bound)
+\f0\b0\fs28 \
+\
+Logical (trit-level) frame:
+\f2\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f7\fs28 \cf3 [ MAGIC ][ VER ][ MODE ][ FLAGS ][ SCHEMA-ID ][ CONTEXT-ID ][ PAYLOAD ][ (AEAD TAG?) ]
+\f2\fs24 \cf0 \
+\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+
+\f0\fs28 \cf2 	\'95	
+\f1\b \cf2 MAGIC:
+\f0\b0 \cf2  9 trits unique to TritRPC.\
+	\'95	
+\f1\b \cf2 VER:
+\f0\b0 \cf2  2 trits (start at 1).\
+	\'95	
+\f1\b \cf2 MODE:
+\f0\b0 \cf2  1 trit \uc0\u8594  
+\f6 \cf2 0=B2
+\f0 \cf2 , 
+\f6 \cf2 1=B3
+\f0 \cf2 , 
+\f6 \cf2 2=Q3
+\f0 \cf2 .\
+	\'95	
+\f1\b \cf2 FLAGS:
+\f0\b0 \cf2  3 trits (use as binary bits: AEAD, compression, reserved).\
+	\'95	
+\f1\b \cf2 SCHEMA-ID:
+\f0\b0 \cf2  81 trits = multicodec\'92d 
+\f1\b \cf2 SHA3-256(Avro canonical form)
+\f0\b0 \cf2 .\
+	\'95	
+\f1\b \cf2 CONTEXT-ID:
+\f0\b0 \cf2  81 trits = multicodec\'92d 
+\f1\b \cf2 SHA3-256(JSON-LD @context canonicalization)
+\f0\b0 \cf2 .\
+	\'95	
+\f1\b \cf2 PAYLOAD:
+\f0\b0 \cf2 \
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Path A: the 
+\f1\b Avro Binary Encoding
+\f0\b0  (ABE) datum (bytes)\
+	\'95	Path B: 
+\f1\b Avro-T3 encoding
+\f0\b0  (trits), then packed for B2 mode\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f1\b \cf2 AEAD:
+\f0\b0 \cf2  optional, as a trailing length-delimited field (authenticate everything before it).\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\b \cf2 Canonical Byte Packing (shared by both paths) \'97 TritPack243
+\f0\b0 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Pack 
+\f1\b \cf2 5 trits 
+\f8 \uc0\u8594 
+\f1  1 byte
+\f0\b0 \cf2  (value 0..242).\
+	\'95	Tail groups (1..4 trits) \uc0\u8594  emit 
+\f1\b \cf2 marker 243..246
+\f0\b0 \cf2  + 
+\f1\b \cf2 1 data byte
+\f0\b0 \cf2 .\
+	\'95	Bytes 
+\f1\b \cf2 247..255
+\f0\b0 \cf2  are invalid in canonical form.\
+	\'95	Hash/sign 
+\f1\b \cf2 the canonical TritPack243 bytes
+\f0\b0 \cf2  for transport-invariant integrity.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\fs24 \cf0 \
+
+\f0 \uc0\u11835 
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs34 \cf2 3) Avro Type Mapping (Path B: Avro-T3 codec)
+\f0\b0\fs28 \
+\
+Below, \'93TLEB3\'94 is a 
+\f1\b base-3 varint
+\f0\b0  using small trit groups with a continuation trit (conceptually like varint, ternary edition).
+\f2\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f9\b\fs26 \cf2 Avro Type
+\f2\b0\fs24 \cf0 	
+\f9\b\fs26 \cf2 Avro-T3 Encoding (ternary)
+\f2\b0\fs24 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\b\fs26 \cf2 null
+\f2\b0\fs24 \cf0 	
+\f0\fs26 \cf2 no bytes/trits emitted.
+\f2\fs24 \cf0 \
+
+\f1\b\fs26 \cf2 boolean
+\f2\b0\fs24 \cf0 	
+\f0\fs26 \cf2 1 trit (0=false, 2=true; 1 reserved).
+\f2\fs24 \cf0 \
+
+\f1\b\fs26 \cf2 int
+\f0\b0  (32b)
+\f2\fs24 \cf0 	
+\f1\b\fs26 \cf2 varint-bt
+\f0\b0  (balanced-ternary varint).
+\f2\fs24 \cf0 \
+
+\f1\b\fs26 \cf2 long
+\f0\b0  (64b)
+\f2\fs24 \cf0 	
+\f1\b\fs26 \cf2 varint-bt
+\f0\b0 .
+\f2\fs24 \cf0 \
+
+\f1\b\fs26 \cf2 bytes
+\f2\b0\fs24 \cf0 	
+\f6\fs26 \cf2 len
+\f0  as TLEB3, then that many 
+\f1\b bytes
+\f0\b0  (opaque).
+\f2\fs24 \cf0 \
+
+\f1\b\fs26 \cf2 string
+\f2\b0\fs24 \cf0 	
+\f6\fs26 \cf2 len
+\f0  as TLEB3, then UTF-8 
+\f1\b bytes
+\f0\b0 .
+\f2\fs24 \cf0 \
+
+\f1\b\fs26 \cf2 float
+\f2\b0\fs24 \cf0 	
+\f0\fs26 \cf2 length-delimited 4-byte IEEE 754 (opaque bytes).
+\f2\fs24 \cf0 \
+
+\f1\b\fs26 \cf2 double
+\f2\b0\fs24 \cf0 	
+\f0\fs26 \cf2 length-delimited 8-byte IEEE 754 (opaque bytes).
+\f2\fs24 \cf0 \
+
+\f1\b\fs26 \cf2 fixed(N)
+\f2\b0\fs24 \cf0 	
+\f0\fs26 \cf2 exactly N 
+\f1\b bytes
+\f0\b0 .
+\f2\fs24 \cf0 \
+
+\f1\b\fs26 \cf2 enum
+\f2\b0\fs24 \cf0 	
+\f0\fs26 \cf2 symbol index as TLEB3.
+\f2\fs24 \cf0 \
+
+\f1\b\fs26 \cf2 array[T]
+\f2\b0\fs24 \cf0 	
+\f0\fs26 \cf2 Avro\'92s block framing: 
+\f6 block_count
+\f0  (TLEB3), then items (T3-encoded); repeat until zero block. Negative count for size-prefixed blocks can be modeled with a ternary sign (or keep Avro\'92s rule verbatim).
+\f2\fs24 \cf0 \
+
+\f1\b\fs26 \cf2 map[V]
+\f2\b0\fs24 \cf0 	
+\f6\fs26 \cf2 block_count
+\f0  (TLEB3), then pairs: 
+\f6 len(key)
+\f0  + key bytes, then value V; repeat; zero block terminator.
+\f2\fs24 \cf0 \
+
+\f1\b\fs26 \cf2 union[U\uc0\u8320 \'85U
+\f0\b0 \uc0\u8342 
+\f1\b ]
+\f2\b0\fs24 \cf0 	
+\f6\fs26 \cf2 member_index
+\f0  (TLEB3), followed by value encoded as that member\'92s type.
+\f2\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\b\fs28 \cf2 Logical types (recommended)
+\f0\b0 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f6 \cf2 \{"type":"long","logicalType":"balancedTernary"\}
+\f0 \cf2  \uc0\u8594  
+\f1\b \cf2 force
+\f0\b0 \cf2  varint-bt (both paths can accept; in Path A it\'92s advisory).\
+	\'95	
+\f6 \cf2 \{"type":"bytes","logicalType":"trits"\}
+\f0 \cf2  \uc0\u8594  payload interpreted as 
+\f1\b \cf2 trit stream
+\f0\b0 \cf2  (still serialized as bytes in Avro, but 
+\f5\i \cf2 meaning
+\f0\i0 \cf2  is trits; pack/unpack via TritPack243 when crossing modes).\
+	\'95	Keep Avro\'92s standard logicals (decimal, date, time, timestamp, uuid) as-is (bytes/ints); define ternary alternates only if you truly need them.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\b \cf2 Unions & defaults
+\f0\b0 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	All Avro union and default behaviors remain 
+\f1\b \cf2 unchanged
+\f0\b0 \cf2 . The codec only alters primitive encodings, not schema resolution semantics.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\fs24 \cf0 \
+
+\f0 \uc0\u11835 
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs34 \cf2 4) JSON-LD / SALAD Semantics
+\f0\b0\fs28 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Carry a 
+\f1\b \cf2 CONTEXT-ID
+\f0\b0 \cf2  (SHA3-256 of canonicalized 
+\f6 \cf2 @context
+\f0 \cf2 ).\
+	\'95	Optional: include a 
+\f1\b \cf2 contextURI
+\f0\b0 \cf2  field (length-delimited) in a control/handshake frame for resolvers.\
+	\'95	Stores/indexers can resolve both 
+\f1\b \cf2 structure
+\f0\b0 \cf2  (Avro schema) and 
+\f1\b \cf2 meaning
+\f0\b0 \cf2  (JSON-LD) for knowledge graphs and semantic joins.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\fs24 \cf0 \
+
+\f0 \uc0\u11835 
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs34 \cf2 5) Kafka & Schema Registry
+\f0\b0\fs28 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f1\b \cf2 Key:
+\f0\b0 \cf2  typically 
+\f6 \cf2 \{subject, schemaVersion\}
+\f0 \cf2  or a stable hash.\
+	\'95	
+\f1\b \cf2 Value:
+\f0\b0 \cf2  
+\f1\b \cf2 B2 bytes
+\f0\b0 \cf2  = canonical TritPack243 of the entire TritRPC envelope (header + payload [+ AEAD tag]).\
+	\'95	
+\f1\b \cf2 Schema Registry subject:
+\f0\b0 \cf2  the Avro writer\'92s schema; we also pin 
+\f1\b \cf2 SCHEMA-ID
+\f0\b0 \cf2  in the envelope so consumers can verify they resolved the exact schema used to encode.\
+	\'95	
+\f1\b \cf2 Context pinning:
+\f0\b0 \cf2  store 
+\f6 \cf2 CONTEXT-ID
+\f0 \cf2  as a header or inside the envelope to keep semantics explicit.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\b \cf2 Why put the whole envelope in Kafka value?
+\f0\b0 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	AEAD, mode, flags, and IDs ride with the message; consumers can do strict verification, not rely on out-of-band contracts.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\fs24 \cf0 \
+
+\f0 \uc0\u11835 
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs34 \cf2 6) Worked Example (both Path A and Path B)
+\f0\b0\fs28 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\b \cf2 Avro schema
+\f2\b0\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f7\fs28 \cf3 \{\
+  \cf4 "type"\cf3 : \cf5 "record"\cf3 ,\
+  \cf4 "name"\cf3 : \cf5 "AddRequest"\cf3 ,\
+  \cf4 "namespace"\cf3 : \cf5 "calc.v1"\cf3 ,\
+  \cf4 "fields"\cf3 : [\
+    \{\cf4 "name"\cf3 :\cf5 "a"\cf3 ,\cf4 "type"\cf3 :\{\cf4 "type"\cf3 :\cf5 "long"\cf3 ,\cf4 "logicalType"\cf3 :\cf5 "balancedTernary"\cf3 \}\},\
+    \{\cf4 "name"\cf3 :\cf5 "b"\cf3 ,\cf4 "type"\cf3 :\{\cf4 "type"\cf3 :\cf5 "long"\cf3 ,\cf4 "logicalType"\cf3 :\cf5 "balancedTernary"\cf3 \}\}\
+  ]\
+\}
+\f2\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 We send: 
+\f6 AddRequest\{ a=12, b=5 \}
+\f0 .\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs30 \cf2 6.1 Path A \'97 Avro Binary in TritRPC
+\f0\b0\fs28 \cf2 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\b \cf2 Payload (ABE bytes):
+\f0\b0 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Avro 
+\f6 \cf2 long
+\f0 \cf2  uses zigzag + varint.\
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f6 12
+\f0  (zigzag) \uc0\u8594  
+\f6 24
+\f0  \uc0\u8594  varint bytes: 
+\f6 0x18
+\f0 \
+	\'95	
+\f6 5
+\f0  (zigzag) \uc0\u8594  
+\f6 10
+\f0  \uc0\u8594  varint bytes: 
+\f6 0x0A
+\f0 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	ABE payload = 
+\f6 \cf2 18 0A
+\f0 \cf2  (hex).\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\b \cf2 TritRPC envelope (conceptual)
+\f2\b0\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f7\fs28 \cf3 MAGIC,VER,MODE=B2,FLAGS\
+SCHEMA-ID  (SHA3 of Avro canonical form)\
+CONTEXT-ID (SHA3 of JSON-LD \cf6 @context\cf3 )\
+PAYLOAD = [\cf7 0x18\cf3 , \cf7 0x0A\cf3 ]     # Avro binary bytes\
+(AEAD tag \cf8 if\cf3  enabled)
+\f2\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 If 
+\f6 MODE=B2
+\f0 , we can pass 
+\f6 18 0A
+\f0  raw. If we want strict canonicalization everywhere, we instead 
+\f1\b TritPack243
+\f0\b0  the trit form of the envelope into bytes (recommended), then hash/sign those bytes.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs30 \cf2 6.2 Path B \'97 Avro-T3 (ternary-native payload)
+\f0\b0\fs28 \cf2 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\b \cf2 Balanced-ternary (big-endian digits)
+\f0\b0 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f6 \cf2 12
+\f0 \cf2  \uc0\u8594  base-3 
+\f6 \cf2 110
+\f0 \cf2  \uc0\u8594  balanced digits 
+\f6 \cf2 (+,+,0)
+\f0 \cf2  \uc0\u8594  
+\f1\b \cf2 transport trits
+\f0\b0 \cf2  
+\f6 \cf2 [2,2,1]
+\f0 \cf2  (map \uc0\u8722 1\u8594 0, 0\u8594 1, +1\u8594 2)\
+	\'95	
+\f6 \cf2 5
+\f0 \cf2   \uc0\u8594  base-3 
+\f6 \cf2 12
+\f0 \cf2   \uc0\u8594  balanced digits 
+\f6 \cf2 (+,-,-)
+\f0 \cf2  \uc0\u8594  
+\f1\b \cf2 transport trits
+\f0\b0 \cf2  
+\f6 \cf2 [2,0,0]
+\f0 \cf2 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\b \cf2 Encode each long as varint-bt:
+\f0\b0 \
+Let 
+\f6 len=3
+\f0  digits each. A simple TLEB3 for 
+\f6 len=3
+\f0  might be: one digit group with continuation=Z and value=3. Then emit the 3 trits in chosen endianness (spec: big-endian).\
+\
+
+\f1\b Field order
+\f0\b0  follows Avro field order (no field tags in Avro):
+\f2\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f7\fs28 \cf3 [a (len=\cf7 3\cf3 ), a digits: \cf7 2\cf3  \cf7 2\cf3  \cf7 1\cf3 ] [b (len=\cf7 3\cf3 ), b digits: \cf7 2\cf3  \cf7 0\cf3  \cf7 0\cf3 ]
+\f2\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 Now wrap with TritRPC header and (if MODE=B2) pack the whole trit stream via 
+\f1\b TritPack243
+\f0\b0  into bytes for Kafka.\
+\
+\pard\tx860\tx1420\tx1980\tx2540\tx3100\tx3660\tx4220\tx4780\tx5340\tx5900\tx6460\tx7020\li300\sl324\slmult1\partightenfactor0
+
+\f1\b \cf2 Note:
+\f0\b0 \cf2  Path B preserves all Avro semantics; only the primitive codec differs.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\fs24 \cf0 \
+
+\f0 \uc0\u11835 
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs34 \cf2 7) AEAD, Hashing, Compression
+\f0\b0\fs28 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Compute AEAD (e.g., XChaCha20-Poly1305) over the 
+\f1\b \cf2 canonical TritPack243 bytes of the entire envelope
+\f0\b0 \cf2 , excluding the trailing AEAD tag field.\
+	\'95	Include header fields (MODE, FLAGS, SCHEMA-ID, CONTEXT-ID) in the associated data so transport upgrades/downgrades can\'92t be replayed/misinterpreted.\
+	\'95	Compress 
+\f1\b \cf2 PAYLOAD
+\f0\b0 \cf2  (Zstd/LZ4) 
+\f1\b \cf2 before
+\f0\b0 \cf2  AEAD if 
+\f6 \cf2 FLAGS.compression=1
+\f0 \cf2 . For B3/Q3 links, compress the 
+\f1\b \cf2 byte form
+\f0\b0 \cf2  (i.e., after packing).\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\fs24 \cf0 \
+
+\f0 \uc0\u11835 
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs34 \cf2 8) Avro Resolution & Evolution (Reader/Writer)
+\f0\b0\fs28 \
+\
+All Avro resolution rules apply identically:\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f1\b \cf2 Default values
+\f0\b0 \cf2 : reader defaults used when writer lacks a field.\
+	\'95	
+\f1\b \cf2 Aliases
+\f0\b0 \cf2 : respected as usual.\
+	\'95	
+\f1\b \cf2 Union resolution
+\f0\b0 \cf2 : reader resolves the writer\'92s chosen member by name/index as Avro specifies.\
+	\'95	
+\f1\b \cf2 Compatibility
+\f0\b0 \cf2 : your registry checks (backward/forward/full) are unchanged.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\b \cf2 Path A
+\f0\b0 : Writer/reader use stock Avro libraries; envelope just carries the IDs & mode.\
+
+\f1\b Path B
+\f0\b0 : Writer/reader use the 
+\f1\b Avro-T3 codec
+\f0\b0  (drop-in replacement layer). Schema resolution still uses Avro\'92s logic.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\fs24 \cf0 \
+
+\f0 \uc0\u11835 
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs34 \cf2 9) Control/Handshake Frames
+\f0\b0\fs28 \
+\
+Define a tiny Avro record (in a control subject) for negotiation:
+\f2\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f7\fs28 \cf3 \{\
+  \cf4 "type"\cf3 :\cf5 "record"\cf3 ,\
+  \cf4 "name"\cf3 :\cf5 "Hello"\cf3 ,\
+  \cf4 "namespace"\cf3 :\cf5 "tritrpc.control.v1"\cf3 ,\
+  \cf4 "fields"\cf3 :[\
+    \{\cf4 "name"\cf3 :\cf5 "modes"\cf3 ,\cf4 "type"\cf3 :\{\cf4 "type"\cf3 :\cf5 "array"\cf3 ,\cf4 "items"\cf3 :\cf5 "int"\cf3 \}\},   \cf9 // 0=B2, 1=B3, 2=Q3\cf3 \
+    \{\cf4 "name"\cf3 :\cf5 "aead_suites"\cf3 ,\cf4 "type"\cf3 :\{\cf4 "type"\cf3 :\cf5 "array"\cf3 ,\cf4 "items"\cf3 :\cf5 "string"\cf3 \}\},\
+    \{\cf4 "name"\cf3 :\cf5 "contextURI"\cf3 ,\cf4 "type"\cf3 :[\cf5 "null"\cf3 ,\cf5 "string"\cf3 ],\cf4 "default"\cf3 :\cf8 null\cf3 \}\
+  ]\
+\}
+\f2\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 Server replies with a selected mode/suite. Thereafter, data frames use that MODE.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\fs24 \cf0 \
+
+\f0 \uc0\u11835 
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs34 \cf2 10) Diagnostics: Pseudo Wire Dumps
+\f0\b0\fs28 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\b \cf2 Envelope (logical view)
+\f2\b0\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f7\fs28 \cf3 MAGIC(9t) | VER(2t) | MODE(1t) | FLAGS(3t)\
+| SCHEMA-ID(81t) | CONTEXT-ID(81t)\
+| PAYLOAD(...)\
+| [ AEAD-TAG (len-delimited) ]
+\f2\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\b\fs28 \cf2 Path A \'97 Avro bytes inside payload
+\f2\b0\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f7\fs28 \cf3 PAYLOAD = ABE bytes        # example: \cf7 0x18\cf3  \cf7 0x0A
+\f2\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\b\fs28 \cf2 Path B \'97 Avro-T3 payload for AddRequest
+\f2\b0\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f7\fs28 \cf3 # a (\cf7 12\cf3 ): len=\cf7 3\cf3  
+\f10 \uc0\u8594 
+\f7  [Z:\cf8 continue\cf3 =stop | value=\cf7 3\cf3 ]\
+# digits: [\cf7 2\cf3 ,\cf7 2\cf3 ,\cf7 1\cf3 ]\
+# b (\cf7 5\cf3 ):  len=\cf7 3\cf3  
+\f10 \uc0\u8594 
+\f7  [Z       ...        ]\
+# digits: [\cf7 2\cf3 ,\cf7 0\cf3 ,\cf7 0\cf3 ]\
+\
+PAYLOAD = [ TLEB3(\cf7 3\cf3 ) | \cf7 2\cf3  \cf7 2\cf3  \cf7 1\cf3  | TLEB3(\cf7 3\cf3 ) | \cf7 2\cf3  \cf7 0\cf3  \cf7 0\cf3  ]
+\f2\fs24 \cf0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 If 
+\f6 MODE=B2
+\f0 , pack the entire envelope with 
+\f1\b TritPack243
+\f0\b0  to obtain canonical bytes.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\fs24 \cf0 \
+
+\f0 \uc0\u11835 
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs34 \cf2 11) Interop Menu (what to actually ship first)
+\f0\b0\fs28 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f1\b \cf2 Default
+\f0\b0 \cf2  to 
+\f1\b \cf2 Path A (ABT)
+\f0\b0 \cf2  for zero friction:\
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Use existing Avro serializers.\
+	\'95	Wrap in TritRPC envelope with SCHEMA-ID + CONTEXT-ID + AEAD.\
+	\'95	For cross-mode, apply TritPack243 canon bytes.\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	
+\f1\b \cf2 Optionally
+\f0\b0 \cf2  add 
+\f1\b \cf2 Path B (Avro-T3)
+\f0\b0 \cf2  behind a feature flag:\
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Same Avro schemas and resolution.\
+	\'95	New codec that swaps in ternary-friendly primitives.\
+	\'95	Provides a clean bridge to future B3/Q3 links.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\fs24 \cf0 \
+
+\f0 \uc0\u11835 
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs34 \cf2 12) Quick Checklist (engineering)
+\f0\b0\fs28 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Compute 
+\f1\b \cf2 SCHEMA-ID
+\f0\b0 \cf2  = SHA3-256(Avro canonical form).\
+	\'95	Compute 
+\f1\b \cf2 CONTEXT-ID
+\f0\b0 \cf2  = SHA3-256(canonicalized JSON-LD 
+\f6 \cf2 @context
+\f0 \cf2 ).\
+	\'95	Implement 
+\f1\b \cf2 TritPack243
+\f0\b0 \cf2  (trit\uc0\u8596 byte).\
+	\'95	Implement 
+\f1\b \cf2 AEAD
+\f0\b0 \cf2  over canonical TritPack243 bytes.\
+	\'95	
+\f1\b \cf2 Path A
+\f0\b0 \cf2 : drop in Avro Binary payload.\
+	\'95	
+\f1\b \cf2 Path B (optional)
+\f0\b0 \cf2 : Avro-T3 codec primitives (varint-bt, TLEB3, boolean-trit).\
+	\'95	Kafka serializers/deserializers:\
+\pard\tqr\tx500\tx660\li660\fi-660\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	value = canonical bytes (full envelope)\
+	\'95	headers include MODE/FLAGS for quick filtering (optional)\
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Test vectors: same messages encoded with Path A and Path B must produce 
+\f1\b \cf2 different payloads
+\f0\b0 \cf2  but identical 
+\f1\b \cf2 envelope behaviors
+\f0\b0 \cf2  (IDs, AEAD success, evolution, etc.).\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\fs24 \cf0 \
+
+\f0 \uc0\u11835 
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f3\b\fs34 \cf2 13) Self-Critique & Recommended Refinements
+\f0\b0\fs28 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\b \cf2 Strong points now:
+\f0\b0 \
+\pard\tqr\tx100\tx260\li260\fi-260\sl324\slmult1\sb240\partightenfactor0
+\cf2 	\'95	Avro is truly first-class: schema, evolution, and registry integration are preserved.\
+	\'95	Two clear paths: ultra-safe (Path A) and ternary-native (Path B).\
+	\'95	Deterministic canonicalization via TritPack243 + AEAD story is clean and transport-agnostic.\
+	\'95	JSON-LD/SALAD semantics are pinned explicitly (CONTEXT-ID).\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f1\b \cf2 What to tighten next (I recommend doing all of these):
+\f0\b0 \
+\pard\tqr\tx260\tx420\li420\fi-420\sl324\slmult1\sb240\partightenfactor0
+
+\f11 \cf2 	1.	
+\f1\b Publish test vectors
+\f0\b0  for both paths (nulls, unions, arrays/maps, decimals, timestamps). Include: raw trits, packed bytes, SHA3 digests, AEAD tags.\
+
+\f11 	2.	
+\f1\b Lock digit endianness
+\f0\b0  for balanced ternary (spec currently says 
+\f1\b big-endian
+\f0\b0  for human readability; make it a MUST).\
+
+\f11 	3.	
+\f1\b Decimal logical type
+\f0\b0 : define ternary fixed-point representation (Path B) or mandate Avro\'92s existing bytes encoding only (Path A).\
+
+\f11 	4.	
+\f1\b Union index varint size
+\f0\b0 : cap digits for small unions to guarantee worst-case sizes (e.g., \uc0\u8804  9 members \u8594  1 digit).\
+
+\f11 	5.	
+\f1\b Streaming RPC
+\f0\b0  over Avro: define chunked frames with rolling AEAD and explicit flush semantics (mirroring Avro object container block ideas).\
+
+\f11 	6.	
+\f1\b Registry augmentation
+\f0\b0 : store 
+\f6 CONTEXT-ID
+\f0  and MODE support in schema metadata so readers can verify expectations before decode.\
+
+\f11 	7.	
+\f1\b B3/Q3 ECC profile
+\f0\b0 : specify a default RS(GF(3^m)) or ternary stabilizer at the link layer, and a small outer CRC in the envelope for fast failure.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\fs24 \cf0 \
+
+\f0 \uc0\u11835 
+\f2 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\sl324\slmult1\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 \
+If you want, I can follow up with (a) a 
+\f1\b Rust
+\f0\b0  reference for TritPack243 + envelope, (b) 
+\f1\b Kafka SerDes
+\f0\b0  for Path A, and (c) 
+\f1\b Avro-T3
+\f0\b0  codec scaffolding for Path B, plus a 
+\f1\b test-vector pack
+\f0\b0  that exercises unions, arrays/maps, and logical types.}

@@ -16,3 +16,8 @@ __MACOSX/
 .DS_Store
 __MACOSX/
 ._*
+
+# ignore macOS cruft
+.DS_Store
+__MACOSX/
+._*

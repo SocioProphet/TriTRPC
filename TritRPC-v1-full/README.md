@@ -1,5 +1,10 @@
 # TritRPC v1 (Repository)
 
+**Description:** TritRPC v1 is a deterministic, ternary-native RPC protocol with
+authenticated envelope framing, reference fixtures, and Rust/Go implementations.
+
+**Topics:** ternary, rpc, protocol, deterministic-encoding, fixtures, rust, go, avro, aead
+
 This repository contains reference material, fixtures, and two language ports (Rust and Go)
 for **TritRPC v1**, a protocol that blends ternary-native encodings with conventional
 byte-transport, along with authenticated envelope framing. The focus of this repo is

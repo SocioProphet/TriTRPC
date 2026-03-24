@@ -1,4 +1,3 @@
-
 # macOS cruft
 .DS_Store
 __MACOSX/
@@ -6,18 +5,17 @@ __MACOSX/
 # python
 __pycache__/
 *.pyc
-
 # macOS cruft
 .DS_Store
 __MACOSX/
 ._*
-
 # macOS cruft
 .DS_Store
 __MACOSX/
 ._*
-
 # ignore macOS cruft
 .DS_Store
 __MACOSX/
 ._*
+*.egg-info/
+.pytest_cache/

@@ -1,0 +1,30 @@
+module_name: "Commercial AES-GCM Boundary"
+approved_mode: true
+module_type: "software"
+runtime_binding: "commercial-openssl-like"
+operational_environment:
+  os: linux
+  arch: x86_64
+selected_aead:
+  - AES-256-GCM
+selected_hashes:
+  - SHA-384
+  - SHA-512
+selected_key_establishment:
+  - ECDH-P384
+selected_signatures:
+  - ECDSA-P384
+selected_transports:
+  - tls13
+self_tests_power_up: true
+self_tests_conditional: true
+error_state_on_self_test_failure: true
+entropy_source_documented: true
+sbom_path: ../artifacts/sbom.spdx.json
+provenance_path: ../artifacts/build_provenance.json
+source_revision: sandbox-2026-03-11
+fail_closed: true
+zeroization_attempted: true
+key_separation_documented: true
+notes:
+  purpose: standards-inspired without certificate pedigree

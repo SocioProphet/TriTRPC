@@ -1,0 +1,230 @@
+{
+  "unary": [
+    {
+      "name": "hyper.v1.AddVertex_a.REQ",
+      "current_len": 148,
+      "payload_len": 12,
+      "conservative_len": 123,
+      "aggressive_len": 35
+    },
+    {
+      "name": "hyper.v1.AddVertex_a.RSP",
+      "current_len": 147,
+      "payload_len": 11,
+      "conservative_len": 122,
+      "aggressive_len": 34
+    },
+    {
+      "name": "hyper.v1.AddVertex_b.REQ",
+      "current_len": 148,
+      "payload_len": 12,
+      "conservative_len": 123,
+      "aggressive_len": 35
+    },
+    {
+      "name": "hyper.v1.AddVertex_b.RSP",
+      "current_len": 147,
+      "payload_len": 11,
+      "conservative_len": 122,
+      "aggressive_len": 34
+    },
+    {
+      "name": "hyper.v1.AddHyperedge_e1_ab.REQ",
+      "current_len": 161,
+      "payload_len": 18,
+      "conservative_len": 136,
+      "aggressive_len": 41
+    },
+    {
+      "name": "hyper.v1.AddHyperedge_e1_ab.RSP",
+      "current_len": 173,
+      "payload_len": 30,
+      "conservative_len": 148,
+      "aggressive_len": 53
+    },
+    {
+      "name": "hyper.v1.QueryNeighbors_a_k1.REQ",
+      "current_len": 153,
+      "payload_len": 9,
+      "conservative_len": 128,
+      "aggressive_len": 32
+    },
+    {
+      "name": "hyper.v1.QueryNeighbors_a_k1.RSP",
+      "current_len": 168,
+      "payload_len": 24,
+      "conservative_len": 143,
+      "aggressive_len": 47
+    },
+    {
+      "name": "hyper.v1.GetSubgraph_a_k1.REQ",
+      "current_len": 150,
+      "payload_len": 9,
+      "conservative_len": 125,
+      "aggressive_len": 32
+    },
+    {
+      "name": "hyper.v1.GetSubgraph_a_k1.RSP",
+      "current_len": 171,
+      "payload_len": 30,
+      "conservative_len": 146,
+      "aggressive_len": 53
+    },
+    {
+      "name": "hyper.v1.RemoveHyperedge_e1.REQ",
+      "current_len": 152,
+      "payload_len": 9,
+      "conservative_len": 127,
+      "aggressive_len": 32
+    },
+    {
+      "name": "hyper.v1.RemoveHyperedge_e1.RSP",
+      "current_len": 160,
+      "payload_len": 17,
+      "conservative_len": 135,
+      "aggressive_len": 40
+    },
+    {
+      "name": "hyper.v1.RemoveVertex_a.REQ",
+      "current_len": 146,
+      "payload_len": 8,
+      "conservative_len": 122,
+      "aggressive_len": 31
+    },
+    {
+      "name": "hyper.v1.RemoveVertex_a.RSP",
+      "current_len": 150,
+      "payload_len": 11,
+      "conservative_len": 125,
+      "aggressive_len": 34
+    }
+  ],
+  "stream_avrochunk": [
+    {
+      "name": "hyper.v1.AddVertex_a.REQ",
+      "current_len": 144,
+      "payload_len": 12,
+      "conservative_len": 119,
+      "aggressive_len": 35
+    },
+    {
+      "name": "hyper.v1.AddVertex_a.RSP",
+      "current_len": 140,
+      "payload_len": 4,
+      "conservative_len": 116,
+      "aggressive_len": 27
+    },
+    {
+      "name": "hyper.v1.AddVertex_b.REQ",
+      "current_len": 144,
+      "payload_len": 12,
+      "conservative_len": 119,
+      "aggressive_len": 35
+    },
+    {
+      "name": "hyper.v1.AddVertex_b.RSP",
+      "current_len": 140,
+      "payload_len": 4,
+      "conservative_len": 116,
+      "aggressive_len": 27
+    },
+    {
+      "name": "hyper.v1.AddHyperedge_e1_ab.REQ",
+      "current_len": 157,
+      "payload_len": 18,
+      "conservative_len": 132,
+      "aggressive_len": 41
+    },
+    {
+      "name": "hyper.v1.AddHyperedge_e1_ab.RSP",
+      "current_len": 147,
+      "payload_len": 4,
+      "conservative_len": 123,
+      "aggressive_len": 27
+    },
+    {
+      "name": "hyper.v1.RemoveVertex_a.REQ",
+      "current_len": 142,
+      "payload_len": 8,
+      "conservative_len": 118,
+      "aggressive_len": 31
+    },
+    {
+      "name": "hyper.v1.RemoveVertex_a.RSP",
+      "current_len": 143,
+      "payload_len": 4,
+      "conservative_len": 119,
+      "aggressive_len": 27
+    },
+    {
+      "name": "hyper.v1.RemoveHyperedge_e1.REQ",
+      "current_len": 148,
+      "payload_len": 9,
+      "conservative_len": 123,
+      "aggressive_len": 32
+    },
+    {
+      "name": "hyper.v1.RemoveHyperedge_e1.RSP",
+      "current_len": 147,
+      "payload_len": 4,
+      "conservative_len": 123,
+      "aggressive_len": 27
+    },
+    {
+      "name": "hyper.v1.QueryNeighbors_a_k1.REQ",
+      "current_len": 149,
+      "payload_len": 9,
+      "conservative_len": 124,
+      "aggressive_len": 32
+    },
+    {
+      "name": "hyper.v1.QueryNeighbors_a_k1.RSP",
+      "current_len": 148,
+      "payload_len": 4,
+      "conservative_len": 124,
+      "aggressive_len": 27
+    },
+    {
+      "name": "hyper.v1.GetSubgraph_a_k1.REQ",
+      "current_len": 146,
+      "payload_len": 9,
+      "conservative_len": 121,
+      "aggressive_len": 32
+    },
+    {
+      "name": "hyper.v1.GetSubgraph_a_k1.RSP",
+      "current_len": 145,
+      "payload_len": 4,
+      "conservative_len": 121,
+      "aggressive_len": 27
+    },
+    {
+      "name": "hyper.v1.GetSubgraphStream.OPEN",
+      "current_len": 159,
+      "payload_len": 21,
+      "conservative_len": 134,
+      "aggressive_len": 45
+    },
+    {
+      "name": "hyper.v1.GetSubgraphStream.DATA1",
+      "current_len": 180,
+      "payload_len": 42,
+      "conservative_len": 155,
+      "aggressive_len": 65
+    },
+    {
+      "name": "hyper.v1.GetSubgraphStream.DATA2",
+      "current_len": 160,
+      "payload_len": 22,
+      "conservative_len": 135,
+      "aggressive_len": 45
+    },
+    {
+      "name": "hyper.v1.GetSubgraphStream.CLOSE",
+      "current_len": 327,
+      "payload_len": 189,
+      "conservative_len": 302,
+      "aggressive_len": 212
+    }
+  ]
+}

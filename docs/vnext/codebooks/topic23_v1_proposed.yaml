@@ -1,0 +1,189 @@
+version: topic23.proposed.v1
+topics:
+- index: 1
+  code: idn
+  label: identity
+  family: core
+  aliases:
+  - identity
+  - principal
+  - subject
+  description: stable actors and workload identity
+- index: 2
+  code: rte
+  label: routing
+  family: transport
+  aliases:
+  - route
+  - path
+  - dispatch
+  description: route families, handles, and delivery cohorts
+- index: 3
+  code: pol
+  label: policy
+  family: governance
+  aliases:
+  - policy
+  - rule
+  - constraint
+  description: authorization and governance policy state
+- index: 4
+  code: trt
+  label: trust
+  family: governance
+  aliases:
+  - trust
+  - assurance
+  description: trust zone and trust relationship state
+- index: 5
+  code: rsk
+  label: risk
+  family: governance
+  aliases:
+  - risk
+  - hazard
+  description: risk posture and harm bands
+- index: 6
+  code: asr
+  label: assurance
+  family: governance
+  aliases:
+  - assurance
+  - validation
+  description: evidence and assurance posture
+- index: 7
+  code: nov
+  label: novelty
+  family: adaptation
+  aliases:
+  - novelty
+  - surprise
+  description: novelty detection and adaptation mode
+- index: 8
+  code: cmp
+  label: competence
+  family: adaptation
+  aliases:
+  - competence
+  - capability-bound
+  description: self-knowledge of competence envelope
+- index: 9
+  code: cap
+  label: capability
+  family: adaptation
+  aliases:
+  - capability
+  - affordance
+  description: advertised abilities and supported tasks
+- index: 10
+  code: prv
+  label: provenance
+  family: knowledge
+  aliases:
+  - provenance
+  - lineage
+  description: origin, lineage, and replay anchors
+- index: 11
+  code: cau
+  label: causality
+  family: knowledge
+  aliases:
+  - causal
+  - cause
+  description: causal links and explanatory structure
+- index: 12
+  code: sch
+  label: schema
+  family: knowledge
+  aliases:
+  - schema
+  - event-schema
+  description: schemas, frames, and structured event knowledge
+- index: 13
+  code: wrd
+  label: world-model
+  family: knowledge
+  aliases:
+  - world
+  - model
+  description: world-model state and external environment assumptions
+- index: 14
+  code: dlg
+  label: dialogue
+  family: interaction
+  aliases:
+  - dialogue
+  - conversation
+  description: dialogue acts and conversational posture
+- index: 15
+  code: tem
+  label: team
+  family: interaction
+  aliases:
+  - team
+  - coordination
+  description: teaming and shared mental models
+- index: 16
+  code: cul
+  label: culture
+  family: interaction
+  aliases:
+  - culture
+  - social
+  description: cultural and local knowledge overlays
+- index: 17
+  code: wfl
+  label: workflow
+  family: control
+  aliases:
+  - workflow
+  - process
+  description: workflow and process-stage coordination
+- index: 18
+  code: lrn
+  label: learning
+  family: control
+  aliases:
+  - learning
+  - training
+  description: learning-loop and adaptation state
+- index: 19
+  code: mem
+  label: memory
+  family: knowledge
+  aliases:
+  - memory
+  - cache
+  description: working memory and retained context
+- index: 20
+  code: ret
+  label: retrieval
+  family: knowledge
+  aliases:
+  - retrieval
+  - search
+  description: retrieval and in-flow knowledge selection
+- index: 21
+  code: pln
+  label: planning
+  family: control
+  aliases:
+  - planning
+  - decision
+  description: planning and decision horizon
+- index: 22
+  code: act
+  label: actuation
+  family: control
+  aliases:
+  - action
+  - execution
+  description: execution, tool use, and actuation
+- index: 23
+  code: inc
+  label: incident
+  family: governance
+  aliases:
+  - incident
+  - response
+  description: incident mode, containment, and recovery

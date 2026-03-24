@@ -1,0 +1,142 @@
+[
+  {
+    "id": "REQ-BOUNDARY-001",
+    "category": "boundary",
+    "summary": "Declare cryptographic module name"
+  },
+  {
+    "id": "REQ-BOUNDARY-003",
+    "category": "boundary",
+    "summary": "Pin tested operational environment"
+  },
+  {
+    "id": "REQ-BOUNDARY-004",
+    "category": "boundary",
+    "summary": "Document power-up and conditional self-tests"
+  },
+  {
+    "id": "REQ-BOUNDARY-005",
+    "category": "boundary",
+    "summary": "Fail closed on self-test failure"
+  },
+  {
+    "id": "REQ-BOUNDARY-006",
+    "category": "boundary",
+    "summary": "Document entropy source / RNG boundary"
+  },
+  {
+    "id": "REQ-SUPPLY-001",
+    "category": "supply-chain",
+    "summary": "Maintain an SBOM artifact"
+  },
+  {
+    "id": "REQ-SUPPLY-002",
+    "category": "supply-chain",
+    "summary": "Maintain provenance artifact"
+  },
+  {
+    "id": "REQ-CRYPTO-001",
+    "category": "crypto",
+    "summary": "Approved-family AEAD is AES-256-GCM"
+  },
+  {
+    "id": "REQ-CRYPTO-002",
+    "category": "crypto",
+    "summary": "Approved-family hash is SHA-384 or SHA-512"
+  },
+  {
+    "id": "REQ-CRYPTO-003",
+    "category": "crypto",
+    "summary": "Hot-path tag length fixed at 16 bytes"
+  },
+  {
+    "id": "REQ-CRYPTO-004",
+    "category": "crypto",
+    "summary": "Use module-managed or approved nonce/IV construction"
+  },
+  {
+    "id": "REQ-TRANSPORT-002",
+    "category": "transport",
+    "summary": "TLS 1.3 version pinning when tls13 is selected"
+  },
+  {
+    "id": "REQ-CNSA2-001",
+    "category": "crypto-agility",
+    "summary": "CNSA2-ready key establishment uses ML-KEM-1024"
+  },
+  {
+    "id": "REQ-CNSA2-002",
+    "category": "crypto-agility",
+    "summary": "CNSA2-ready signatures use ML-DSA-87"
+  },
+  {
+    "id": "REQ-DEPLOY-002",
+    "category": "deployment",
+    "summary": "Canonical wire must be locked"
+  },
+  {
+    "id": "REQ-DEPLOY-003",
+    "category": "deployment",
+    "summary": "Golden vectors must exist"
+  },
+  {
+    "id": "REQ-DEPLOY-004",
+    "category": "deployment",
+    "summary": "Negative/tamper tests required"
+  },
+  {
+    "id": "REQ-DEPLOY-005",
+    "category": "audit",
+    "summary": "Audit logging required outside research target"
+  },
+  {
+    "id": "REQ-DEPLOY-006",
+    "category": "audit",
+    "summary": "Audit chain uses SHA-384 or SHA-512"
+  },
+  {
+    "id": "REQ-DEPLOY-007",
+    "category": "deployment",
+    "summary": "Research build must be separated"
+  },
+  {
+    "id": "REQ-DEPLOY-008",
+    "category": "supply-chain",
+    "summary": "Provenance attestation required"
+  },
+  {
+    "id": "REQ-DEPLOY-009",
+    "category": "crypto-agility",
+    "summary": "Maintain a cryptographic inventory"
+  },
+  {
+    "id": "REQ-DEPLOY-012",
+    "category": "secure-development",
+    "summary": "Align to SSDF-like secure development"
+  },
+  {
+    "id": "REQ-DEPLOY-013",
+    "category": "secure-development",
+    "summary": "AI systems align to AI SSDF profile"
+  },
+  {
+    "id": "REQ-DEPLOY-014",
+    "category": "crypto-agility",
+    "summary": "Maintain algorithm transition plan"
+  },
+  {
+    "id": "REQ-DEPLOY-015",
+    "category": "crypto-agility",
+    "summary": "Maintain key management plan"
+  },
+  {
+    "id": "REQ-DEPLOY-016",
+    "category": "audit",
+    "summary": "Maintain logging plan"
+  },
+  {
+    "id": "REQ-DEPLOY-017",
+    "category": "supply-chain",
+    "summary": "Maintain C-SCRM plan"
+  }
+]

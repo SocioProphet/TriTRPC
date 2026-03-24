@@ -1,0 +1,48 @@
+{
+  "break_even": {
+    "beacon_vs_per_frame_data_frames": 13,
+    "inherited_vs_per_frame_data_frames": 2
+  },
+  "lengths": {
+    "beacon": 26,
+    "inherited_extra_per_stream": 2,
+    "per_frame_extra_per_data": 2,
+    "stream_data_base": 35,
+    "stream_data_per_frame": 37,
+    "stream_open_base": 43,
+    "stream_open_inherited": 45
+  },
+  "summary": {
+    "beacon_saving_vs_per_frame_1000": 1974,
+    "braid243_value": 94,
+    "inherited_saving_vs_per_frame_1000": 1998,
+    "state243_label": "active/verified/routine/fluid/cohort"
+  },
+  "totals": {
+    "one_stream_1000_data": {
+      "baseline_no_semantics": 35043,
+      "beaconed_context": 35069,
+      "inherited_open_defaults": 35045,
+      "per_frame_braid_state": 37043
+    },
+    "one_stream_10_data": {
+      "baseline_no_semantics": 393,
+      "beaconed_context": 419,
+      "inherited_open_defaults": 395,
+      "per_frame_braid_state": 413
+    },
+    "ten_streams_100_data_each": {
+      "baseline_no_semantics": 35430,
+      "beaconed_context": 35456,
+      "inherited_open_defaults": 35450,
+      "per_frame_braid_state": 37430
+    }
+  },
+  "wire_examples": {
+    "beacon_hex": "f32af2060112135e010100000000000000000000000000000000",
+    "stream_data_base_hex": "f32a01030112090b7b226368756e6b223a317d00000000000000000000000000000000",
+    "stream_data_per_frame_hex": "f32a01030112090b7b226368756e6b223a317d5e8800000000000000000000000000000000",
+    "stream_open_base_hex": "f32a010201120709127b22637572736f72223a227374617274227d00000000000000000000000000000000",
+    "stream_open_inherited_hex": "f32a010201120709127b22637572736f72223a227374617274227d5e8800000000000000000000000000000000"
+  }
+}

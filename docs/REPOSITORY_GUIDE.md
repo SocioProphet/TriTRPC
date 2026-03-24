@@ -72,3 +72,9 @@ When working in this repository, these expectations should always hold:
 
 If you modify encoding rules or envelope layout, you must regenerate fixtures and ensure
 all tests still pass.
+
+
+## VNext design pack
+
+- `docs/vnext/README.md`: entry point for the braided cadence / standards-inspired pack.
+- `reference/experimental/tritrpc_requirements_impl_v4/`: experimental Python package for vNext framing, cadence, assurance profiles, and comparisons.

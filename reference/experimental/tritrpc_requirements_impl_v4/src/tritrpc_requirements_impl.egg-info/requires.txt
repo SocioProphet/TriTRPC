@@ -1,5 +1,0 @@
-pyyaml>=6.0
-jsonschema>=4.0
-cryptography>=42.0
-protobuf>=5.0
-thrift>=0.20.0

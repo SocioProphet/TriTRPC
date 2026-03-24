@@ -135,3 +135,14 @@ If you need to refresh tags intentionally, run:
 ```bash
 python tools/regenerate_aead_tags.py
 ```
+
+
+## vNext preview
+
+The repository now includes an experimental vNext design pack focused on braided semantic cadence, compact authenticated hot-path framing, standards-inspired hardening, and transport comparisons.
+
+Start here:
+- `docs/vnext/README.md`
+- `docs/vnext/WHAT_IS_TRITRPC_VNEXT.md`
+- `docs/vnext/PERFORMANCE_AND_TESTING.md`
+- `reference/experimental/tritrpc_requirements_impl_v4/`

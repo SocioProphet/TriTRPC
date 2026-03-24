@@ -41,7 +41,7 @@ Normative steps (MUST):
    - Numbers rendered per JCS (shortest round-trippable decimal form).
 3. **Reject non-finite numbers** (`NaN`, `+Inf`, `-Inf`).
 4. **Hash/sign input** = **UTF-8 bytes** of the JCS canonical JSON produced in step (2).
-5. **Compute content hash** using **BLAKE3** over those canonical bytes.
+5. **Compute content hash** using **BLAKE3-256** (fixed **32-byte / 256-bit digest output**) over those canonical bytes.
 
 Receipts are considered replay-grade only when their hashes are computed via the JCS canonical
 bytes described above. Implementations MUST pass the published canonicalization + BLAKE3 test

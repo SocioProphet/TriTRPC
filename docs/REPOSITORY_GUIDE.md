@@ -1,4 +1,11 @@
-# Repository Guide (Pedantic)
+# Repository guide
+
+This repository now has two layers:
+
+- stable TritRPC v1 material for deterministic fixtures, spec behavior, and Go/Rust parity
+- experimental TriTRPC vNext material for braided semantic cadence, compact hot-path framing, standards-inspired hardening, and transport comparisons
+
+Guide (Pedantic)
 
 This guide explains the structure of the repository and the intent behind each major
 folder. It complements the top-level README by giving concrete navigation hints.

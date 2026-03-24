@@ -1,14 +1,20 @@
-# TritRPC v1 (Repository)
+# TriTRPC (Repository)
 
-**Description:** TritRPC v1 is a deterministic, ternary-native RPC protocol with
-authenticated envelope framing, reference fixtures, and Rust/Go implementations.
+Description: TriTRPC is a deterministic, ternary-native RPC protocol repository. It contains the stable TritRPC v1 specification, fixtures, and Rust/Go implementations, plus an experimental TriTRPC vNext design pack for braided semantic cadence, compact authenticated hot-path framing, and standards-inspired hardening.
 
-**Topics:** ternary, rpc, protocol, deterministic-encoding, fixtures, rust, go, avro, aead
+Topics: ternary, rpc, protocol, deterministic-encoding, fixtures, rust, go, avro, aead, agentic-transport, braided-semantics
 
-This repository contains reference material, fixtures, and two language ports (Rust and Go)
-for **TritRPC v1**, a protocol that blends ternary-native encodings with conventional
-byte-transport, along with authenticated envelope framing. The focus of this repo is
-**deterministic, byte-for-byte reproducibility** across implementations.
+This repository contains two layers of work:
+
+1. **Stable TritRPC v1** — deterministic, byte-for-byte reproducible fixtures, normative spec material, and Go/Rust ports.
+2. **Experimental TriTRPC vNext** — a public design pack for route handles, compact control words, braided semantic cadence, standards-inspired hardening, and transport comparisons.
+
+The repository focus remains deterministic reproducibility and cross-language parity for v1, while also publishing the current vNext direction in-repo so the design work is reviewable, testable, and easy to discuss publicly.
+
+## Repository status
+
+- **v1**: stable interoperability surface for fixtures, reference behavior, and Go/Rust parity.
+- **vNext**: experimental design pack and reference package; not yet the normative wire format for the stable ports.
 
 ## Quick navigation
 

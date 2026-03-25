@@ -1,0 +1,32 @@
+[
+  {
+    "message": "Approved-family suites must use AES-256-GCM at the protocol AEAD layer",
+    "requirement_id": "REQ-CRYPTO-001",
+    "severity": "error"
+  },
+  {
+    "message": "Approved-family suites must use SHA-384 or SHA-512",
+    "requirement_id": "REQ-CRYPTO-002",
+    "severity": "error"
+  },
+  {
+    "message": "Approved-family suites must use a module-managed or otherwise approved IV/nonce construction",
+    "requirement_id": "REQ-CRYPTO-004",
+    "severity": "error"
+  },
+  {
+    "message": "Approved-family suites must not allow research-only algorithms",
+    "requirement_id": "REQ-CRYPTO-005",
+    "severity": "error"
+  },
+  {
+    "message": "Raw custom transport is harder to defend; prefer TLS, IPsec, or SSH semantics",
+    "requirement_id": "REQ-TRANSPORT-001",
+    "severity": "warning"
+  },
+  {
+    "message": "Approved-family suites require a referenced validated cryptographic module",
+    "requirement_id": "REQ-CRYPTO-006",
+    "severity": "error"
+  }
+]

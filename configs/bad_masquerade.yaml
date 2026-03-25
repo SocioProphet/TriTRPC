@@ -1,0 +1,8 @@
+suite: 1
+approved_mode: true
+aead: XChaCha20-Poly1305
+hash_function: SHA-256
+transport: raw
+tag_length_bytes: 16
+nonce_strategy: userland-random
+allow_research_algorithms: true

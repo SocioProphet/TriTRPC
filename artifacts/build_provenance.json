@@ -1,0 +1,24 @@
+{
+  "_type": "https://in-toto.io/Statement/v1",
+  "subject": [
+    {
+      "name": "tritrpc_requirements_impl_v2.zip",
+      "digest": {
+        "sha256": "DEMO-PLACEHOLDER"
+      }
+    }
+  ],
+  "predicateType": "https://slsa.dev/provenance/v1",
+  "predicate": {
+    "buildType": "sandbox/manual-python-build",
+    "builder": {
+      "id": "sandbox://openai/container"
+    },
+    "buildDefinition": {
+      "externalParameters": {
+        "sourceRevision": "sandbox-2026-03-11",
+        "profile": "standards-inspired"
+      }
+    }
+  }
+}

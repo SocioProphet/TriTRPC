@@ -1,0 +1,168 @@
+{
+  "scenarios": {
+    "braid243_coordinate_only": {
+      "description": "Coordinate-only comparison for one 7x23 braid state (phase 4, topic 14).",
+      "hex_samples": {
+        "protobuf_combined_coord": "085e",
+        "protobuf_split_phase_topic": "0804100e",
+        "thrift_compact_combined_coord": "15bc0100",
+        "tritrpc_braid243": "5e"
+      },
+      "lengths": {
+        "protobuf_combined_coord": 2,
+        "protobuf_split_phase_topic": 4,
+        "thrift_compact_combined_coord": 4,
+        "thrift_compact_split_phase_topic": 5,
+        "tritrpc_braid243": 1
+      },
+      "name": "braid243_coordinate_only",
+      "notes": [
+        "Seven phases times 23 topics gives 161 live states, which fit inside one 5-trit byte."
+      ]
+    },
+    "hot_unary_large_secure_1024": {
+      "description": "Authenticated hot unary request with 1024-byte opaque payload.",
+      "hex_samples": {
+        "protobuf_handle_prefix": "08011801201228073280087878787878787878787878787878787878787878787878787878787878",
+        "tritrpc_prefix": "f32a0100011207f3e8d8f40178787878787878787878787878787878787878787878787878787878"
+      },
+      "lengths": {
+        "protobuf_fused": 1051,
+        "protobuf_handle": 1053,
+        "thrift_compact_fused": 1052,
+        "thrift_compact_handle": 1056,
+        "tritrpc": 1052
+      },
+      "name": "hot_unary_large_secure_1024",
+      "notes": [
+        "As payload size grows, fixed-header differences become nearly irrelevant; in this benchmark, manually fused protobuf edges TriTRPC by one byte."
+      ]
+    },
+    "hot_unary_small_secure": {
+      "description": "Authenticated hot unary request with handle route and 28-byte JSON payload.",
+      "hex_samples": {
+        "protobuf_fused": "081110121807221c7b226f70223a226164642d766572746578222c226964223a2261227d2a1000000000000000000000000000000000",
+        "protobuf_handle": "0801180120122807321c7b226f70223a226164642d766572746578222c226964223a2261227d3a1000000000000000000000000000000000",
+        "thrift_compact_handle": "1402140014021524150e181c7b226f70223a226164642d766572746578222c226964223a2261227d18100000000000000000000000000000000000",
+        "tritrpc": "f32a01000112071c7b226f70223a226164642d766572746578222c226964223a2261227d00000000000000000000000000000000"
+      },
+      "lengths": {
+        "protobuf_fused": 54,
+        "protobuf_handle": 56,
+        "protobuf_inline": 87,
+        "thrift_binary_handle": 88,
+        "thrift_compact_fused": 55,
+        "thrift_compact_handle": 59,
+        "thrift_compact_inline": 90,
+        "tritrpc": 52
+      },
+      "name": "hot_unary_small_secure",
+      "notes": [
+        "TriTRPC advantage here comes from one-byte Control243, one-byte S243 integers, fixed hot framing, and a built-in 16-byte tag.",
+        "The fused protobuf/thrift variants are deliberately generous competitors that manually combine control/kind/suite into a single small scalar."
+      ]
+    },
+    "stream_data_small_secure": {
+      "description": "Authenticated stream DATA with stream_id and 11-byte JSON payload.",
+      "hex_samples": {
+        "protobuf_fused": "081d10121809220b7b226368756e6b223a317d2a1000000000000000000000000000000000",
+        "protobuf_handle": "08011003180120122809320b7b226368756e6b223a317d3a1000000000000000000000000000000000",
+        "thrift_compact_handle": "14021406140215241512180b7b226368756e6b223a317d18100000000000000000000000000000000000",
+        "tritrpc": "f32a01030112090b7b226368756e6b223a317d00000000000000000000000000000000"
+      },
+      "lengths": {
+        "protobuf_fused": 37,
+        "protobuf_handle": 41,
+        "thrift_compact_fused": 38,
+        "thrift_compact_handle": 42,
+        "tritrpc": 35
+      },
+      "name": "stream_data_small_secure",
+      "notes": [
+        "This is the cleanest hot-path comparison because route metadata is already interned away."
+      ]
+    },
+    "stream_open_small_secure": {
+      "description": "Authenticated stream OPEN with handle route, stream_id, and 18-byte JSON payload.",
+      "hex_samples": {
+        "protobuf_fused": "08191012180720092a127b22637572736f72223a227374617274227d321000000000000000000000000000000000",
+        "protobuf_handle": "0801100218012012280730093a127b22637572736f72223a227374617274227d421000000000000000000000000000000000",
+        "thrift_compact_handle": "1402140414021524150e151218127b22637572736f72223a227374617274227d18100000000000000000000000000000000000",
+        "tritrpc": "f32a010201120709127b22637572736f72223a227374617274227d00000000000000000000000000000000"
+      },
+      "lengths": {
+        "protobuf_fused": 46,
+        "protobuf_handle": 50,
+        "thrift_compact_fused": 47,
+        "thrift_compact_handle": 51,
+        "tritrpc": 43
+      },
+      "name": "stream_open_small_secure",
+      "notes": [
+        "Once stream state is established, TriTRPC avoids repeating route metadata on DATA frames."
+      ]
+    },
+    "tristate_vector_100_payload_only": {
+      "description": "Payload-only comparison for 100 values in {0,1,2}.",
+      "hex_samples": {
+        "protobuf_packed_uint32": "0a6400010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200010200",
+        "thrift_compact_list_i32": "19f5640002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040002040000",
+        "tritrpc_tritpack243": "2eb18c2eb18c2eb18c2eb18c2eb18c2eb18c2eb1"
+      },
+      "lengths": {
+        "protobuf_packed_uint32": 102,
+        "thrift_binary_list_i32": 409,
+        "thrift_compact_list_i32": 104,
+        "tritrpc_tritpack243": 20
+      },
+      "name": "tristate_vector_100_payload_only",
+      "notes": [
+        "This is where ternary-native packing creates a categorical advantage, because the payload alphabet itself is ternary."
+      ]
+    }
+  },
+  "summary": {
+    "constants_for_small_secure_frames": {
+      "protobuf_hot_unary_fused": 26,
+      "protobuf_hot_unary_handle": 28,
+      "protobuf_stream_data_fused": 26,
+      "protobuf_stream_data_handle": 30,
+      "protobuf_stream_open_fused": 28,
+      "protobuf_stream_open_handle": 32,
+      "thrift_compact_hot_unary_fused": 27,
+      "thrift_compact_hot_unary_handle": 31,
+      "thrift_compact_stream_data_fused": 27,
+      "thrift_compact_stream_data_handle": 31,
+      "thrift_compact_stream_open_fused": 29,
+      "thrift_compact_stream_open_handle": 33,
+      "tritrpc_hot_unary": 24,
+      "tritrpc_stream_data": 24,
+      "tritrpc_stream_open": 25
+    },
+    "payloads": {
+      "hot_unary_small_payload_len": 28,
+      "large_payload_len": 1024,
+      "stream_data_small_payload_len": 11,
+      "stream_open_small_payload_len": 18
+    },
+    "totals_for_100_frames": {
+      "hot_unary_small_secure": {
+        "protobuf_fused": 5400,
+        "protobuf_handle": 5600,
+        "protobuf_inline": 8700,
+        "thrift_binary_handle": 8800,
+        "thrift_compact_fused": 5500,
+        "thrift_compact_handle": 5900,
+        "thrift_compact_inline": 9000,
+        "tritrpc": 5200
+      },
+      "stream_data_small_secure": {
+        "protobuf_fused": 3700,
+        "protobuf_handle": 4100,
+        "thrift_compact_fused": 3800,
+        "thrift_compact_handle": 4200,
+        "tritrpc": 3500
+      }
+    }
+  }
+}

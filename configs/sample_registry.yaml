@@ -1,0 +1,18 @@
+routes:
+  7:
+    service: hyper.v1
+    method: AddVertex
+    schema: sha256:1111111111111111111111111111111111111111111111111111111111111111
+    context_policy: tenant-default
+    default_profile: Path-A
+    reply_semantics: unary-rsp
+  19:
+    service: beacon.v1
+    method: Commit
+    schema: sha256:2222222222222222222222222222222222222222222222222222222222222222
+    context_policy: control-plane
+    default_profile: Path-H
+    reply_semantics: none
+identities:
+  19:
+    canonical_id: sp.agentplane.runtime.workflow.executor[t03+t11]@e18.p4.f14.verified+l3#prod.use1

@@ -1,0 +1,18 @@
+{
+  "tests_passed": 21,
+  "approved_like_findings": [],
+  "standards_inspired_findings": [],
+  "standards_inspired_no_cert_findings": [
+    {
+      "message": "Boundary manifest should reference a security policy or local equivalent",
+      "requirement_id": "REQ-BOUNDARY-011",
+      "severity": "info"
+    },
+    {
+      "message": "No certificate number is attached; this boundary can mimic standards but not claim validation pedigree",
+      "requirement_id": "REQ-BOUNDARY-012A",
+      "severity": "warning"
+    }
+  ],
+  "audit_chain_valid": true
+}

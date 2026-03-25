@@ -1,0 +1,36 @@
+module_name: "AWS-LC Cryptographic Module (static)"
+certificate: "4816"
+standard: "FIPS 140-3"
+status: "Active"
+approved_mode: true
+module_type: "software"
+runtime_binding: "aws-lc-fips-static"
+operational_environment:
+  os: linux
+  arch: x86_64
+selected_aead:
+  - AES-256-GCM
+selected_hashes:
+  - SHA-384
+  - SHA-512
+selected_key_establishment:
+  - ML-KEM-1024
+selected_signatures:
+  - ML-DSA-87
+selected_transports:
+  - tls13
+  - ipsec
+  - ssh
+self_tests_power_up: true
+self_tests_conditional: true
+error_state_on_self_test_failure: true
+entropy_source_documented: true
+sbom_path: ../artifacts/sbom.spdx.json
+provenance_path: ../artifacts/build_provenance.json
+security_policy_url: https://csrc.nist.gov/projects/cryptographic-module-validation-program/certificate/4816
+source_revision: sandbox-2026-03-11
+fail_closed: true
+zeroization_attempted: true
+key_separation_documented: true
+notes:
+  purpose: standards-inspired AWS-LC boundary example

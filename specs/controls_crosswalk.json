@@ -1,0 +1,46 @@
+{
+  "REQ-BOUNDARY-004": {
+    "source_family": "FIPS 140-3",
+    "intent": "self-tests"
+  },
+  "REQ-BOUNDARY-005": {
+    "source_family": "FIPS 140-3",
+    "intent": "error states / fail closed"
+  },
+  "REQ-BOUNDARY-003": {
+    "source_family": "CMVP IG",
+    "intent": "operational environment pinning"
+  },
+  "REQ-CRYPTO-001": {
+    "source_family": "NIST SP 800-38D + NSA CNSA profiles",
+    "intent": "AES-256-GCM on approved-family protocol lane"
+  },
+  "REQ-TRANSPORT-002": {
+    "source_family": "NIST SP 800-52r2",
+    "intent": "TLS 1.3 transport preference/support"
+  },
+  "REQ-DEPLOY-014": {
+    "source_family": "NIST SP 800-131A",
+    "intent": "algorithm transition planning"
+  },
+  "REQ-DEPLOY-015": {
+    "source_family": "NIST SP 800-57",
+    "intent": "key management planning"
+  },
+  "REQ-DEPLOY-005": {
+    "source_family": "NIST SP 800-92",
+    "intent": "log management / accountability"
+  },
+  "REQ-SUPPLY-001": {
+    "source_family": "NIST SP 800-161r1 + SBOM guidance",
+    "intent": "supply-chain visibility"
+  },
+  "REQ-DEPLOY-012": {
+    "source_family": "NIST SP 800-218",
+    "intent": "secure software development discipline"
+  },
+  "REQ-DEPLOY-013": {
+    "source_family": "NIST SP 800-218A",
+    "intent": "AI-specific secure development discipline"
+  }
+}

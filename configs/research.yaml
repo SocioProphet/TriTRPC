@@ -1,0 +1,10 @@
+suite: 0
+approved_mode: false
+aead: XChaCha20-Poly1305
+hash_function: SHA-512
+transport: raw
+tag_length_bytes: 16
+nonce_strategy: userland-context-counter
+allow_research_algorithms: true
+notes:
+  purpose: research-only

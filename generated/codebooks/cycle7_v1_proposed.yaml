@@ -1,0 +1,38 @@
+version: cycle7.proposed.v1
+reserved_gray: '100'
+phases:
+- index: 1
+  code: obs
+  label: observe
+  machine_gray: '000'
+  description: sense or receive incoming evidence
+- index: 2
+  code: prs
+  label: parse
+  machine_gray: '001'
+  description: parse and normalize raw inputs
+- index: 3
+  code: str
+  label: structure
+  machine_gray: '011'
+  description: structure evidence into canonical cells
+- index: 4
+  code: dec
+  label: decide
+  machine_gray: '010'
+  description: decide policy and routing posture
+- index: 5
+  code: act
+  label: act
+  machine_gray: '110'
+  description: execute, dispatch, or emit control
+- index: 6
+  code: rev
+  label: review
+  machine_gray: '111'
+  description: review results and apply friction if needed
+- index: 7
+  code: frz
+  label: freeze
+  machine_gray: '101'
+  description: freeze, checkpoint, or promote durable state

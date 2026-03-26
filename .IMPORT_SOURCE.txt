@@ -1,5 +1,0 @@
-Imported from archive wrapper: /Users/michaelheller/dev/_incoming_repo_ingest_zipbatch/20260325-final-batch/extracted/37-tritrpc-requirements-impl-v4
-Candidate root: /Users/michaelheller/dev/_incoming_repo_ingest_zipbatch/20260325-final-batch/extracted/37-tritrpc-requirements-impl-v4/tritrpc_requirements_impl_v4
-Suggested slug: tritrpc-requirements-impl-03
-Suggested target: SocioProphet/tritrpc-requirements-impl-03
-Lane: socioprophet-integration

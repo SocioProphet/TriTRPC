@@ -1,0 +1,155 @@
+[
+  {
+    "id": "REQ-EXT-001",
+    "class": "external",
+    "must": true,
+    "requirement": "Federal-use cryptographic modules must be designed and implemented against FIPS 140-3 / CMVP expectations.",
+    "source": "NIST FIPS 140-3; CMVP",
+    "implemented_in": ["policy.py", "configs/fips_classical.yaml", "configs/cnsa2_ready.yaml"],
+    "status": "implemented-as-policy-gate"
+  },
+  {
+    "id": "REQ-EXT-002",
+    "class": "external",
+    "must": true,
+    "requirement": "Approved algorithms alone are insufficient; the crypto boundary must reference a validated module.",
+    "source": "NIST CMVP validated modules guidance",
+    "implemented_in": ["policy.py"],
+    "status": "implemented-as-policy-gate"
+  },
+  {
+    "id": "REQ-EXT-003",
+    "class": "external",
+    "must": true,
+    "requirement": "NSS/DoD-facing mode cannot stop at FIPS validation alone; it must model NSA-approved/CNSA/NIAP-style deployment constraints.",
+    "source": "NSA CNSA 2.0 algorithms guidance",
+    "implemented_in": ["policy.py", "specs/requirements_and_implementation.md"],
+    "status": "implemented-as-policy-gate"
+  },
+  {
+    "id": "REQ-EXT-004",
+    "class": "external-draft",
+    "must": true,
+    "requirement": "CSfC-aligned profiles should carry an active NIST FIPS validation certificate number for relevant components.",
+    "source": "NSA CSfC Symmetric Key Management Requirements Annex draft 3.0.0",
+    "implemented_in": ["configs/fips_classical.yaml", "configs/cnsa2_ready.yaml", "policy.py"],
+    "status": "implemented-as-policy-gate"
+  },
+  {
+    "id": "REQ-EXT-005",
+    "class": "external",
+    "must": true,
+    "requirement": "Approved-mode AEAD uses AES-256-GCM with a 16-byte tag in the hot-frame reference; nonce/IV construction must be module-managed or module-approved.",
+    "source": "NIST SP 800-38D and 2024/2025 revision notes; NSA CNSA guidance",
+    "implemented_in": ["policy.py", "frames.py"],
+    "status": "implemented-as-policy-gate-and-demo"
+  },
+  {
+    "id": "REQ-EXT-006",
+    "class": "external",
+    "must": true,
+    "requirement": "CNSA 2.0-ready profile uses ML-KEM-1024, ML-DSA-87, AES-256-GCM, and SHA-384/SHA-512; TLS binding requires TLS 1.3.",
+    "source": "NIST FIPS 203/204/205; NSA CNSA 2.0 and CSfC PQC guidance",
+    "implemented_in": ["policy.py", "configs/cnsa2_ready.yaml"],
+    "status": "implemented-as-policy-gate"
+  },
+  {
+    "id": "REQ-DES-001",
+    "class": "design",
+    "must": true,
+    "requirement": "Research and approved profiles must be hard-separated so research mode cannot masquerade as approved mode.",
+    "source": "Architecture decision",
+    "implemented_in": ["policy.py", "tests/test_policy.py"],
+    "status": "implemented"
+  },
+  {
+    "id": "REQ-DES-002",
+    "class": "design",
+    "must": true,
+    "requirement": "Canonical hot frames use fixed MAGIC[2], Control243[1], Kind[1], Suite[1], followed by kind-specific canonical fields and a fixed 16-byte tag.",
+    "source": "TriTRPC vNext mini-spec",
+    "implemented_in": ["frames.py", "tests/test_frames.py"],
+    "status": "implemented"
+  },
+  {
+    "id": "REQ-DES-003",
+    "class": "design",
+    "must": true,
+    "requirement": "Hot lengths, stream IDs, and epoch IDs use S243 rather than cold-path TLEB3 directly.",
+    "source": "TriTRPC vNext mini-spec",
+    "implemented_in": ["codec.py", "tests/test_codec.py"],
+    "status": "implemented"
+  },
+  {
+    "id": "REQ-DES-004",
+    "class": "design",
+    "must": true,
+    "requirement": "Route and identity indirection use Handle243, allowing compact hot-path route/identity references.",
+    "source": "TriTRPC vNext mini-spec",
+    "implemented_in": ["codec.py", "registry.py", "frames.py"],
+    "status": "implemented"
+  },
+  {
+    "id": "REQ-DES-005",
+    "class": "design",
+    "must": true,
+    "requirement": "Braided identity is registry-first and exposes a compact Braid243 coordinate for phase(1..7) × topic(1..23).",
+    "source": "Braided naming design",
+    "implemented_in": ["naming.py", "frames.py", "registry.py", "tests/test_naming.py"],
+    "status": "implemented"
+  },
+  {
+    "id": "REQ-DES-006",
+    "class": "design",
+    "must": false,
+    "requirement": "Optional 3-adic refinement lanes should be append-only and reserved for approximation-bearing state, not opaque binary payloads.",
+    "source": "Protocol optimization study",
+    "implemented_in": ["padic.py"],
+    "status": "implemented-as-experimental"
+  },
+  {
+    "id": "REQ-DES-007",
+    "class": "design",
+    "must": false,
+    "requirement": "Beacon frames should carry compact semantic routing (identity handle + braid) rather than full canonical names.",
+    "source": "Protocol optimization study",
+    "implemented_in": ["frames.py", "tests/test_frames.py"],
+    "status": "implemented"
+  },
+  {
+    "id": "REQ-VER-001",
+    "class": "verification",
+    "must": true,
+    "requirement": "Canonical encodings must round-trip and reject malformed/non-canonical representations.",
+    "source": "Determinism requirement",
+    "implemented_in": ["tests/test_codec.py", "tests/test_frames.py", "tests/test_naming.py"],
+    "status": "implemented"
+  },
+  {
+    "id": "REQ-VER-002",
+    "class": "verification",
+    "must": true,
+    "requirement": "Example policy profiles and vectors must be generated so downstream repos can diff and port the design.",
+    "source": "Implementation readiness",
+    "implemented_in": ["generated/sample_vectors.json", "generated/*validation.json", "configs/*.yaml"],
+    "status": "implemented"
+  },
+  {
+    "id": "REQ-GAP-001",
+    "class": "deferred",
+    "must": true,
+    "requirement": "Bind approved mode to an actual validated module in the target language runtime; the sandbox demo provider is not validated.",
+    "source": "Reality of CMVP boundary",
+    "implemented_in": [],
+    "status": "deferred"
+  },
+  {
+    "id": "REQ-GAP-002",
+    "class": "deferred",
+    "must": true,
+    "requirement": "Generate repo-native Go/Rust golden fixtures and upstream patches once the target runtime and validated module are chosen.",
+    "source": "Porting requirement",
+    "implemented_in": [],
+    "status": "deferred"
+  }
+]

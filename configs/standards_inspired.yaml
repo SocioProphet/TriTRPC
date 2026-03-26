@@ -1,11 +1,11 @@
-name: tritrpc-cnsa2-standards-inspired
+name: tritrpc-standards-inspired
 assurance_target: standards-inspired
-profile: cnsa2_ready.yaml
-boundary: awslc_fips_boundary.yaml
+profile: fips_classical.yaml
+boundary: openssl_fips_boundary.yaml
 ai_system: true
 registry_version: braid-topic23.placeholder.v0
 canonical_wire_locked: true
-golden_vectors_path: ../generated/sample_vectors_v4.json
+golden_vectors_path: ../generated/sample_vectors_v2.json
 negative_tests: true
 audit_enabled: true
 audit_hash: SHA-384

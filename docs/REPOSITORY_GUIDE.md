@@ -88,10 +88,15 @@ all tests still pass.
 
 ## Branch integration workflow
 
-To reduce risk while integrating branch updates, use:
+To reduce risk while integrating branch updates, use one of:
 
-- `scripts/safe_merge.sh <source-branch> [target-branch]`
+- `scripts/merge_readiness.sh <source-branch> [target-branch]` for a non-destructive preflight.
+- `scripts/safe_merge.sh <source-branch> [target-branch]` for the actual merge.
 
-The script verifies a clean working tree, validates branch existence, optionally fast-forwards
-the target branch from its upstream, performs a `--no-ff` merge, and runs `make verify`
-(or `make test` when `verify` is unavailable).
+`merge_readiness.sh` performs a temporary `--no-commit` merge into the target branch,
+runs `make verify` (or `make test`), then automatically aborts the merge and returns you to
+your original branch.
+
+`safe_merge.sh` verifies a clean working tree, validates branch existence, optionally
+fast-forwards the target branch from its upstream, performs a `--no-ff` merge, and runs
+`make verify` (or `make test` when `verify` is unavailable).

@@ -62,12 +62,21 @@ git merge --no-ff "$SOURCE_BRANCH"
 
 echo "Running available project checks..."
 if command -v make >/dev/null 2>&1; then
-  make test || {
-    echo "make test failed after merge. Resolve issues and re-run checks." >&2
-    exit 1
-  }
+  if make -qp | awk -F: '/^[a-zA-Z0-9_.-]+:/ {print $1}' | grep -qx 'verify'; then
+    make verify || {
+      echo "make verify failed after merge. Resolve issues and re-run checks." >&2
+      exit 1
+    }
+  elif make -qp | awk -F: '/^[a-zA-Z0-9_.-]+:/ {print $1}' | grep -qx 'test'; then
+    make test || {
+      echo "make test failed after merge. Resolve issues and re-run checks." >&2
+      exit 1
+    }
+  else
+    echo "No 'verify' or 'test' target found; skipping checks."
+  fi
 else
-  echo "'make' not available; skipping tests."
+  echo "'make' not available; skipping checks."
 fi
 
 echo "Merge complete. Review changes, then push and open a PR."

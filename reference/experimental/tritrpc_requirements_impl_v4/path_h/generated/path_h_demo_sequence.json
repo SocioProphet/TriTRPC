@@ -1,0 +1,41 @@
+{
+  "name": "Path-H qutrit teleportation draft demo sequence",
+  "version": "draft-0",
+  "steps": [
+    {
+      "step": 1,
+      "event": "PAIR.OPEN",
+      "purpose": "reserve a qutrit-capable entangled-pair resource between two sites",
+      "fixture_ref": "PAIR.OPEN",
+      "frame_hex": "f32adc00120b09010713010203c5b4030c431d63d7e4aa85db0563cd0557f86b"
+    },
+    {
+      "step": 2,
+      "event": "PAIR.HERALD",
+      "purpose": "publish detector-confirmed success and basic pair quality",
+      "fixture_ref": "PAIR.HERALD",
+      "frame_hex": "f32ac700120c13023d071302011805bf54318f4d1503b703b0a7948956ef284c62bf9f20efbd14b99384"
+    },
+    {
+      "step": 3,
+      "event": "TELEPORT.BSM3",
+      "purpose": "publish the qutrit Bell-state measurement result as a 2-trit code",
+      "fixture_ref": "TELEPORT.BSM3",
+      "frame_hex": "f32ad900120d0e033d02051805bf546d2a171503091f0abcc962885d1d86214fa3e14fcf6e"
+    },
+    {
+      "step": 4,
+      "event": "FRAME.DEFER",
+      "purpose": "record a deferred frame update instead of immediate physical correction",
+      "fixture_ref": "FRAME.DEFER",
+      "frame_hex": "f32adc00120e0d043d0102011805bf54a8c4e11575f30cf3d878e6190f41fafe3be68911"
+    },
+    {
+      "step": 5,
+      "event": "WITNESS.REPORT",
+      "purpose": "publish measured quality, timing, and link/path evidence",
+      "fixture_ref": "WITNESS.REPORT",
+      "frame_hex": "f32aeb00120f1b05013d00000000004c4b4003b303ab071c01211805bf54e45fab1575c2a416f67df694f324062f1a37aaa0"
+    }
+  ]
+}

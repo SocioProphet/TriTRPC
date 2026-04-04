@@ -38,3 +38,10 @@ Generate the current TriTRPC vs protobuf/thrift comparison artifacts:
 ```bash
 PYTHONPATH=src python -m tritrpc_requirements_impl compare-transports generated/transport_comparison_v3.json --markdown generated/transport_comparison_v3.md
 ```
+
+## Hybrid / Path-H annex material
+
+- `path_h/README.md` — qutrit / hybrid profile companion package
+- `path_h/reference/` — reference encoder
+- `path_h/generated/` — canonical fixtures, demo sequence, and notes
+- `path_h/parity/` — Go and Rust parity harnesses

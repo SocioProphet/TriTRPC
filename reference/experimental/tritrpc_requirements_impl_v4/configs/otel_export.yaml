@@ -1,0 +1,5 @@
+resource_mapping: strict
+span_mapping: genai_compatible
+log_mapping: canonical_events
+metric_mapping: cost_usage_latency
+mcp_mapping: enrich_existing_spans

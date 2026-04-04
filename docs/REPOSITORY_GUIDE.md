@@ -85,3 +85,13 @@ all tests still pass.
 
 - `docs/vnext/README.md`: entry point for the braided cadence / standards-inspired pack.
 - `reference/experimental/tritrpc_requirements_impl_v4/`: experimental Python package for vNext framing, cadence, assurance profiles, and comparisons.
+
+## Branch integration workflow
+
+To reduce risk while integrating branch updates, use:
+
+- `scripts/safe_merge.sh <source-branch> [target-branch]`
+
+The script verifies a clean working tree, validates branch existence, optionally fast-forwards
+the target branch from its upstream, performs a `--no-ff` merge, and runs `make verify`
+(or `make test` when `verify` is unavailable).

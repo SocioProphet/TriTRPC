@@ -27,9 +27,9 @@ PYTHONPATH=src python -m tritrpc_requirements_impl validate-boundary configs/ope
 PYTHONPATH=src python -m tritrpc_requirements_impl validate-deployment configs/standards_inspired.yaml
 PYTHONPATH=src python -m tritrpc_requirements_impl emit-vectors generated/sample_vectors_v2.json --null-tag
 PYTHONPATH=src python -m tritrpc_requirements_impl emit-audit generated/sample_audit_chain.json --null-tag
+PYTHONPATH=src python -m tritrpc_requirements_impl validate-route-policy-vectors ../../../../docs/vnext/generated/route_policy_delta_vectors_v1.json ../../../../docs/vnext/generated/route_policy_delta_resume_vectors_v1.json
 pytest
 ```
-
 
 ## Transport comparison
 

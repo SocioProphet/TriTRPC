@@ -1,0 +1,144 @@
+{
+  "name": "TriTRPC route policy resume vectors v1",
+  "status": "Reference-only",
+  "notes": [
+    "These vectors extend the main route-policy vector pack with resume semantics so pause/revoke flows are paired with an explicit recovery path.",
+    "The vectors intentionally preserve the authority split: degradation advises, route policy authorizes, hot frames follow the updated posture."
+  ],
+  "vectors": [
+    {
+      "vector_id": "resume_route_after_pause",
+      "summary": "A previously paused route is resumed by trusted policy, after which hot requests may flow again with baseline control posture.",
+      "sequence": [
+        {
+          "destination": "beacon",
+          "kind243": 5,
+          "ctrl243_trits": [0, 0, 0, 0, 1],
+          "ctrl243_byte": 1,
+          "delta_type": "route_policy_delta.v1",
+          "payload": {
+            "epoch": 53,
+            "scope": "global",
+            "route_h": 24,
+            "policy_h": 5,
+            "update_kind": "resume",
+            "attestation": {
+              "attestation_type": "policy_attestation.v1",
+              "authority_h": 5,
+              "policy_h": 5,
+              "issuer_h": 11,
+              "scope": "route",
+              "decision_class": "resume",
+              "issued_at_ms": 1710000240000,
+              "effective_from_epoch": 53,
+              "effective_until_epoch": 54,
+              "receipt_ref": null,
+              "proof_ref": "sha256:policy-resume-53",
+              "replay_ref": "policy-epoch-53",
+              "signature_ref": "sig:policy-53",
+              "evidence_grade": "exact",
+              "reason_code": "capacity-recovered"
+            }
+          }
+        },
+        {
+          "destination": "hot_frame",
+          "kind243": 0,
+          "ctrl243_trits": [0, 0, 0, 0, 1],
+          "ctrl243_byte": 1,
+          "route_h": 24,
+          "note": "request after route resume returns to baseline exact classical handle-routed posture"
+        }
+      ]
+    },
+    {
+      "vector_id": "resume_then_authorize_fallback",
+      "summary": "A resumed route may later receive a separate authoritative fallback allowance; resume does not itself imply fallback permission.",
+      "sequence": [
+        {
+          "destination": "beacon",
+          "kind243": 5,
+          "ctrl243_trits": [0, 0, 0, 0, 1],
+          "ctrl243_byte": 1,
+          "delta_type": "route_policy_delta.v1",
+          "payload": {
+            "epoch": 70,
+            "scope": "cohort",
+            "route_h": 31,
+            "policy_h": 7,
+            "update_kind": "resume",
+            "attestation": {
+              "attestation_type": "policy_attestation.v1",
+              "authority_h": 7,
+              "policy_h": 7,
+              "issuer_h": 13,
+              "scope": "route",
+              "decision_class": "resume",
+              "issued_at_ms": 1710000300000,
+              "effective_from_epoch": 70,
+              "effective_until_epoch": 71,
+              "receipt_ref": null,
+              "proof_ref": "sha256:policy-resume-70",
+              "replay_ref": "policy-epoch-70",
+              "signature_ref": "sig:policy-70",
+              "evidence_grade": "exact",
+              "reason_code": "maintenance-end"
+            }
+          }
+        },
+        {
+          "destination": "hot_frame",
+          "kind243": 0,
+          "ctrl243_trits": [0, 0, 0, 0, 1],
+          "ctrl243_byte": 1,
+          "route_h": 31,
+          "note": "resume alone restores traffic but not fallback permission"
+        },
+        {
+          "destination": "beacon",
+          "kind243": 5,
+          "ctrl243_trits": [0, 0, 0, 0, 1],
+          "ctrl243_byte": 1,
+          "delta_type": "route_policy_delta.v1",
+          "payload": {
+            "epoch": 71,
+            "scope": "cohort",
+            "route_h": 31,
+            "policy_h": 7,
+            "update_kind": "fallback",
+            "fallback_policy": {
+              "value": "classical-fallback-ok",
+              "reason_class": "experiment",
+              "ttl_ms": 45000
+            },
+            "attestation": {
+              "attestation_type": "policy_attestation.v1",
+              "authority_h": 7,
+              "policy_h": 7,
+              "issuer_h": 13,
+              "scope": "route",
+              "decision_class": "fallback",
+              "issued_at_ms": 1710000360000,
+              "effective_from_epoch": 71,
+              "effective_until_epoch": 72,
+              "receipt_ref": null,
+              "proof_ref": "sha256:policy-fallback-71",
+              "replay_ref": "policy-epoch-71",
+              "signature_ref": "sig:policy-71",
+              "evidence_grade": "exact",
+              "reason_code": "experiment-window"
+            }
+          }
+        },
+        {
+          "destination": "hot_frame",
+          "kind243": 0,
+          "ctrl243_trits": [0, 0, 0, 1, 1],
+          "ctrl243_byte": 4,
+          "route_h": 31,
+          "note": "subsequent request after explicit fallback authorization"
+        }
+      ]
+    }
+  ]
+}

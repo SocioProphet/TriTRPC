@@ -1,0 +1,13 @@
+{
+  "allow": true,
+  "reason": "remote_allowed_with_redaction",
+  "approvedDestinationZone": "tenant",
+  "requiredTransformations": [
+    "tokenize_pii",
+    "strip_raw_attachments",
+    "send_extractive_context_only"
+  ],
+  "maxContextBytes": 16384,
+  "ttlSeconds": 120,
+  "policyHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+}

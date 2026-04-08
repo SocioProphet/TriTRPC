@@ -1,0 +1,18 @@
+{
+  "taskId": "task_01",
+  "capabilityInstanceId": "capinst.summarize.abstractive.v1.stub",
+  "input": {
+    "kind": "summarization_request",
+    "objective": "Summarize and identify unresolved risks",
+    "context": {
+      "chunks": [
+        {"chunkId": "c1", "text": "Replay semantics are partially specified and restoration boundaries still need canonical anchors."},
+        {"chunkId": "c2", "text": "Tenant execution is allowed only after redaction and extractive context reduction."}
+      ]
+    }
+  },
+  "executionPolicy": {
+    "sideEffectsAllowed": false,
+    "networkEgressAllowed": false
+  }
+}

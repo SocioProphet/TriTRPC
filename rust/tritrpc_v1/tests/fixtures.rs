@@ -5,6 +5,10 @@ use std::fs;
 use subtle::ConstantTimeEq;
 use tritrpc_v1::{avrodec, avroenc, envelope, tleb3, tritpack243};
 
+fn fixture_path(name: &str) -> String {
+    format!("{}/../../fixtures/{}", env!("CARGO_MANIFEST_DIR"), name)
+}
+
 fn read_pairs(path: &str) -> Vec<(String, Vec<u8>)> {
     let txt = fs::read_to_string(path).expect("read fixtures");
     txt.lines()
@@ -54,31 +58,25 @@ fn aead_bit(flags_bytes: &[u8]) -> bool {
 #[test]
 fn verify_all_frames_and_payloads() {
     let sets = vec![
+        ("vectors_hex.txt", "vectors_hex.txt.nonces"),
         (
-            "fixtures/vectors_hex.txt",
-            "fixtures/vectors_hex.txt.nonces",
+            "vectors_hex_stream_avrochunk.txt",
+            "vectors_hex_stream_avrochunk.txt.nonces",
         ),
         (
-            "fixtures/vectors_hex_stream_avrochunk.txt",
-            "fixtures/vectors_hex_stream_avrochunk.txt.nonces",
+            "vectors_hex_unary_rich.txt",
+            "vectors_hex_unary_rich.txt.nonces",
         ),
         (
-            "fixtures/vectors_hex_unary_rich.txt",
-            "fixtures/vectors_hex_unary_rich.txt.nonces",
+            "vectors_hex_stream_avronested.txt",
+            "vectors_hex_stream_avronested.txt.nonces",
         ),
-        (
-            "fixtures/vectors_hex_stream_avronested.txt",
-            "fixtures/vectors_hex_stream_avronested.txt.nonces",
-        ),
-        (
-            "fixtures/vectors_hex_pathB.txt",
-            "fixtures/vectors_hex_pathB.txt.nonces",
-        ),
+        ("vectors_hex_pathB.txt", "vectors_hex_pathB.txt.nonces"),
     ];
     let key = [0u8; 32];
     for (fx, nx) in sets {
-        let pairs = read_pairs(fx);
-        let nonces = read_nonces(nx);
+        let pairs = read_pairs(&fixture_path(fx));
+        let nonces = read_nonces(&fixture_path(nx));
         for (name, frame) in pairs {
             let fields = split_fields(&frame);
             assert!(fields.len() >= 9, "{}", name);

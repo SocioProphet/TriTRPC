@@ -123,7 +123,7 @@ fn verify_all_frames_and_payloads() {
                     )
                     .unwrap();
                 let computed = &ct[ct.len() - 16..];
-                let matches = computed.ct_eq(tag.as_slice()).into();
+                let matches: bool = computed.ct_eq(tag.as_slice()).into();
                 assert!(matches, "tag mismatch for {}", name);
                 if strict {
                     assert!(matches, "strict tag mismatch for {}", name);

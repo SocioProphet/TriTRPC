@@ -76,21 +76,32 @@ pub mod tleb3 {
             let p1 = d / 3;
             let p0 = d % 3;
             trits.push(c);
-            trits.push(*p1);
-            trits.push(*p0);
+            trits.push(p1);
+            trits.push(p0);
         }
         tritpack243::pack(&trits)
     }
 
-    pub fn decode_len(bytes: &[u8], mut offset: usize) -> Result<(u64, usize), String> {
+    pub fn decode_len(bytes: &[u8], offset: usize) -> Result<(u64, usize), String> {
         let mut trits: Vec<u8> = Vec::new();
+        let mut pos = offset;
         loop {
-            if offset >= bytes.len() {
+            if pos >= bytes.len() {
                 return Err("EOF in TLEB3".into());
             }
-            let b = bytes[offset];
-            offset += 1;
-            let ts = super::tritpack243::unpack(&[b])?;
+            let b = bytes[pos];
+            pos += 1;
+            // Tail-marker bytes (0xF3..=0xF6) span two bytes; pass both to unpack.
+            let ts = if (0xF3..=0xF6).contains(&b) {
+                if pos >= bytes.len() {
+                    return Err("truncated TLEB3 tail marker".into());
+                }
+                let b2 = bytes[pos];
+                pos += 1;
+                super::tritpack243::unpack(&[b, b2])?
+            } else {
+                super::tritpack243::unpack(&[b])?
+            };
             trits.extend_from_slice(&ts);
             if trits.len() < 3 {
                 continue;
@@ -109,8 +120,7 @@ pub mod tleb3 {
                 }
             }
             if used_trits > 0 {
-                let used_bytes = super::tritpack243::pack(&trits[..used_trits]).len();
-                let new_off = offset - 1 + (used_bytes - 1);
+                let new_off = offset + super::tritpack243::pack(&trits[..used_trits]).len();
                 return Ok((val, new_off));
             }
         }
@@ -994,8 +1004,9 @@ pub mod tritrpc_v1_tests {
                     )
                     .unwrap();
                 let computed = &ct[ct.len() - 16..];
+                let matches: bool = computed.ct_eq(tag.as_slice()).into();
                 assert!(
-                    computed.ct_eq(tag.as_slice()).into(),
+                    matches,
                     "tag mismatch {}",
                     name
                 );
@@ -1080,9 +1091,10 @@ pub mod avroenc_json {
     pub fn enc_HGResponse_json(v: &Value) -> Vec<u8> {
         let ok = v["ok"].as_bool().unwrap_or(true);
         let err = v.get("err").and_then(|e| e.as_str());
+        let empty_arr = vec![];
         let vertices = v["vertices"]
             .as_array()
-            .unwrap_or(&vec![])
+            .unwrap_or(&empty_arr)
             .iter()
             .map(|x| {
                 (
@@ -1091,9 +1103,10 @@ pub mod avroenc_json {
                 )
             })
             .collect::<Vec<_>>();
+        let empty_arr2 = vec![];
         let edges = v["edges"]
             .as_array()
-            .unwrap_or(&vec![])
+            .unwrap_or(&empty_arr2)
             .iter()
             .map(|x| {
                 let eid = x["eid"].as_str().unwrap();
@@ -1209,3 +1222,5 @@ pub mod pathb_dec {
         ((vid, label), o4 + 1)
     }
 }
+
+pub mod v4;

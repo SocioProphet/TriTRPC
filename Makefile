@@ -14,7 +14,7 @@ rust-test:
 	cd rust/tritrpc_v1 && cargo test
 
 go-test:
-	cd go/tritrpcv1 && go test
+	cd go/tritrpcv1 && go test -mod=mod ./...
 
 fixtures:
 	python tools/verify_fixtures_strict.py

@@ -51,3 +51,10 @@ TriTRPC vNext is the current design pack for:
 ## Experimental package
 
 - `../../reference/experimental/tritrpc_requirements_impl_v4/`
+
+## Unified integration
+
+- `integration/README.md`
+- `integration/unified_spec_integration_crosswalk.md`
+- `../../spec/drafts/tritrpc_unified_v4_master_spec.md`
+- `../../spec/drafts/annex_b_path_h_qutrit_hybrid_profile.md`

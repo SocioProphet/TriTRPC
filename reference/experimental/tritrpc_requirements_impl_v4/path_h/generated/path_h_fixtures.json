@@ -1,0 +1,156 @@
+{
+  "meta": {
+    "name": "TriTRPC Path-H draft canonical fixtures",
+    "version": "draft-0",
+    "magic_hex": "f32a",
+    "epoch": 18,
+    "kind": "unary_req",
+    "tag_mode": "HMAC-SHA256(test_key)[:16] for draft fixture reproducibility only",
+    "route_handles": {
+      "PAIR.OPEN": 11,
+      "PAIR.HERALD": 12,
+      "TELEPORT.BSM3": 13,
+      "FRAME.DEFER": 14,
+      "WITNESS.REPORT": 15
+    }
+  },
+  "fixtures": {
+    "PAIR.OPEN": {
+      "event": "PAIR.OPEN",
+      "epoch": 18,
+      "kind": "unary_req",
+      "route_h": 11,
+      "ctrl_trits": {
+        "profile": 2,
+        "lane": 2,
+        "evidence": 0,
+        "fallback": 1,
+        "routefmt": 1
+      },
+      "payload_len": 9,
+      "payload_hex": "010713010203c5b403",
+      "tag_hex": "0c431d63d7e4aa85db0563cd0557f86b",
+      "frame_hex": "f32adc00120b09010713010203c5b4030c431d63d7e4aa85db0563cd0557f86b",
+      "object": {
+        "seq": 1,
+        "src_site": 7,
+        "dst_site": 19,
+        "pair_kind": "qutrit",
+        "encoding_kind": "frequency-bin",
+        "target_fidelity_milli": 965,
+        "ttl_ms": 180,
+        "need_memory": true,
+        "need_teleport_ready": true
+      }
+    },
+    "PAIR.HERALD": {
+      "event": "PAIR.HERALD",
+      "epoch": 18,
+      "kind": "unary_req",
+      "route_h": 12,
+      "ctrl_trits": {
+        "profile": 2,
+        "lane": 1,
+        "evidence": 1,
+        "fallback": 0,
+        "routefmt": 1
+      },
+      "payload_len": 19,
+      "payload_hex": "023d071302011805bf54318f4d1503b703b0a7",
+      "tag_hex": "948956ef284c62bf9f20efbd14b99384",
+      "frame_hex": "f32ac700120c13023d071302011805bf54318f4d1503b703b0a7948956ef284c62bf9f20efbd14b99384",
+      "object": {
+        "seq": 2,
+        "pair_id": 61,
+        "src_site": 7,
+        "dst_site": 19,
+        "encoding_kind": "frequency-bin",
+        "herald_success": true,
+        "ts_ns": 1731000000123456789,
+        "fidelity_milli": 951,
+        "visibility_milli": 944,
+        "ttl_ms": 167
+      }
+    },
+    "TELEPORT.BSM3": {
+      "event": "TELEPORT.BSM3",
+      "epoch": 18,
+      "kind": "unary_req",
+      "route_h": 13,
+      "ctrl_trits": {
+        "profile": 2,
+        "lane": 2,
+        "evidence": 0,
+        "fallback": 0,
+        "routefmt": 1
+      },
+      "payload_len": 14,
+      "payload_hex": "033d02051805bf546d2a17150309",
+      "tag_hex": "1f0abcc962885d1d86214fa3e14fcf6e",
+      "frame_hex": "f32ad900120d0e033d02051805bf546d2a171503091f0abcc962885d1d86214fa3e14fcf6e",
+      "object": {
+        "seq": 3,
+        "pair_id": 61,
+        "basis_id": 2,
+        "bsm3_code": "12",
+        "ts_ns": 1731000001123456789,
+        "mem_id": 9,
+        "defer_ok": true
+      }
+    },
+    "FRAME.DEFER": {
+      "event": "FRAME.DEFER",
+      "epoch": 18,
+      "kind": "unary_req",
+      "route_h": 14,
+      "ctrl_trits": {
+        "profile": 2,
+        "lane": 2,
+        "evidence": 0,
+        "fallback": 1,
+        "routefmt": 1
+      },
+      "payload_len": 13,
+      "payload_hex": "043d0102011805bf54a8c4e115",
+      "tag_hex": "75f30cf3d878e6190f41fafe3be68911",
+      "frame_hex": "f32adc00120e0d043d0102011805bf54a8c4e11575f30cf3d878e6190f41fafe3be68911",
+      "object": {
+        "seq": 4,
+        "pair_id": 61,
+        "frame_shift_x": 1,
+        "frame_shift_z": 2,
+        "frame_epoch": 1,
+        "ts_ns": 1731000002123456789
+      }
+    },
+    "WITNESS.REPORT": {
+      "event": "WITNESS.REPORT",
+      "epoch": 18,
+      "kind": "unary_req",
+      "route_h": 15,
+      "ctrl_trits": {
+        "profile": 2,
+        "lane": 2,
+        "evidence": 2,
+        "fallback": 0,
+        "routefmt": 1
+      },
+      "payload_len": 27,
+      "payload_hex": "05013d00000000004c4b4003b303ab071c01211805bf54e45fab15",
+      "tag_hex": "75c2a416f67df694f324062f1a37aaa0",
+      "frame_hex": "f32aeb00120f1b05013d00000000004c4b4003b303ab071c01211805bf54e45fab1575c2a416f67df694f324062f1a37aaa0",
+      "object": {
+        "seq": 5,
+        "subject_kind": "pair",
+        "subject_id": 61,
+        "delay_ns": 5000000,
+        "fidelity_milli": 947,
+        "visibility_milli": 939,
+        "snr_milli": 1820,
+        "clock_quality_code": "degraded",
+        "env_ref": 33,
+        "ts_ns": 1731000003123456789
+      }
+    }
+  }
+}

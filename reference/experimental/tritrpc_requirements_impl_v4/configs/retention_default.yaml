@@ -1,0 +1,11 @@
+defaults:
+  event_ledger: canonical
+  snapshots: canonical
+  blobs: privileged_blob_only
+  views: derived
+  exporter_cache: ephemeral
+
+ttl_days:
+  run_card: 180
+  raw_blobs: 30
+  audit_chain: 3650

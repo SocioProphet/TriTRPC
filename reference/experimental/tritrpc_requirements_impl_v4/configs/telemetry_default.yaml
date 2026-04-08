@@ -1,0 +1,17 @@
+schema_version: agentplane.v1
+redaction_profile: redaction_strict.yaml
+retention_profile: retention_default.yaml
+otel_export_profile: otel_export.yaml
+
+control_snapshot_required: true
+event_ledger_required: true
+release_attestation_required: true
+context_management_logging: true
+subagent_lineage_required: true
+
+materialized_views:
+  - run_card
+  - policy_posture
+  - context_health
+  - release_attestation
+  - operational_health

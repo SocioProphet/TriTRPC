@@ -1,0 +1,14 @@
+classes:
+  A: plaintext_public
+  B: plaintext_internal
+  C: hash_default
+  D: pointer_only
+  E: never_raw
+
+defaults:
+  prompt_body: C
+  tool_input: C
+  tool_result: C
+  transcript_ref: D
+  hidden_reasoning: E
+  secrets: E

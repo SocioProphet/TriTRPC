@@ -7,9 +7,10 @@ from typing import Tuple
 _XCHACHA_PROVIDER = None
 
 try:
-    from nacl.bindings import (
-        crypto_aead_xchacha20poly1305_ietf_encrypt,
-    )
+    try:
+        from nacl.bindings.crypto_aead import crypto_aead_xchacha20poly1305_ietf_encrypt
+    except Exception:
+        from nacl.bindings import crypto_aead_xchacha20poly1305_ietf_encrypt
 
     _XCHACHA_PROVIDER = "pynacl"
 

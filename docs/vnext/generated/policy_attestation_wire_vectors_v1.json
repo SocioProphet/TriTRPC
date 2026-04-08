@@ -1,0 +1,55 @@
+{
+  "name": "TriTRPC policy attestation wire vectors v1",
+  "status": "Reference-only",
+  "encoding_note": "2-byte little-endian presence bitmap; fixed required field order; Handle243/S243 lowering; hash-escape for digest references when provided as hash_hex.",
+  "vectors": [
+    {
+      "vector_id": "fallback_authorization_attestation",
+      "logical": {
+        "authority_h": 3,
+        "policy_h": 3,
+        "issuer_h": 9,
+        "scope": "route",
+        "decision_class": "fallback",
+        "issued_at_ms": 1710000000000,
+        "effective_from_epoch": 42,
+        "effective_until_epoch": 43,
+        "receipt_h": null,
+        "proof_ref": {
+          "hash_hex": "9bb688b24d5b2ddce3b1a23d66f8c38c9806d273eda52ab114c1b94cc232b53f"
+        },
+        "replay_h": 21,
+        "signature_ref": {
+          "hash_hex": "9f1b648133e73762374ca14247f28b429404cf333d66204fdaa8233c9aec8235"
+        },
+        "evidence_grade": "exact",
+        "reason_h": 30
+      },
+      "packed_hex": "ef010303090000f3a88964df8fd2ccf6062a2bf59bb688b24d5b2ddce3b1a23d66f8c38c9806d273eda52ab114c1b94cc232b53f15f59f1b648133e73762374ca14247f28b429404cf333d66204fdaa8233c9aec8235001e"
+    },
+    {
+      "vector_id": "verified_receipt_attestation",
+      "logical": {
+        "authority_h": 3,
+        "policy_h": null,
+        "issuer_h": 9,
+        "scope": "epoch",
+        "decision_class": "receipt",
+        "issued_at_ms": 1710000001000,
+        "effective_from_epoch": 42,
+        "effective_until_epoch": null,
+        "receipt_h": 77,
+        "proof_ref": {
+          "hash_hex": "62c9fefcdd72d66bb7a7bb0dd9ecce573597a62202b5c929dc0b3ae0673cbddc"
+        },
+        "replay_h": 88,
+        "signature_ref": {
+          "hash_hex": "959b185b337cac2bd7f409a08e3367a00a685013a9af66a30190da36a1e52459"
+        },
+        "evidence_grade": "verified",
+        "reason_h": null
+      },
+      "packed_hex": "f60003090206f3b2927fdf8fd2ccf6062a4df562c9fefcdd72d66bb7a7bb0dd9ecce573597a62202b5c929dc0b3ae0673cbddc58f5959b185b337cac2bd7f409a08e3367a00a685013a9af66a30190da36a1e5245902"
+    }
+  ]
+}

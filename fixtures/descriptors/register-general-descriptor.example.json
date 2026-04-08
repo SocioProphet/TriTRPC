@@ -1,0 +1,47 @@
+{
+  "service": "DescriptorService",
+  "method": "RegisterGeneralDescriptor",
+  "contextId": "ctx:aokc:v0.1",
+  "schemaId": "schema:general-descriptor:v0.1",
+  "request": {
+    "descriptor": {
+      "apiVersion": "knowledge.socioprophet.org/v0.1",
+      "kind": "GeneralDescriptor",
+      "metadata": {
+        "id": "asset:github:SocioProphet/agentplane/docs/system-space.md",
+        "name": "system-space-strategy",
+        "displayName": "System Space Strategy",
+        "createdAt": "2026-04-05T00:00:00Z",
+        "version": "1.0.0"
+      },
+      "spec": {
+        "object": {
+          "objectType": "DocumentAsset",
+          "schemaRef": "schema:knowledge.asset.document/v0.1",
+          "sourceSystem": "github",
+          "sourceRef": {
+            "repo": "SocioProphet/agentplane",
+            "path": "docs/system-space.md",
+            "ref": "main"
+          }
+        },
+        "relationships": {
+          "domains": ["execution-control", "knowledge-commons"],
+          "owners": ["team:agentplane"],
+          "contentSpaces": ["content-space:agentplane-system-space"]
+        },
+        "policies": {
+          "visibility": "internal",
+          "stewardReviewRequired": true
+        },
+        "provenance": {
+          "evidenceRefs": ["evidence:github-commit:example"]
+        }
+      }
+    }
+  },
+  "response": {
+    "descriptorId": "asset:github:SocioProphet/agentplane/docs/system-space.md",
+    "status": "registered"
+  }
+}

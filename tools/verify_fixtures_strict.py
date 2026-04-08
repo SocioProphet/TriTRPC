@@ -8,16 +8,14 @@ _XCHACHA_PROVIDER = None
 
 try:
     from nacl.bindings import (
-        crypto_aead_xchacha20poly1305_ietf_encrypt_detached,
+        crypto_aead_xchacha20poly1305_ietf_encrypt,
     )
 
     _XCHACHA_PROVIDER = "pynacl"
 
     def xchacha20poly1305_tag(key: bytes, nonce: bytes, aad: bytes) -> bytes:
-        _ciphertext, tag = crypto_aead_xchacha20poly1305_ietf_encrypt_detached(
-            b"", aad, nonce, key
-        )
-        return tag
+        sealed = crypto_aead_xchacha20poly1305_ietf_encrypt(b"", aad, nonce, key)
+        return sealed[-16:]
 
 except Exception:
     try:

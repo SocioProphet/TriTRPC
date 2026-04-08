@@ -1,4 +1,4 @@
-.PHONY: verify fmt rust-fmt go-fmt rust-test go-test fixtures
+.PHONY: verify fmt rust-fmt go-fmt rust-test go-test fixtures integration-audit
 
 verify: fmt rust-test go-test fixtures
 
@@ -18,3 +18,7 @@ go-test:
 
 fixtures:
 	python tools/verify_fixtures_strict.py
+
+
+integration-audit:
+	./tools/audit_branch_pr_integration.sh main HEAD

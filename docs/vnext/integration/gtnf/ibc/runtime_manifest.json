@@ -1,0 +1,10 @@
+{
+  "name": "gtnf-ibc-runtime-handoff",
+  "version": "capture-pack-v1",
+  "chain_baseline": "ibc-go-stable-v10-line",
+  "carrier": "ibc-classic-ics20-callbacks-memo-gtnf",
+  "topology": "two-chain-local-gaia",
+  "relayer_family": "hermes-1.13.x",
+  "exact_relayer_tag": null,
+  "status": "runtime-ready-not-yet-executed"
+}

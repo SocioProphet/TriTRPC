@@ -1,0 +1,27 @@
+{
+  "name": "gtnf-ibc-runtime-handoff",
+  "version": "2.0",
+  "status": "runtime-ready-not-yet-executed",
+  "chain_baseline": {
+    "ibc_go_line": "v10",
+    "carrier": "classic-ics20-callbacks-memo-gtnf",
+    "topology": "two-chain-local-gaia"
+  },
+  "relayer": {
+    "candidate_family": "hermes-1.13.x",
+    "exact_tag": null,
+    "status": "validation-pending"
+  },
+  "required_artifacts": [
+    "filled-relayer-validation-log",
+    "event-assertion-output",
+    "packet-ack-timeout-traces",
+    "memo-size-and-gas-observations",
+    "exact-relayer-tag",
+    "lock-or-reject-decision"
+  ],
+  "current_constitutional_bounds": {
+    "epsilon_release": 1.0,
+    "max_memo_bytes": 2048
+  }
+}

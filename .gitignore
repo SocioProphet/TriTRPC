@@ -19,3 +19,7 @@ __MACOSX/
 ._*
 *.egg-info/
 .pytest_cache/
+
+# Rust build artifacts
+target/
+

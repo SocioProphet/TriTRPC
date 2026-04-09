@@ -5,11 +5,11 @@ This note defines the minimum transport and fixture expectations for Ghost contr
 
 ## Scope
 The Ghost transport surface currently covers:
-- semantic Ghost events
-- signed Ghost event wrappers
-- signed governance attestations
-- signed registry update bundles
-- correlated control-plane reports
+- semantic Ghost events (method family `semantic.*`)
+- primeER contradiction-fracture reports (method family `primeER.*`)
+- signed registry update bundles (method family `registry.*`)
+- correlated control-plane validation reports (method family `validation.*`)
+- signed Ghost event wrappers and governance attestations (cross-cutting)
 
 ## Method namespace
 Recommended method families:
@@ -32,9 +32,9 @@ Malformed means invalid at transport/schema/canonicalization level.
 ## Canonical event integrity
 If a payload-bearing Ghost event includes `canonical_hash`, implementations MUST verify:
 
-`sha256(canonical_json(event_without_canonical_hash))`
+`sha256(jcs_rfc8785(event_without_canonical_hash))`
 
-with sorted keys, compact separators, preserved array order, and the top-level `canonical_hash` excluded from hash scope.
+where `event_without_canonical_hash` is the event with the top-level `canonical_hash` member removed before hashing, and `jcs_rfc8785(...)` means canonicalization according to RFC 8785 (JSON Canonicalization Scheme) over the resulting JSON value encoded as UTF-8. This RFC 8785 requirement is normative for fixtures and replay. Inputs that cannot be represented or canonicalized under RFC 8785, including duplicate object member names, MUST be treated as malformed.
 
 ## Signed wrappers
 Signed wrappers MUST bind:

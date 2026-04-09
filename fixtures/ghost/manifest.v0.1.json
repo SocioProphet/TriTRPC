@@ -1,0 +1,22 @@
+{
+  "version": "0.1",
+  "domains": ["semantic", "governance", "registry", "validation"],
+  "fixture_classes": ["happy", "warning", "blocked", "malformed"],
+  "methods": {
+    "semantic.declareCell": {
+      "expected_classes": ["happy", "warning", "blocked", "malformed"]
+    },
+    "semantic.reportLiftedProjection": {
+      "expected_classes": ["happy", "warning", "blocked", "malformed"]
+    },
+    "primeER.reportContradictionFracture": {
+      "expected_classes": ["happy", "blocked", "malformed"]
+    },
+    "registry.reportUpdateBundle": {
+      "expected_classes": ["happy", "warning", "blocked", "malformed"]
+    },
+    "validation.reportOutcome": {
+      "expected_classes": ["happy", "warning", "blocked", "malformed"]
+    }
+  }
+}

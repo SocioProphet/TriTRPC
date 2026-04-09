@@ -9,7 +9,15 @@ func PBDecodeLen(buf []byte, off int) (int, int) {
 	for {
 		b := buf[off]
 		off++
-		ts, _ := TritUnpack243([]byte{b})
+		var ts []byte
+		if b >= 243 && b <= 246 {
+			// Tail-marker byte spans two bytes; consume the value byte as well.
+			b2 := buf[off]
+			off++
+			ts, _ = TritUnpack243([]byte{b, b2})
+		} else {
+			ts, _ = TritUnpack243([]byte{b})
+		}
 		trits = append(trits, ts...)
 		if len(trits) >= 3 {
 			v := uint64(0)

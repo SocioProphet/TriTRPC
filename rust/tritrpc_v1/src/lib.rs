@@ -1005,11 +1005,7 @@ pub mod tritrpc_v1_tests {
                     .unwrap();
                 let computed = &ct[ct.len() - 16..];
                 let matches: bool = computed.ct_eq(tag.as_slice()).into();
-                assert!(
-                    matches,
-                    "tag mismatch {}",
-                    name
-                );
+                assert!(matches, "tag mismatch {}", name);
             }
             ok += 1;
         }

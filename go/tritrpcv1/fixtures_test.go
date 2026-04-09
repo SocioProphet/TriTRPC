@@ -110,7 +110,12 @@ func TestFixturesAEADAndPayloads(t *testing.T) {
 			if hex.EncodeToString(env.Context) != hex.EncodeToString(CONTEXT_ID_32) {
 				t.Fatalf("context id mismatch %s", name)
 			}
-			repacked := BuildEnvelope(env.Service, env.Method, env.Payload, env.Aux, env.Tag, env.AeadOn, env.Compress)
+			modeTrits, _ := TritUnpack243(env.Mode)
+			var modeTrit byte
+			if len(modeTrits) > 0 {
+				modeTrit = modeTrits[0]
+			}
+			repacked := BuildEnvelopeWithMode(env.Service, env.Method, env.Payload, env.Aux, env.Tag, env.AeadOn, env.Compress, modeTrit)
 			if hex.EncodeToString(repacked) != hex.EncodeToString(frame) {
 				t.Fatalf("repack mismatch %s", name)
 			}

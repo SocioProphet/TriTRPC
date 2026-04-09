@@ -165,13 +165,28 @@ pub mod envelope {
         aead_on: bool,
         compress: bool,
     ) -> Vec<u8> {
+        build_with_mode(
+            service, method, payload, aux, aead_tag, aead_on, compress, 0,
+        )
+    }
+
+    pub fn build_with_mode(
+        service: &str,
+        method: &str,
+        payload: &[u8],
+        aux: Option<&[u8]>,
+        aead_tag: Option<&[u8]>,
+        aead_on: bool,
+        compress: bool,
+        mode_trit: u8,
+    ) -> Vec<u8> {
         let mut out: Vec<u8> = Vec::new();
         out.extend(len_prefix(&MAGIC_B2));
         out.extend(MAGIC_B2);
         let ver = pack_trits(&[1]);
         out.extend(len_prefix(&ver));
         out.extend(ver);
-        let mode = pack_trits(&[0]);
+        let mode = pack_trits(&[mode_trit]);
         out.extend(len_prefix(&mode));
         out.extend(mode);
         let flags = pack_trits(&super::envelope::flags_trits(aead_on, compress));
@@ -954,6 +969,7 @@ pub mod avrodec {
 
 pub mod tritrpc_v1_tests {
     use super::envelope;
+    use super::tritpack243;
     use chacha20poly1305::aead::{Aead, KeyInit};
     use chacha20poly1305::XChaCha20Poly1305;
     use std::collections::HashMap;
@@ -979,7 +995,12 @@ pub mod tritrpc_v1_tests {
                 "context id mismatch {}",
                 name
             );
-            let repacked = envelope::build(
+            let mode_trit = tritpack243::unpack(&decoded.mode)
+                .unwrap_or_else(|_| vec![0])
+                .into_iter()
+                .next()
+                .unwrap_or(0);
+            let repacked = envelope::build_with_mode(
                 &decoded.service,
                 &decoded.method,
                 &decoded.payload,
@@ -987,6 +1008,7 @@ pub mod tritrpc_v1_tests {
                 decoded.tag.as_deref(),
                 decoded.aead_on,
                 decoded.compress,
+                mode_trit,
             );
             assert_eq!(repacked, frame, "repack mismatch {}", name);
             if decoded.aead_on {

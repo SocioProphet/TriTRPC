@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"crypto/subtle"
 	"encoding/hex"
-	"golang.org/x/crypto/chacha20poly1305"
+	"golang.org/x/crypto/blake2b"
 	"os"
 	"path/filepath"
 	"strings"
@@ -110,7 +110,7 @@ func TestFixturesAEADAndPayloads(t *testing.T) {
 			if hex.EncodeToString(env.Context) != hex.EncodeToString(CONTEXT_ID_32) {
 				t.Fatalf("context id mismatch %s", name)
 			}
-			repacked := BuildEnvelope(env.Service, env.Method, env.Payload, env.Aux, env.Tag, env.AeadOn, env.Compress)
+			repacked := BuildEnvelopeWithMode(env.Mode, env.Service, env.Method, env.Payload, env.Aux, env.Tag, env.AeadOn, env.Compress)
 			if hex.EncodeToString(repacked) != hex.EncodeToString(frame) {
 				t.Fatalf("repack mismatch %s", name)
 			}
@@ -128,14 +128,10 @@ func TestFixturesAEADAndPayloads(t *testing.T) {
 				if len(tag) != 16 {
 					t.Fatalf("tag size mismatch %s", name)
 				}
-				a, _ := chacha20poly1305.NewX(key[:])
-				strict := os.Getenv("STRICT_AEAD") == "1"
-				ct := a.Seal(nil, n, []byte{}, aad)
-				computed := ct[len(ct)-16:]
+				mac, _ := blake2b.New(16, key[:])
+				mac.Write(aad)
+				computed := mac.Sum(nil)
 				if subtle.ConstantTimeCompare(computed, tag) != 1 {
-					if strict {
-						t.Fatalf("strict AEAD tag mismatch for %s", name)
-					}
 					t.Fatalf("tag mismatch for %s", name)
 				}
 			}

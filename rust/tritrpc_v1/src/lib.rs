@@ -76,21 +76,26 @@ pub mod tleb3 {
             let p1 = d / 3;
             let p0 = d % 3;
             trits.push(c);
-            trits.push(*p1);
-            trits.push(*p0);
+            trits.push(p1);
+            trits.push(p0);
         }
         tritpack243::pack(&trits)
     }
 
-    pub fn decode_len(bytes: &[u8], mut offset: usize) -> Result<(u64, usize), String> {
+    pub fn decode_len(bytes: &[u8], start: usize) -> Result<(u64, usize), String> {
         let mut trits: Vec<u8> = Vec::new();
+        let mut offset = start;
         loop {
             if offset >= bytes.len() {
                 return Err("EOF in TLEB3".into());
             }
             let b = bytes[offset];
-            offset += 1;
-            let ts = super::tritpack243::unpack(&[b])?;
+            let read_count = if b >= 243 && b <= 246 { 2 } else { 1 };
+            if offset + read_count > bytes.len() {
+                return Err("EOF in TLEB3".into());
+            }
+            let ts = super::tritpack243::unpack(&bytes[offset..offset + read_count])?;
+            offset += read_count;
             trits.extend_from_slice(&ts);
             if trits.len() < 3 {
                 continue;
@@ -110,8 +115,7 @@ pub mod tleb3 {
             }
             if used_trits > 0 {
                 let used_bytes = super::tritpack243::pack(&trits[..used_trits]).len();
-                let new_off = offset - 1 + (used_bytes - 1);
-                return Ok((val, new_off));
+                return Ok((val, start + used_bytes));
             }
         }
     }
@@ -995,7 +999,7 @@ pub mod tritrpc_v1_tests {
                     .unwrap();
                 let computed = &ct[ct.len() - 16..];
                 assert!(
-                    computed.ct_eq(tag.as_slice()).into(),
+                    bool::from(computed.ct_eq(tag.as_slice())),
                     "tag mismatch {}",
                     name
                 );
@@ -1080,9 +1084,10 @@ pub mod avroenc_json {
     pub fn enc_HGResponse_json(v: &Value) -> Vec<u8> {
         let ok = v["ok"].as_bool().unwrap_or(true);
         let err = v.get("err").and_then(|e| e.as_str());
+        let empty_arr: Vec<serde_json::Value> = vec![];
         let vertices = v["vertices"]
             .as_array()
-            .unwrap_or(&vec![])
+            .unwrap_or(&empty_arr)
             .iter()
             .map(|x| {
                 (
@@ -1091,9 +1096,10 @@ pub mod avroenc_json {
                 )
             })
             .collect::<Vec<_>>();
+        let empty_arr2: Vec<serde_json::Value> = vec![];
         let edges = v["edges"]
             .as_array()
-            .unwrap_or(&vec![])
+            .unwrap_or(&empty_arr2)
             .iter()
             .map(|x| {
                 let eid = x["eid"].as_str().unwrap();

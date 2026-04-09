@@ -53,32 +53,33 @@ fn aead_bit(flags_bytes: &[u8]) -> bool {
 
 #[test]
 fn verify_all_frames_and_payloads() {
+    let root = concat!(env!("CARGO_MANIFEST_DIR"), "/../../fixtures");
     let sets = vec![
         (
-            "fixtures/vectors_hex.txt",
-            "fixtures/vectors_hex.txt.nonces",
+            format!("{}/vectors_hex.txt", root),
+            format!("{}/vectors_hex.txt.nonces", root),
         ),
         (
-            "fixtures/vectors_hex_stream_avrochunk.txt",
-            "fixtures/vectors_hex_stream_avrochunk.txt.nonces",
+            format!("{}/vectors_hex_stream_avrochunk.txt", root),
+            format!("{}/vectors_hex_stream_avrochunk.txt.nonces", root),
         ),
         (
-            "fixtures/vectors_hex_unary_rich.txt",
-            "fixtures/vectors_hex_unary_rich.txt.nonces",
+            format!("{}/vectors_hex_unary_rich.txt", root),
+            format!("{}/vectors_hex_unary_rich.txt.nonces", root),
         ),
         (
-            "fixtures/vectors_hex_stream_avronested.txt",
-            "fixtures/vectors_hex_stream_avronested.txt.nonces",
+            format!("{}/vectors_hex_stream_avronested.txt", root),
+            format!("{}/vectors_hex_stream_avronested.txt.nonces", root),
         ),
         (
-            "fixtures/vectors_hex_pathB.txt",
-            "fixtures/vectors_hex_pathB.txt.nonces",
+            format!("{}/vectors_hex_pathB.txt", root),
+            format!("{}/vectors_hex_pathB.txt.nonces", root),
         ),
     ];
     let key = [0u8; 32];
     for (fx, nx) in sets {
-        let pairs = read_pairs(fx);
-        let nonces = read_nonces(nx);
+        let pairs = read_pairs(&fx);
+        let nonces = read_nonces(&nx);
         for (name, frame) in pairs {
             let fields = split_fields(&frame);
             assert!(fields.len() >= 9, "{}", name);
@@ -125,7 +126,7 @@ fn verify_all_frames_and_payloads() {
                     )
                     .unwrap();
                 let computed = &ct[ct.len() - 16..];
-                let matches = computed.ct_eq(tag.as_slice()).into();
+                let matches: bool = bool::from(computed.ct_eq(tag.as_slice()));
                 assert!(matches, "tag mismatch for {}", name);
                 if strict {
                     assert!(matches, "strict tag mismatch for {}", name);
@@ -152,4 +153,30 @@ fn verify_all_frames_and_payloads() {
             }
         }
     }
+}
+
+#[test]
+fn debug_aead_single() {
+    let frame_hex = "f502f32af502f301f502f300f502f512d0f300b2ab814588f99c875d37bb7546d0df4369c28bc5f60ce38a6607dac468034352d0f300e6572c0e618f18d572d4c2969db4909659f09eaef32ec66fbb804bad9d89aacdf50868797065722e7631eaf301476574537562677261706853747265616da2f3010a0000020261000202b4f30108742d303108732d303100e1f301b4f58a932b3da2f25489ed7e6a023155";
+    let nonce_hex = "020202020202020202020202020202020202020200000000";
+    let frame = hex::decode(frame_hex).unwrap();
+    let nonce_bytes = hex::decode(nonce_hex).unwrap();
+    let decoded = envelope::decode(&frame).expect("decode");
+    let tag_start = decoded.tag_start.expect("tag_start");
+    let aad = &frame[..tag_start];
+    // also rebuild to verify
+    let rebuilt = envelope::build(
+        &decoded.service, &decoded.method, &decoded.payload,
+        decoded.aux.as_deref(), None, decoded.aead_on, decoded.compress,
+    );
+    eprintln!("tag_start={} frame_len={} aad_len={} rebuilt_len={}", tag_start, frame.len(), aad.len(), rebuilt.len());
+    eprintln!("aad==rebuilt: {}", aad == rebuilt.as_slice());
+    eprintln!("stored tag: {}", hex::encode(decoded.tag.as_ref().unwrap()));
+    let key = [0u8; 32];
+    let aead = XChaCha20Poly1305::new(&key.into());
+    let mut nonce = [0u8; 24];
+    nonce.copy_from_slice(&nonce_bytes);
+    let ct = aead.encrypt(nonce.as_slice().into(), chacha20poly1305::aead::Payload { msg: b"", aad }).unwrap();
+    let computed_tag = &ct[ct.len()-16..];
+    eprintln!("computed tag: {}", hex::encode(computed_tag));
 }

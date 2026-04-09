@@ -1,0 +1,29 @@
+{
+  "service": "ExecutionBridgeService",
+  "method": "AttachRunArtifact",
+  "contextId": "ctx:aokc:v0.1",
+  "schemaId": "schema:run-artifact:v0.1",
+  "request": {
+    "orderId": "order:promotion:github:SocioProphet/agentplane/docs/system-space.md",
+    "descriptorId": "asset:github:SocioProphet/agentplane/docs/system-space.md",
+    "runArtifact": {
+      "kind": "RunArtifact",
+      "bundle": "bundle:aokc:promotion:system-space",
+      "capturedAt": "2026-04-09T00:00:00Z",
+      "lane": "staging",
+      "executor": "executor:lima-local",
+      "backendIntent": "lima-process",
+      "status": "success",
+      "exitCode": 0,
+      "stdoutRef": "artifact:stdout:system-space",
+      "stderrRef": null
+    }
+  },
+  "response": {
+    "status": "attached",
+    "preservedRefs": {
+      "orderId": "order:promotion:github:SocioProphet/agentplane/docs/system-space.md",
+      "descriptorId": "asset:github:SocioProphet/agentplane/docs/system-space.md"
+    }
+  }
+}

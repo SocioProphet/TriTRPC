@@ -40,7 +40,10 @@ impl FrameKind {
 
     /// Returns `true` for kinds that may appear in a `HotUnaryFrame`.
     pub fn is_hot_unary(self) -> bool {
-        matches!(self, FrameKind::UnaryReq | FrameKind::UnaryRsp | FrameKind::Error)
+        matches!(
+            self,
+            FrameKind::UnaryReq | FrameKind::UnaryRsp | FrameKind::Error
+        )
     }
 }
 

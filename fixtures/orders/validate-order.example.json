@@ -1,0 +1,23 @@
+{
+  "service": "OrderService",
+  "method": "ValidateOrder",
+  "contextId": "ctx:aokc:v0.1",
+  "schemaId": "schema:order-descriptor:v0.1",
+  "request": {
+    "orderId": "order:promotion:matrix-thread:incident-8421"
+  },
+  "response": {
+    "orderId": "order:promotion:matrix-thread:incident-8421",
+    "validationPassed": true,
+    "completedChecks": [
+      "source-provenance-present",
+      "policy-check-passed",
+      "duplicate-check-complete",
+      "human-review-complete"
+    ],
+    "failedChecks": [],
+    "evidenceRefs": [
+      "evidence:validation:incident-8421"
+    ]
+  }
+}

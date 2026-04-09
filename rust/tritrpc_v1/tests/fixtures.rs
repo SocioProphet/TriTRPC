@@ -1,5 +1,5 @@
 use blake2::{
-    digest::{consts::U16, Mac, KeyInit},
+    digest::{consts::U16, KeyInit, Mac},
     Blake2bMac,
 };
 use std::fs;
@@ -70,7 +70,11 @@ fn verify_all_frames_and_payloads() {
                 name
             );
 
-            let repacked = envelope::build(
+            let mode_trit = tritpack243::unpack(&decoded.mode)
+                .ok()
+                .and_then(|t| t.into_iter().next())
+                .unwrap_or(0);
+            let repacked = envelope::build_with_mode(
                 &decoded.service,
                 &decoded.method,
                 &decoded.payload,
@@ -78,6 +82,7 @@ fn verify_all_frames_and_payloads() {
                 decoded.tag.as_deref(),
                 decoded.aead_on,
                 decoded.compress,
+                mode_trit,
             );
             assert_eq!(repacked, frame, "repack mismatch {}", name);
 
@@ -88,8 +93,7 @@ fn verify_all_frames_and_payloads() {
                 assert_eq!(tag.len(), 16, "tag size mismatch {}", name);
                 let aad_start = decoded.tag_start.expect("tag start missing");
                 let aad = &frame[..aad_start];
-                let mut mac =
-                    <Blake2bMac128 as KeyInit>::new_from_slice(&key).expect("valid key");
+                let mut mac = <Blake2bMac128 as KeyInit>::new_from_slice(&key).expect("valid key");
                 mac.update(aad);
                 let computed = mac.finalize().into_bytes();
                 assert_eq!(
@@ -101,10 +105,8 @@ fn verify_all_frames_and_payloads() {
             }
 
             if decoded.method.ends_with(".REQ") {
-                let parsed =
-                    avrodec::dec_hg_request(&decoded.payload).expect("decode HGRequest");
-                let recoded =
-                    avrodec::enc_hg_request(&parsed).expect("re-encode HGRequest");
+                let parsed = avrodec::dec_hg_request(&decoded.payload).expect("decode HGRequest");
+                let recoded = avrodec::enc_hg_request(&parsed).expect("re-encode HGRequest");
                 assert_eq!(
                     recoded, decoded.payload,
                     "HGRequest round-trip mismatch {}",
@@ -112,10 +114,8 @@ fn verify_all_frames_and_payloads() {
                 );
             }
             if decoded.method.ends_with(".RSP") {
-                let parsed =
-                    avrodec::dec_hg_response(&decoded.payload).expect("decode HGResponse");
-                let recoded =
-                    avrodec::enc_hg_response(&parsed).expect("re-encode HGResponse");
+                let parsed = avrodec::dec_hg_response(&decoded.payload).expect("decode HGResponse");
+                let recoded = avrodec::enc_hg_response(&parsed).expect("re-encode HGResponse");
                 assert_eq!(
                     recoded, decoded.payload,
                     "HGResponse round-trip mismatch {}",

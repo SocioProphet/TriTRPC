@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">TriTRPC logo</title>
+  <desc id="desc">Three connected nodes arranged as a ternary transport mark.</desc>
+  <rect x="12" y="12" width="232" height="232" rx="36" fill="#0b1020"/>
+  <path d="M78 74 L178 74 L128 164 Z" fill="none" stroke="#7dd3fc" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="78" cy="74" r="16" fill="#22d3ee"/>
+  <circle cx="178" cy="74" r="16" fill="#22d3ee"/>
+  <circle cx="128" cy="164" r="16" fill="#22d3ee"/>
+  <circle cx="128" cy="112" r="12" fill="#f8fafc"/>
+  <path d="M128 74 V100" stroke="#f8fafc" stroke-width="8" stroke-linecap="round"/>
+  <path d="M98 148 L118 126" stroke="#f8fafc" stroke-width="8" stroke-linecap="round"/>
+  <path d="M158 148 L138 126" stroke="#f8fafc" stroke-width="8" stroke-linecap="round"/>
+</svg>

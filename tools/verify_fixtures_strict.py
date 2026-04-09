@@ -1,38 +1,11 @@
 #!/usr/bin/env python3
-# Verifies that every fixture line's AEAD tag == XChaCha20-Poly1305(key=0x00*32, nonce from .nonces, AAD=frame minus AEAD field)
+# Verifies that every fixture line's AEAD tag == BLAKE2b-MAC(key=0x00*32, digest_size=16, msg=AAD)
+# where AAD = frame bytes before the final (AEAD tag) field.
 # Exits non-zero on the first mismatch.
+import hashlib
 import sys
 from pathlib import Path
 from typing import Tuple
-_XCHACHA_PROVIDER = None
-
-try:
-    try:
-        from nacl.bindings.crypto_aead import crypto_aead_xchacha20poly1305_ietf_encrypt
-    except Exception:
-        from nacl.bindings import crypto_aead_xchacha20poly1305_ietf_encrypt
-
-    _XCHACHA_PROVIDER = "pynacl"
-
-    def xchacha20poly1305_tag(key: bytes, nonce: bytes, aad: bytes) -> bytes:
-        sealed = crypto_aead_xchacha20poly1305_ietf_encrypt(b"", aad, nonce, key)
-        return sealed[-16:]
-
-except Exception:
-    try:
-        from cryptography.hazmat.primitives.ciphers.aead import XChaCha20Poly1305
-
-        _XCHACHA_PROVIDER = "cryptography"
-
-        def xchacha20poly1305_tag(key: bytes, nonce: bytes, aad: bytes) -> bytes:
-            return XChaCha20Poly1305(key).encrypt(nonce, b"", aad)[-16:]
-
-    except Exception:
-        print("ERROR: XChaCha20-Poly1305 support is required for this hook.", file=sys.stderr)
-        print("Install one of:", file=sys.stderr)
-        print("  pip install pynacl", file=sys.stderr)
-        print("  pip install cryptography", file=sys.stderr)
-        sys.exit(2)
 
 ROOT = Path(__file__).resolve().parents[1]
 FX = ROOT / "fixtures"
@@ -117,7 +90,7 @@ def verify_file(fx_name: str, nx_name: str) -> None:
         if name not in nonce:
             print(f"[FAIL] Nonce missing for {fx_name}:{name}", file=sys.stderr)
             sys.exit(3)
-        calc = xchacha20poly1305_tag(KEY, nonce[name], aad)
+        calc = hashlib.blake2b(aad, key=KEY, digest_size=16).digest()
         if calc != tag:
             print(f"[FAIL] AEAD tag mismatch: {fx_name}:{name}", file=sys.stderr)
             sys.exit(4)
@@ -132,7 +105,7 @@ def main():
         ("vectors_hex_pathB_stream.txt","vectors_hex_pathB_stream.txt.nonces"),
     ]
     for f,n in sets: verify_file(f,n)
-    print(f"[OK] All fixture AEAD tags verified under XChaCha20-Poly1305 ({_XCHACHA_PROVIDER}).")
+    print("[OK] All fixture AEAD tags verified under BLAKE2b-MAC (hashlib.blake2b, key=0x00*32, digest_size=16).")
 
 if __name__ == "__main__":
     main()

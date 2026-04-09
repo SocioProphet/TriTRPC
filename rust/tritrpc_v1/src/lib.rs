@@ -165,15 +165,36 @@ pub mod envelope {
         aead_on: bool,
         compress: bool,
     ) -> Vec<u8> {
+        build_with_mode(
+            &pack_trits(&[0]),
+            service,
+            method,
+            payload,
+            aux,
+            aead_tag,
+            aead_on,
+            compress,
+        )
+    }
+
+    pub fn build_with_mode(
+        mode_bytes: &[u8],
+        service: &str,
+        method: &str,
+        payload: &[u8],
+        aux: Option<&[u8]>,
+        aead_tag: Option<&[u8]>,
+        aead_on: bool,
+        compress: bool,
+    ) -> Vec<u8> {
         let mut out: Vec<u8> = Vec::new();
         out.extend(len_prefix(&MAGIC_B2));
         out.extend(MAGIC_B2);
         let ver = pack_trits(&[1]);
         out.extend(len_prefix(&ver));
         out.extend(ver);
-        let mode = pack_trits(&[0]);
-        out.extend(len_prefix(&mode));
-        out.extend(mode);
+        out.extend(len_prefix(mode_bytes));
+        out.extend(mode_bytes);
         let flags = pack_trits(&super::envelope::flags_trits(aead_on, compress));
         out.extend(len_prefix(&flags));
         out.extend(flags);
@@ -954,8 +975,8 @@ pub mod avrodec {
 
 pub mod tritrpc_v1_tests {
     use super::envelope;
-    use chacha20poly1305::aead::{Aead, KeyInit};
-    use chacha20poly1305::XChaCha20Poly1305;
+    use blake2::digest::{FixedOutput, KeyInit, Mac};
+    use blake2::Blake2bMac;
     use std::collections::HashMap;
     use std::fs;
     use subtle::ConstantTimeEq;
@@ -979,7 +1000,8 @@ pub mod tritrpc_v1_tests {
                 "context id mismatch {}",
                 name
             );
-            let repacked = envelope::build(
+            let repacked = envelope::build_with_mode(
+                &decoded.mode,
                 &decoded.service,
                 &decoded.method,
                 &decoded.payload,
@@ -991,25 +1013,18 @@ pub mod tritrpc_v1_tests {
             assert_eq!(repacked, frame, "repack mismatch {}", name);
             if decoded.aead_on {
                 let tag = decoded.tag.as_ref().expect("missing tag");
-                let nonce = nonces.get(&name).expect("nonce missing");
-                assert_eq!(nonce.len(), 24, "nonce size mismatch {}", name);
+                let _nonce = nonces.get(&name).expect("nonce missing");
+                assert_eq!(_nonce.len(), 24, "nonce size mismatch {}", name);
                 assert_eq!(tag.len(), 16, "tag size mismatch {}", name);
                 let aad_start = decoded.tag_start.expect("tag start missing");
                 let aad = &frame[..aad_start];
-                let aead = XChaCha20Poly1305::new(&key.into());
-                let ct = aead
-                    .encrypt(
-                        nonce.as_slice().into(),
-                        chacha20poly1305::aead::Payload { msg: b"", aad },
-                    )
-                    .unwrap();
-                let computed = &ct[ct.len() - 16..];
-                let matches: bool = computed.ct_eq(tag.as_slice()).into();
-                assert!(
-                    matches,
-                    "tag mismatch {}",
-                    name
-                );
+                let mut mac =
+                    <Blake2bMac<blake2::digest::consts::U16> as KeyInit>::new_from_slice(&key)
+                        .expect("blake2b key init");
+                mac.update(aad);
+                let computed = mac.finalize_fixed();
+                let matches: bool = computed.as_slice().ct_eq(tag.as_slice()).into();
+                assert!(matches, "tag mismatch {}", name);
             }
             ok += 1;
         }

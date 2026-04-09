@@ -26,6 +26,11 @@ func lenPrefix(b []byte) []byte {
 }
 
 func BuildEnvelope(service, method string, payload []byte, aux []byte, aeadTag []byte, aeadOn bool, compress bool) []byte {
+	mode := TritPack243([]byte{0})
+	return BuildEnvelopeWithMode(mode, service, method, payload, aux, aeadTag, aeadOn, compress)
+}
+
+func BuildEnvelopeWithMode(modeBytes []byte, service, method string, payload []byte, aux []byte, aeadTag []byte, aeadOn bool, compress bool) []byte {
 	out := make([]byte, 0)
 	out = append(out, lenPrefix(MAGIC_B2)...)
 	out = append(out, MAGIC_B2...)
@@ -34,9 +39,8 @@ func BuildEnvelope(service, method string, payload []byte, aux []byte, aeadTag [
 	out = append(out, lenPrefix(ver)...)
 	out = append(out, ver...)
 
-	mode := TritPack243([]byte{0})
-	out = append(out, lenPrefix(mode)...)
-	out = append(out, mode...)
+	out = append(out, lenPrefix(modeBytes)...)
+	out = append(out, modeBytes...)
 
 	flags := TritPack243(flagsTrits(aeadOn, compress))
 	out = append(out, lenPrefix(flags)...)

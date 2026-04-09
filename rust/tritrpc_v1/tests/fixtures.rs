@@ -1,5 +1,5 @@
-use chacha20poly1305::aead::{Aead, KeyInit};
-use chacha20poly1305::XChaCha20Poly1305;
+use blake2::digest::{FixedOutput, KeyInit, Mac};
+use blake2::Blake2bMac;
 use std::collections::HashMap;
 use std::fs;
 use subtle::ConstantTimeEq;
@@ -94,7 +94,8 @@ fn verify_all_frames_and_payloads() {
                 name
             );
 
-            let repacked = envelope::build(
+            let repacked = envelope::build_with_mode(
+                &decoded.mode,
                 &decoded.service,
                 &decoded.method,
                 &decoded.payload,
@@ -110,24 +111,17 @@ fn verify_all_frames_and_payloads() {
             if has_aead {
                 let tag = decoded.tag.as_ref().expect("missing tag");
                 assert_eq!(tag.len(), 16, "tag size mismatch {}", name);
-                let nonce = nonces.get(&name).expect("nonce missing");
-                assert_eq!(nonce.len(), 24, "nonce size mismatch {}", name);
+                let _nonce = nonces.get(&name).expect("nonce missing");
+                assert_eq!(_nonce.len(), 24, "nonce size mismatch {}", name);
                 let aad_start = decoded.tag_start.expect("tag start missing");
                 let aad = &frame[..aad_start];
-                let strict = std::env::var("STRICT_AEAD").ok().as_deref() == Some("1");
-                let aead = XChaCha20Poly1305::new(&key.into());
-                let ct = aead
-                    .encrypt(
-                        nonce.as_slice().into(),
-                        chacha20poly1305::aead::Payload { msg: b"", aad },
-                    )
-                    .unwrap();
-                let computed = &ct[ct.len() - 16..];
-                let matches: bool = computed.ct_eq(tag.as_slice()).into();
+                let mut mac =
+                    <Blake2bMac<blake2::digest::consts::U16> as KeyInit>::new_from_slice(&key)
+                        .expect("blake2b key init");
+                mac.update(aad);
+                let computed = mac.finalize_fixed();
+                let matches: bool = computed.as_slice().ct_eq(tag.as_slice()).into();
                 assert!(matches, "tag mismatch for {}", name);
-                if strict {
-                    assert!(matches, "strict tag mismatch for {}", name);
-                }
             }
 
             if decoded.method.ends_with(".REQ") {

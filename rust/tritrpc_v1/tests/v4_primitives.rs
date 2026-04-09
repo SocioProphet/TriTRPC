@@ -157,7 +157,10 @@ fn v4_primitives_ctrl243_all_zeros_is_zero_byte() {
 fn v4_primitives_ctrl243_routefmt1_is_byte_1() {
     // routefmt=1 (direct handle), all others 0
     // Encoding: ((((0*3+0)*3+0)*3+0)*3+1) = 1 = 0x01
-    let ctrl = Control243 { routefmt: 1, ..Default::default() };
+    let ctrl = Control243 {
+        routefmt: 1,
+        ..Default::default()
+    };
     assert_eq!(ctrl.encode().unwrap(), 0x01);
 }
 
@@ -165,7 +168,11 @@ fn v4_primitives_ctrl243_routefmt1_is_byte_1() {
 fn v4_primitives_ctrl243_roundtrip() {
     for profile in 0u8..=2 {
         for routefmt in 0u8..=2 {
-            let ctrl = Control243 { profile, routefmt, ..Default::default() };
+            let ctrl = Control243 {
+                profile,
+                routefmt,
+                ..Default::default()
+            };
             let byte = ctrl.encode().unwrap();
             let decoded = Control243::decode(byte).unwrap();
             assert_eq!(decoded, ctrl);
@@ -175,7 +182,10 @@ fn v4_primitives_ctrl243_roundtrip() {
 
 #[test]
 fn v4_primitives_ctrl243_invalid_field_returns_error() {
-    let ctrl = Control243 { profile: 3, ..Default::default() };
+    let ctrl = Control243 {
+        profile: 3,
+        ..Default::default()
+    };
     assert!(ctrl.encode().is_err());
 }
 

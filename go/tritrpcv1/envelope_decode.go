@@ -8,6 +8,7 @@ type Envelope struct {
 	Magic    []byte
 	Version  []byte
 	Mode     []byte
+	ModeTrit byte
 	Flags    []byte
 	Schema   []byte
 	Context  []byte
@@ -79,6 +80,12 @@ func DecodeEnvelope(frame []byte) (*Envelope, error) {
 	aeadOn := len(trits) > 0 && trits[0] == 2
 	compress := len(trits) > 1 && trits[1] == 2
 
+	modeTrits, _ := TritUnpack243(mode)
+	var modeTrit byte
+	if len(modeTrits) > 0 {
+		modeTrit = modeTrits[0]
+	}
+
 	var aux []byte
 	var tag []byte
 	tagStart := -1
@@ -118,6 +125,7 @@ func DecodeEnvelope(frame []byte) (*Envelope, error) {
 		Magic:    append([]byte{}, magic...),
 		Version:  append([]byte{}, version...),
 		Mode:     append([]byte{}, mode...),
+		ModeTrit: modeTrit,
 		Flags:    append([]byte{}, flags...),
 		Schema:   append([]byte{}, schema...),
 		Context:  append([]byte{}, context...),

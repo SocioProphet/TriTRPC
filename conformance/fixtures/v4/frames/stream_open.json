@@ -1,0 +1,112 @@
+{
+  "fixture_type": "frame",
+  "feature_id": "V4-006",
+  "feature_name": "StreamOpenFrame",
+  "oracle_module": "tritrpc_requirements_impl.frames",
+  "oracle_symbol": "StreamOpenFrame/parse_frame/serialize_frame",
+  "cases": [
+    {
+      "id": "stream-open-basic-direct-handle-empty-payload",
+      "kind": "positive",
+      "semantic_input": {
+        "control": {
+          "profile": 0,
+          "lane": 0,
+          "evidence": 0,
+          "fallback": 0,
+          "routefmt": 1
+        },
+        "suite": 0,
+        "epoch": 0,
+        "route_handle": {
+          "type": "direct",
+          "value": 5
+        },
+        "stream_id": 1,
+        "payload_hex": "",
+        "tag_hex": "00000000000000000000000000000000"
+      },
+      "expected_frame_hex": "f32a0102000005010000000000000000000000000000000000",
+      "expected_parse": {
+        "control": {
+          "profile": 0,
+          "lane": 0,
+          "evidence": 0,
+          "fallback": 0,
+          "routefmt": 1
+        },
+        "suite": 0,
+        "epoch": 0,
+        "route_handle": {
+          "type": "direct",
+          "value": 5
+        },
+        "stream_id": 1,
+        "payload_hex": "",
+        "tag_hex": "00000000000000000000000000000000"
+      }
+    },
+    {
+      "id": "stream-open-utf8-handle-with-payload",
+      "kind": "positive",
+      "semantic_input": {
+        "control": {
+          "profile": 0,
+          "lane": 0,
+          "evidence": 0,
+          "fallback": 0,
+          "routefmt": 0
+        },
+        "suite": 1,
+        "epoch": 2,
+        "route_handle": {
+          "type": "utf8",
+          "value": "svc"
+        },
+        "stream_id": 0,
+        "payload_hex": "deadbeef",
+        "tag_hex": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "expected_frame_hex": "f32a00020102f4037376630004deadbeefaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "expected_parse": {
+        "control": {
+          "profile": 0,
+          "lane": 0,
+          "evidence": 0,
+          "fallback": 0,
+          "routefmt": 0
+        },
+        "suite": 1,
+        "epoch": 2,
+        "route_handle": {
+          "type": "utf8",
+          "value": "svc"
+        },
+        "stream_id": 0,
+        "payload_hex": "deadbeef",
+        "tag_hex": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "stream-open-invalid-magic",
+      "kind": "negative",
+      "operation": "parse",
+      "input_hex": "00000102000005010000000000000000000000000000000000",
+      "expected_error": "invalid magic"
+    },
+    {
+      "id": "stream-open-wrong-kind",
+      "kind": "negative",
+      "operation": "parse",
+      "input_hex": "f32a01000005010000000000000000000000000000000000",
+      "expected_error_contains": "expected stream-open kind"
+    },
+    {
+      "id": "stream-open-truncated-frame",
+      "kind": "negative",
+      "operation": "parse",
+      "input_hex": "f32a010200000501000000000000000000000000000000",
+      "expected_error": "truncated stream-open frame"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "sequence_id": "seq-artifact-commit-001",
+  "events": [
+    {
+      "kind": "env-cap",
+      "epoch_id": "env-epoch-001",
+      "artifact_root": "/mnt/data"
+    },
+    {
+      "kind": "beacon-boundary-delta",
+      "action": "copy-to-artifact",
+      "source": "/home/oai/.config",
+      "result": "staged-selected-file-only"
+    },
+    {
+      "kind": "artifact-commit",
+      "bundle_id": "acb-001",
+      "manifest_ref": "artifact:manifest-001",
+      "hash_ref": "sha256:archive-001"
+    }
+  ]
+}

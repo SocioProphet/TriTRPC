@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.socioprophet.example/security/triproof.schema.json",
+  "title": "TriRPC Request Confirmation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "typ",
+    "ver",
+    "jti",
+    "iat",
+    "htm",
+    "htu",
+    "nonce",
+    "cap_hash"
+  ],
+  "properties": {
+    "typ": {
+      "type": "string",
+      "const": "triproof+jwt"
+    },
+    "ver": {
+      "type": "string",
+      "const": "1"
+    },
+    "jti": {
+      "type": "string",
+      "minLength": 16
+    },
+    "iat": {
+      "type": "integer"
+    },
+    "htm": {
+      "type": "string",
+      "minLength": 1
+    },
+    "htu": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nonce": {
+      "type": "string",
+      "minLength": 8
+    },
+    "cap_hash": {
+      "type": "string",
+      "pattern": "^sha256:.+"
+    }
+  }
+}

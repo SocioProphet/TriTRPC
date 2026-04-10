@@ -1,0 +1,25 @@
+ticket-claims = {
+  "typ": "triticket+jwt",
+  "ver": "1",
+  ? "sub_ref": tstr,
+  ? "sid_ref": tstr,
+  "iss": tstr,
+  "jti": tstr,
+  "iat": int,
+  "nbf": int,
+  "exp": int,
+  "aud": tstr,
+  ? "workspace_id": tstr,
+  ? "tenant_id": tstr,
+  "authorization_details": [+ authz-detail],
+  "cnf": {"jkt": tstr},
+  ? "policy": { * tstr => any },
+  ? "evidence": { * tstr => any },
+}
+
+authz-detail = {
+  "type": "trirpc",
+  "action": tstr,
+  "resource": { * tstr => any },
+  "constraints": { * tstr => any },
+}

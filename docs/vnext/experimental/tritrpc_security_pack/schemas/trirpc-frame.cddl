@@ -1,0 +1,33 @@
+; TriRPC internal CBOR frame logical body profile v0.1
+
+frame-body = {
+  "trace_id": tstr,
+  "aud": tstr,
+  "ticket": ticket-claims,
+  "request": request-body,
+}
+
+ticket-claims = {
+  "typ": "triticket+jwt",
+  "ver": "1",
+  "iss": tstr,
+  "jti": tstr,
+  "iat": int,
+  "nbf": int,
+  "exp": int,
+  "aud": tstr,
+  "authorization_details": [+ authz-detail],
+  * tstr => any,
+}
+
+authz-detail = {
+  "type": "trirpc",
+  "action": tstr,
+  "resource": { * tstr => any },
+  "constraints": { * tstr => any },
+}
+
+request-body = {
+  "action": tstr,
+  "resource": { * tstr => any },
+}

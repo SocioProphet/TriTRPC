@@ -1,0 +1,32 @@
+{
+  "sequence_id": "seq-semantic-beacon-001",
+  "events": [
+    {
+      "kind": "stream-open",
+      "route_h": "rh:precursor-evidence-stream",
+      "context_h": "ch:ce1002-prep-window",
+      "defaults": {
+        "braid": "str.sch",
+        "state": "verified-review-local"
+      }
+    },
+    {
+      "kind": "beacon-intent",
+      "bundle_h": "bh:intent-ce1002-v1",
+      "semantic_refs": [
+        "cell-kairos-ce-001",
+        "tcell-chrono-001"
+      ]
+    },
+    {
+      "kind": "stream-data",
+      "stream_id": 1,
+      "payload_ref": "artifact:evidence-chunk-001"
+    },
+    {
+      "kind": "beacon-commit",
+      "bundle_h": "bh:commit-ce1002-v1",
+      "result": "promoted"
+    }
+  ]
+}

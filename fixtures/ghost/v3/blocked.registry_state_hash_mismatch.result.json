@@ -1,0 +1,4 @@
+{
+  "status": "BLOCKED",
+  "reason_codes": ["registry_state_hash:mismatch"]
+}

@@ -1,0 +1,19 @@
+{
+  "version": "0.2",
+  "notes": "GhostEventV3 transport implications over the existing Ghost fixture surface.",
+  "required_fields": [
+    "prime_registry_ref",
+    "prime_registry_state_hash",
+    "event_ir_hash",
+    "prime_vector"
+  ],
+  "fixture_classes": ["happy", "warning", "blocked", "malformed"],
+  "minimum_cases": {
+    "ghost_event_v3": [
+      "happy.valid_sparse_vector",
+      "blocked.duplicate_basis_index",
+      "blocked.registry_state_hash_mismatch",
+      "malformed.bad_prime_vector_type"
+    ]
+  }
+}

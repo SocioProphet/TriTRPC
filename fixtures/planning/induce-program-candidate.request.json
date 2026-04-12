@@ -1,0 +1,5 @@
+{
+  "scopeRef": "planning://scope/planning.scope.hdt.export.001",
+  "planNodeRef": "planning://plan-node/plan.node.hdt.repair-consent.001",
+  "reasoningClass": "PROGRAM_INDUCTION"
+}

@@ -1,0 +1,5 @@
+{
+  "scopeRef": "planning://scope/planning.scope.hdt.export.001",
+  "programCandidateRef": "semantic://program-candidate/progcand.hdt.export.001",
+  "status": "CREATED"
+}

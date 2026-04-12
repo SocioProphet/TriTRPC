@@ -1,0 +1,14 @@
+{
+  "transport": "competitor",
+  "scenario_id": "agentic-coordination-v1",
+  "metrics": {
+    "mean_bytes_per_control_frame": 0,
+    "mean_bytes_per_data_frame": 0,
+    "semantic_reuse_rate": 0,
+    "beacon_count": 0,
+    "semaphore_events": 0,
+    "barrier_events": 0,
+    "artifact_commit_events": 0
+  },
+  "notes": "Populate with measured values from real or synthetic benchmark runs"
+}

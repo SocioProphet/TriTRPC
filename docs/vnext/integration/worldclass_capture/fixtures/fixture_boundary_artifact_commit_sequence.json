@@ -9,7 +9,7 @@
     {
       "kind": "beacon-boundary-delta",
       "action": "copy-to-artifact",
-      "source": "/home/oai/.config",
+      "source": "/home/user/.config",
       "result": "staged-selected-file-only"
     },
     {

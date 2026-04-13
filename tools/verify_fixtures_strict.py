@@ -7,35 +7,6 @@ import hashlib
 import sys
 from pathlib import Path
 from typing import Tuple
-_XCHACHA_PROVIDER = None
-
-try:
-    try:
-        from nacl.bindings.crypto_aead import crypto_aead_xchacha20poly1305_ietf_encrypt
-    except Exception:
-        from nacl.bindings import crypto_aead_xchacha20poly1305_ietf_encrypt
-
-    _XCHACHA_PROVIDER = "pynacl"
-
-    def xchacha20poly1305_tag(key: bytes, nonce: bytes, aad: bytes) -> bytes:
-        sealed = crypto_aead_xchacha20poly1305_ietf_encrypt(b"", aad, nonce, key)
-        return sealed[-16:]
-
-except Exception:
-    try:
-        from cryptography.hazmat.primitives.ciphers.aead import XChaCha20Poly1305
-
-        _XCHACHA_PROVIDER = "cryptography"
-
-        def xchacha20poly1305_tag(key: bytes, nonce: bytes, aad: bytes) -> bytes:
-            return XChaCha20Poly1305(key).encrypt(nonce, b"", aad)[-16:]
-
-    except Exception:
-        print("ERROR: XChaCha20-Poly1305 support is required for this hook.", file=sys.stderr)
-        print("Install one of:", file=sys.stderr)
-        print("  pip install pynacl", file=sys.stderr)
-        print("  pip install cryptography", file=sys.stderr)
-        sys.exit(2)
 
 ROOT = Path(__file__).resolve().parents[1]
 FX = ROOT / "fixtures"
@@ -68,6 +39,8 @@ def tleb3_decode_len(buf: bytes, offset: int) -> Tuple[int, int]:
                 group[j] = val % 3
                 val //= 3
             trits.extend(group)
+        else:
+            raise ValueError(f"invalid TritPack243 byte {b} at offset {i - 1}")
         if len(trits) >= 3:
             val = 0
             used_trits = 0
@@ -110,7 +83,7 @@ def get_aad_and_tag(frame: bytes):
     return aad, tag
 
 
-def verify_file(fx_name: str, nx_name: str) -> None:
+def verify_file(fx_name: str) -> None:
     path = FX / fx_name
     if not path.exists():
         return
@@ -121,32 +94,27 @@ def verify_file(fx_name: str, nx_name: str) -> None:
         frame = bytes.fromhex(hexs.strip())
         aad, tag = get_aad_and_tag(frame)
         calc = hashlib.blake2b(aad, key=KEY, digest_size=16).digest()
-        if name not in nonce:
-            print(f"[FAIL] Nonce missing for {fx_name}:{name}", file=sys.stderr)
-            sys.exit(3)
-        calc = xchacha20poly1305_tag(KEY, nonce[name], aad)
         if calc != tag:
             print(
-                f"[FAIL] AEAD tag mismatch: {fx_name}:{name}", file=sys.stderr
+                f"[FAIL] BLAKE2b-MAC tag mismatch: {fx_name}:{name}", file=sys.stderr
             )
             sys.exit(4)
 
 
 def main():
-    sets = [
-        ("vectors_hex.txt", "vectors_hex.txt.nonces"),
-        ("vectors_hex_stream_avrochunk.txt", "vectors_hex_stream_avrochunk.txt.nonces"),
-        ("vectors_hex_unary_rich.txt", "vectors_hex_unary_rich.txt.nonces"),
-        ("vectors_hex_stream_avronested.txt", "vectors_hex_stream_avronested.txt.nonces"),
-        ("vectors_hex_pathB.txt", "vectors_hex_pathB.txt.nonces"),
-        ("vectors_hex_pathB_stream.txt", "vectors_hex_pathB_stream.txt.nonces"),
+    fixture_files = [
+        "vectors_hex.txt",
+        "vectors_hex_stream_avrochunk.txt",
+        "vectors_hex_unary_rich.txt",
+        "vectors_hex_stream_avronested.txt",
+        "vectors_hex_pathB.txt",
+        "vectors_hex_pathB_stream.txt",
     ]
-    for f, n in sets:
-        verify_file(f, n)
+    for f in fixture_files:
+        verify_file(f)
     print("[OK] All fixture AEAD tags verified under BLAKE2b-MAC.")
 
-    for f,n in sets: verify_file(f,n)
-    print(f"[OK] All fixture AEAD tags verified under XChaCha20-Poly1305 ({_XCHACHA_PROVIDER}).")
 
 if __name__ == "__main__":
     main()
+

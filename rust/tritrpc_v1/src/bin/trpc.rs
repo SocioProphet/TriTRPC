@@ -16,7 +16,7 @@ fn hex_to_bytes(s: &str) -> Vec<u8> {
 
 fn usage() {
     eprintln!("trpc pack --service S --method M --json path.json --nonce HEX --key HEX");
-    eprintln!("trpc verify --fixtures fixtures/vectors_hex_unary_rich.txt --nonces fixtures/vectors_hex_unary_rich.txt.nonces");
+    eprintln!("trpc verify --fixtures fixtures/vectors_hex_unary_rich.txt");
 }
 
 fn main() {
@@ -89,7 +89,6 @@ fn main() {
         }
         "verify" => {
             let mut fixtures = String::new();
-            let mut nonces = String::new();
             let mut i = 2;
             while i < args.len() {
                 match args[i].as_str() {
@@ -97,19 +96,15 @@ fn main() {
                         i += 1;
                         fixtures = args[i].clone();
                     }
-                    "--nonces" => {
-                        i += 1;
-                        nonces = args[i].clone();
-                    }
                     _ => {}
                 }
                 i += 1;
             }
-            if fixtures.is_empty() || nonces.is_empty() {
+            if fixtures.is_empty() {
                 usage();
                 exit(3);
             }
-            let out = tritrpc_v1::tritrpc_v1_tests::verify_file(&fixtures, &nonces);
+            let out = tritrpc_v1::tritrpc_v1_tests::verify_file(&fixtures);
             println!("{}", out);
         }
         _ => {

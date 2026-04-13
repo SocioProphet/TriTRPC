@@ -7,10 +7,6 @@ use tritrpc_v1::{avrodec, envelope, tleb3, tritpack243};
 
 type Blake2bMac128 = Blake2bMac<U16>;
 
-fn fixture_path(name: &str) -> String {
-    format!("{}/../../fixtures/{}", env!("CARGO_MANIFEST_DIR"), name)
-}
-
 fn read_pairs(path: &str) -> Vec<(String, Vec<u8>)> {
     let txt = fs::read_to_string(path).expect("read fixtures");
     txt.lines()
@@ -57,25 +53,6 @@ fn verify_all_frames_and_payloads() {
     let key = [0u8; 32];
     for fx in sets {
         let pairs = read_pairs(&fx);
-        ("vectors_hex.txt", "vectors_hex.txt.nonces"),
-        (
-            "vectors_hex_stream_avrochunk.txt",
-            "vectors_hex_stream_avrochunk.txt.nonces",
-        ),
-        (
-            "vectors_hex_unary_rich.txt",
-            "vectors_hex_unary_rich.txt.nonces",
-        ),
-        (
-            "vectors_hex_stream_avronested.txt",
-            "vectors_hex_stream_avronested.txt.nonces",
-        ),
-        ("vectors_hex_pathB.txt", "vectors_hex_pathB.txt.nonces"),
-    ];
-    let key = [0u8; 32];
-    for (fx, nx) in sets {
-        let pairs = read_pairs(&fixture_path(fx));
-        let nonces = read_nonces(&fixture_path(nx));
         for (name, frame) in pairs {
             let fields = split_fields(&frame);
             assert!(fields.len() >= 9, "{}", name);
@@ -125,20 +102,6 @@ fn verify_all_frames_and_payloads() {
                     "tag mismatch for {}",
                     name
                 );
-                let strict = std::env::var("STRICT_AEAD").ok().as_deref() == Some("1");
-                let aead = XChaCha20Poly1305::new(&key.into());
-                let ct = aead
-                    .encrypt(
-                        nonce.as_slice().into(),
-                        chacha20poly1305::aead::Payload { msg: b"", aad },
-                    )
-                    .unwrap();
-                let computed = &ct[ct.len() - 16..];
-                let matches: bool = computed.ct_eq(tag.as_slice()).into();
-                assert!(matches, "tag mismatch for {}", name);
-                if strict {
-                    assert!(matches, "strict tag mismatch for {}", name);
-                }
             }
 
             if decoded.method.ends_with(".REQ") {

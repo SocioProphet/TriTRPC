@@ -1026,7 +1026,10 @@ pub mod tritrpc_v1_tests {
                 mac.update(aad);
                 let computed = mac.finalize().into_bytes();
                 assert!(
-                    computed.as_slice() == tag.as_slice(),
+                    bool::from(<[u8] as subtle::ConstantTimeEq>::ct_eq(
+                        computed.as_slice(),
+                        tag.as_slice(),
+                    )),
                 let aead = XChaCha20Poly1305::new(&key.into());
                 let ct = aead
                     .encrypt(

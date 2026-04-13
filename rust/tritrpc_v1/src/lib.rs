@@ -984,7 +984,7 @@ pub mod tritrpc_v1_tests {
 
     type Blake2bMac128 = Blake2bMac<U16>;
 
-    pub fn verify_file(fx: &str, _nonces_path: &str) -> String {
+    pub fn verify_file(fx: &str) -> String {
         let key = [0u8; 32];
         let pairs = read_pairs(fx);
         let mut ok = 0usize;

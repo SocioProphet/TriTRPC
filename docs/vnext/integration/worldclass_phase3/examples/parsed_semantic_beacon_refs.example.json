@@ -1,0 +1,19 @@
+{
+  "sequence_id": "seq-semantic-beacon-001",
+  "refs": {
+    "bundle_h": [
+      "bh:commit-ce1002-v1",
+      "bh:intent-ce1002-v1"
+    ],
+    "context_h": [
+      "ch:ce1002-prep-window"
+    ],
+    "route_h": [
+      "rh:precursor-evidence-stream"
+    ],
+    "semantic_refs": [
+      "cell-kairos-ce-001",
+      "tcell-chrono-001"
+    ]
+  }
+}

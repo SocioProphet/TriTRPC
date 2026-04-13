@@ -1,0 +1,23 @@
+{
+  "taskId": "task_01",
+  "plan": {
+    "steps": [
+      {"id": "s1", "kind": "local_retrieval"},
+      {"id": "s2", "kind": "local_classification"},
+      {"id": "s3", "kind": "policy_check"},
+      {"id": "s4", "kind": "optional_remote_summarization"}
+    ],
+    "requiresRemoteExecution": true,
+    "candidateCapability": "summarize.abstractive.v1"
+  },
+  "input": {
+    "kind": "summarization_request",
+    "objective": "Summarize and identify unresolved risks",
+    "context": {
+      "chunks": [
+        {"chunkId": "c1", "text": "Replay semantics are partially specified and restoration boundaries still need canonical anchors."},
+        {"chunkId": "c2", "text": "Tenant execution is allowed only after redaction and extractive context reduction."}
+      ]
+    }
+  }
+}

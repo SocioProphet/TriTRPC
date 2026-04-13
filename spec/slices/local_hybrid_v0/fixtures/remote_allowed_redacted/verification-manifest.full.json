@@ -1,0 +1,35 @@
+{
+  "fixtureId": "remote_allowed_redacted_full",
+  "targets": [
+    {
+      "name": "policy_allows_remote",
+      "file": "policy-decision.output.example.json",
+      "expect": {"path": "$.allow", "equals": true}
+    },
+    {
+      "name": "binding_execution_lane",
+      "file": "capability-resolve.output.example.json",
+      "expect": {"path": "$.binding.executionLane", "equals": "tenant"}
+    },
+    {
+      "name": "worker_request_disallows_side_effects",
+      "file": "worker-execute.request.example.json",
+      "expect": {"path": "$.executionPolicy.sideEffectsAllowed", "equals": false}
+    },
+    {
+      "name": "evidence_execution_lane_tenant",
+      "file": "evidence-append.request.example.json",
+      "expect": {"path": "$.event.executionLane", "equals": "tenant"}
+    },
+    {
+      "name": "evidence_zone_crossings_present",
+      "file": "evidence-append.request.example.json",
+      "expect": {"path": "$.event.zoneCrossings", "minItems": 2}
+    },
+    {
+      "name": "replay_requests_materialization",
+      "file": "replay-materialize.request.example.json",
+      "expect": {"path": "$.materializeArtifacts", "equals": true}
+    }
+  ]
+}

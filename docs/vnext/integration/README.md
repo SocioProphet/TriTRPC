@@ -8,6 +8,7 @@ This directory captures the reintegration of the two intentionally separated Tri
 ## Start here
 
 - `unified_spec_integration_crosswalk.md` — exact merge map, source precedence, and placement guidance.
+- `branch_pr_merge_runbook.md` — safe merge workflow for integrating branch/PR content into `main` without dropping work.
 - `../../spec/drafts/tritrpc_unified_v4_master_spec.md` — working unified master draft.
 - `../../spec/drafts/annex_b_path_h_qutrit_hybrid_profile.md` — hybrid/qutrit annex promoted from the parallel workstream.
 - `../../reference/experimental/tritrpc_requirements_impl_v4/path_h/` — reference encoder, fixtures, demo sequence, and parity harnesses.

@@ -86,7 +86,7 @@ pub mod tleb3 {
         let mut trits: Vec<u8> = Vec::new();
         let mut offset = start;
         loop {
-            if offset >= bytes.len() {
+            if pos >= bytes.len() {
                 return Err("EOF in TLEB3".into());
             }
             let b = bytes[offset];
@@ -96,6 +96,19 @@ pub mod tleb3 {
             }
             let ts = super::tritpack243::unpack(&bytes[offset..offset + read_count])?;
             offset += read_count;
+            let b = bytes[pos];
+            pos += 1;
+            // Tail-marker bytes (0xF3..=0xF6) span two bytes; pass both to unpack.
+            let ts = if (0xF3..=0xF6).contains(&b) {
+                if pos >= bytes.len() {
+                    return Err("truncated TLEB3 tail marker".into());
+                }
+                let b2 = bytes[pos];
+                pos += 1;
+                super::tritpack243::unpack(&[b, b2])?
+            } else {
+                super::tritpack243::unpack(&[b])?
+            };
             trits.extend_from_slice(&ts);
             if trits.len() < 3 {
                 continue;
@@ -1014,6 +1027,17 @@ pub mod tritrpc_v1_tests {
                 let computed = mac.finalize().into_bytes();
                 assert!(
                     computed.as_slice() == tag.as_slice(),
+                let aead = XChaCha20Poly1305::new(&key.into());
+                let ct = aead
+                    .encrypt(
+                        nonce.as_slice().into(),
+                        chacha20poly1305::aead::Payload { msg: b"", aad },
+                    )
+                    .unwrap();
+                let computed = &ct[ct.len() - 16..];
+                let matches: bool = computed.ct_eq(tag.as_slice()).into();
+                assert!(
+                    matches,
                     "tag mismatch {}",
                     name
                 );
@@ -1087,6 +1111,7 @@ pub mod avroenc_json {
         let ok = v["ok"].as_bool().unwrap_or(true);
         let err = v.get("err").and_then(|e| e.as_str());
         let empty_arr: Vec<serde_json::Value> = vec![];
+        let empty_arr = vec![];
         let vertices = v["vertices"]
             .as_array()
             .unwrap_or(&empty_arr)
@@ -1099,6 +1124,7 @@ pub mod avroenc_json {
             })
             .collect::<Vec<_>>();
         let empty_arr2: Vec<serde_json::Value> = vec![];
+        let empty_arr2 = vec![];
         let edges = v["edges"]
             .as_array()
             .unwrap_or(&empty_arr2)
@@ -1217,3 +1243,5 @@ pub mod pathb_dec {
         ((vid, label), o4 + 1)
     }
 }
+
+pub mod v4;

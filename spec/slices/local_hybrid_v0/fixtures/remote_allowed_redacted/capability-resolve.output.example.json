@@ -1,0 +1,11 @@
+{
+  "resolved": true,
+  "binding": {
+    "capabilityInstanceId": "capinst.summarize.abstractive.v1.stub",
+    "executionLane": "tenant",
+    "workerEndpoint": "tritrpc://tenant/summarize-01",
+    "workerContract": "worker.v1.Capability/Execute",
+    "credentialScope": "task-scoped",
+    "bindingTtlSeconds": 120
+  }
+}

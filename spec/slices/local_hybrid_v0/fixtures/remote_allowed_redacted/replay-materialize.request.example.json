@@ -1,0 +1,5 @@
+{
+  "taskId": "task_01",
+  "journalOffset": 123456789,
+  "materializeArtifacts": true
+}

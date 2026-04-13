@@ -1,0 +1,23 @@
+{
+  "event": {
+    "eventId": "urn:uuid:stub-event-01",
+    "parentEventId": "urn:uuid:stub-parent-00",
+    "sessionId": "sess_01",
+    "taskId": "task_01",
+    "actor": {"kind": "human", "id": "user:local"},
+    "capability": "summarize.abstractive.v1",
+    "policyHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "executionLane": "tenant",
+    "workerId": "worker:summarize-01",
+    "modelId": "model:deterministic-stub-01",
+    "toolchain": ["agentplane.worker-runtime.execute_stub"],
+    "zoneCrossings": ["device->tenant", "tenant->device"],
+    "inputDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "outputDigest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "artifactRefs": [],
+    "startedAt": "2026-04-06T00:00:01Z",
+    "finishedAt": "2026-04-06T00:00:03Z",
+    "journalOffset": null,
+    "cairnId": null
+  }
+}

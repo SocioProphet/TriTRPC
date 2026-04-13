@@ -6,12 +6,21 @@ import (
 	"encoding/hex"
 	"golang.org/x/crypto/chacha20poly1305"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
 
-func readPairs(path string) [][2][]byte {
-	f, _ := os.Open(path)
+func fixturePath(name string) string {
+	return filepath.Join("..", "..", "fixtures", name)
+}
+
+func readPairs(t *testing.T, path string) [][2][]byte {
+	t.Helper()
+	f, err := os.Open(path)
+	if err != nil {
+		t.Fatalf("open fixtures file %s: %v", path, err)
+	}
 	defer f.Close()
 	sc := bufio.NewScanner(f)
 	out := make([][2][]byte, 0)
@@ -28,8 +37,12 @@ func readPairs(path string) [][2][]byte {
 	return out
 }
 
-func readNonces(path string) map[string][]byte {
-	f, _ := os.Open(path)
+func readNonces(t *testing.T, path string) map[string][]byte {
+	t.Helper()
+	f, err := os.Open(path)
+	if err != nil {
+		t.Fatalf("open nonce file %s: %v", path, err)
+	}
 	defer f.Close()
 	sc := bufio.NewScanner(f)
 	out := map[string][]byte{}
@@ -70,16 +83,16 @@ func aeadBit(flags []byte) bool {
 
 func TestFixturesAEADAndPayloads(t *testing.T) {
 	sets := [][2]string{
-		{"fixtures/vectors_hex.txt", "fixtures/vectors_hex.txt.nonces"},
-		{"fixtures/vectors_hex_stream_avrochunk.txt", "fixtures/vectors_hex_stream_avrochunk.txt.nonces"},
-		{"fixtures/vectors_hex_unary_rich.txt", "fixtures/vectors_hex_unary_rich.txt.nonces"},
-		{"fixtures/vectors_hex_stream_avronested.txt", "fixtures/vectors_hex_stream_avronested.txt.nonces"},
-		{"fixtures/vectors_hex_pathB.txt", "fixtures/vectors_hex_pathB.txt.nonces"},
+		{"vectors_hex.txt", "vectors_hex.txt.nonces"},
+		{"vectors_hex_stream_avrochunk.txt", "vectors_hex_stream_avrochunk.txt.nonces"},
+		{"vectors_hex_unary_rich.txt", "vectors_hex_unary_rich.txt.nonces"},
+		{"vectors_hex_stream_avronested.txt", "vectors_hex_stream_avronested.txt.nonces"},
+		{"vectors_hex_pathB.txt", "vectors_hex_pathB.txt.nonces"},
 	}
 	key := [32]byte{}
 	for _, s := range sets {
-		pairs := readPairs(s[0])
-		nonces := readNonces(s[1])
+		pairs := readPairs(t, fixturePath(s[0]))
+		nonces := readNonces(t, fixturePath(s[1]))
 		for _, p := range pairs {
 			name := string(p[0])
 			frame := p[1]

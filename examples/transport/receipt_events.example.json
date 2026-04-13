@@ -1,0 +1,51 @@
+{
+  "trace_id": "trace_gakw_hybrid_warm_001",
+  "events": [
+    {
+      "event_id": "evt_rpc_001",
+      "trace_id": "trace_gakw_hybrid_warm_001",
+      "span_id": "span_rpc_send",
+      "parent_span_id": "span_place",
+      "event_type": "rpc.request.sent",
+      "ts": "2026-04-05T07:30:04.100Z",
+      "producer": "tritrpc",
+      "payload": {
+        "protocol": "tritrpc",
+        "route_id": "route://planner/runner@v1",
+        "peer_id": "node://edge-a-01",
+        "envelope_hash": "sha256:envelope01",
+        "request_bytes": 2048
+      }
+    },
+    {
+      "event_id": "evt_rpc_002",
+      "trace_id": "trace_gakw_hybrid_warm_001",
+      "span_id": "span_rpc_retry",
+      "parent_span_id": "span_rpc_send",
+      "event_type": "rpc.retry",
+      "ts": "2026-04-05T07:30:04.300Z",
+      "producer": "tritrpc",
+      "payload": {
+        "route_id": "route://planner/runner@v1",
+        "attempt": 2,
+        "reason": "deadline_exceeded"
+      }
+    },
+    {
+      "event_id": "evt_rpc_003",
+      "trace_id": "trace_gakw_hybrid_warm_001",
+      "span_id": "span_rpc_recv",
+      "parent_span_id": "span_rpc_send",
+      "event_type": "rpc.response.received",
+      "ts": "2026-04-05T07:30:04.700Z",
+      "producer": "tritrpc",
+      "payload": {
+        "protocol": "tritrpc",
+        "route_id": "route://planner/runner@v1",
+        "peer_id": "node://edge-a-01",
+        "response_bytes": 8192,
+        "latency_ms": 600
+      }
+    }
+  ]
+}

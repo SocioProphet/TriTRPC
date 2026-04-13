@@ -1,0 +1,81 @@
+{
+  "name": "TriTRPC route policy delta wire vectors v1",
+  "status": "Reference-only",
+  "encoding_note": "2-byte little-endian presence bitmap; fixed required field order; route-policy payload embeds policy_attestation_v1 in length-prefixed form; Handle243/S243 lowering; hash-escape for digest references when provided as hash_hex.",
+  "vectors": [
+    {
+      "vector_id": "fallback_authorization_delta",
+      "logical": {
+        "scope": "cohort",
+        "route_h": 17,
+        "policy_h": 3,
+        "update_kind": "fallback",
+        "effective_from_epoch": 42,
+        "effective_until_epoch": 43,
+        "fallback_policy": {
+          "value": "classical-fallback-ok",
+          "reason_class": "timeout",
+          "ttl_ms": 60000
+        },
+        "attestation": {
+          "authority_h": 3,
+          "policy_h": 3,
+          "issuer_h": 9,
+          "scope": "route",
+          "decision_class": "fallback",
+          "issued_at_ms": 1710000000000,
+          "effective_from_epoch": 42,
+          "effective_until_epoch": 43,
+          "receipt_h": null,
+          "proof_ref": {
+            "hash_hex": "9bb688b24d5b2ddce3b1a23d66f8c38c9806d273eda52ab114c1b94cc232b53f"
+          },
+          "replay_h": 21,
+          "signature_ref": {
+            "hash_hex": "9f1b648133e73762374ca14247f28b429404cf333d66204fdaa8233c9aec8235"
+          },
+          "evidence_grade": "exact",
+          "reason_h": 30
+        },
+        "reason_h": 30
+      },
+      "packed_hex": "2300000011032a2b0101f3e05012f50158ef010303090000f3a88964df8fd2ccf6062a2bf59bb688b24d5b2ddce3b1a23d66f8c38c9806d273eda52ab114c1b94cc232b53f15f59f1b648133e73762374ca14247f28b429404cf333d66204fdaa8233c9aec8235001e1e"
+    },
+    {
+      "vector_id": "dictionary_rebind_delta",
+      "logical": {
+        "scope": "global",
+        "route_h": 31,
+        "policy_h": 7,
+        "update_kind": "dictionary_rebind",
+        "effective_from_epoch": 61,
+        "route_target": {
+          "route_h_new": 44,
+          "dictionary_epoch": 61
+        },
+        "attestation": {
+          "authority_h": 7,
+          "policy_h": 7,
+          "issuer_h": 13,
+          "scope": "dictionary",
+          "decision_class": "rebind",
+          "issued_at_ms": 1710000180000,
+          "effective_from_epoch": 61,
+          "effective_until_epoch": null,
+          "receipt_h": null,
+          "proof_ref": {
+            "hash_hex": "3b9ac9ff0a9fd8daec7dd3c86f4754e62fa8391e3926d4caf938a58e0d8b4e35"
+          },
+          "replay_h": 29,
+          "signature_ref": {
+            "hash_hex": "6f8a1e1a2a6c0f6804d17dfc2d6b5846e3b7cf1fbf7c58bb2d7f53e18a77d99c"
+          },
+          "evidence_grade": "exact",
+          "reason_h": null
+        },
+        "reason_h": null
+      },
+      "packed_hex": "180005011f073d2c3d56e70007070d0104f3a950b5a9e0d2ccf6063df53b9ac9ff0a9fd8daec7dd3c86f4754e62fa8391e3926d4caf938a58e0d8b4e351df56f8a1e1a2a6c0f6804d17dfc2d6b5846e3b7cf1fbf7c58bb2d7f53e18a77d99c00"
+    }
+  ]
+}

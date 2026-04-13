@@ -1,0 +1,35 @@
+{
+  "fixtureId": "remote_allowed_redacted",
+  "targets": [
+    {
+      "name": "policy_allows_remote",
+      "file": "policy-decision.output.example.json",
+      "expect": {"path": "$.allow", "equals": true}
+    },
+    {
+      "name": "transformations_present",
+      "file": "policy-decision.output.example.json",
+      "expect": {"path": "$.requiredTransformations", "minItems": 1}
+    },
+    {
+      "name": "binding_execution_lane",
+      "file": "capability-resolve.output.example.json",
+      "expect": {"path": "$.binding.executionLane", "equals": "tenant"}
+    },
+    {
+      "name": "worker_contract_matches",
+      "file": "capability-resolve.output.example.json",
+      "expect": {"path": "$.binding.workerContract", "equals": "worker.v1.Capability/Execute"}
+    },
+    {
+      "name": "worker_request_disallows_side_effects",
+      "file": "worker-execute.request.example.json",
+      "expect": {"path": "$.executionPolicy.sideEffectsAllowed", "equals": false}
+    },
+    {
+      "name": "worker_request_disallows_network_egress",
+      "file": "worker-execute.request.example.json",
+      "expect": {"path": "$.executionPolicy.networkEgressAllowed", "equals": false}
+    }
+  ]
+}

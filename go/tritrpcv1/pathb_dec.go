@@ -15,25 +15,13 @@ func PBDecodeLen(buf []byte, off int) (int, int) {
 		var ts []byte
 		if b >= 243 && b <= 246 {
 			if off >= len(buf) {
-				panic("truncated tail marker in PBDecodeLen")
+				panic(fmt.Sprintf("truncated tail marker in PBDecodeLen at offset %d", off))
 			}
 			ts, _ = TritUnpack243([]byte{b, buf[off]})
 			off++
 		} else {
 			ts, _ = TritUnpack243([]byte{b})
 		}
-		readCount := 1
-		if b >= 243 && b <= 246 {
-			readCount = 2
-		}
-		if off+readCount > len(buf) {
-			panic(fmt.Sprintf("truncated tail marker in PBDecodeLen at offset %d", off))
-		}
-		ts, err := TritUnpack243(buf[off : off+readCount])
-		if err != nil {
-			panic(fmt.Sprintf("TritUnpack243 error in PBDecodeLen: %v", err))
-		}
-		off += readCount
 		trits = append(trits, ts...)
 		if len(trits) >= 3 {
 			v := uint64(0)

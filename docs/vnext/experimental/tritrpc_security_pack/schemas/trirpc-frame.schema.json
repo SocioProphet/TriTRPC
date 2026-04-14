@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.socioprophet.example/security/trirpc-frame.schema.json",
+  "title": "TriRPC Internal Frame Logical Body",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["trace_id", "aud", "ticket", "request"],
+  "properties": {
+    "trace_id": {"type": "string"},
+    "aud": {"type": "string"},
+    "ticket": {"$ref": "scticket.schema.json"},
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "resource"],
+      "properties": {
+        "action": {"type": "string"},
+        "resource": {"type": "object"}
+      }
+    }
+  }
+}

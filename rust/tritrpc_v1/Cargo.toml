@@ -13,6 +13,3 @@ serde_json = "1.0"
 hex = "0.4"
 subtle = "2.5"
 
-[[example]]
-name = "test_tag"
-path = "/tmp/test_tag.rs"

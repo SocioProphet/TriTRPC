@@ -94,10 +94,11 @@ fn verify_all_frames_and_payloads() {
                 name
             );
 
-            let repacked = envelope::build(
+            let repacked = envelope::build_with_mode(
                 &decoded.service,
                 &decoded.method,
                 &decoded.payload,
+                &decoded.mode,
                 decoded.aux.as_deref(),
                 decoded.tag.as_deref(),
                 decoded.aead_on,

@@ -156,10 +156,11 @@ pub mod envelope {
         [if aead { 2 } else { 0 }, if compress { 2 } else { 0 }, 0]
     }
 
-    pub fn build(
+    pub fn build_with_mode(
         service: &str,
         method: &str,
         payload: &[u8],
+        mode_bytes: &[u8],
         aux: Option<&[u8]>,
         aead_tag: Option<&[u8]>,
         aead_on: bool,
@@ -171,9 +172,8 @@ pub mod envelope {
         let ver = pack_trits(&[1]);
         out.extend(len_prefix(&ver));
         out.extend(ver);
-        let mode = pack_trits(&[0]);
-        out.extend(len_prefix(&mode));
-        out.extend(mode);
+        out.extend(len_prefix(mode_bytes));
+        out.extend(mode_bytes);
         let flags = pack_trits(&super::envelope::flags_trits(aead_on, compress));
         out.extend(len_prefix(&flags));
         out.extend(flags);
@@ -200,6 +200,28 @@ pub mod envelope {
             out.extend(tag);
         }
         out
+    }
+
+    pub fn build(
+        service: &str,
+        method: &str,
+        payload: &[u8],
+        aux: Option<&[u8]>,
+        aead_tag: Option<&[u8]>,
+        aead_on: bool,
+        compress: bool,
+    ) -> Vec<u8> {
+        let default_mode = pack_trits(&[0]);
+        build_with_mode(
+            service,
+            method,
+            payload,
+            &default_mode,
+            aux,
+            aead_tag,
+            aead_on,
+            compress,
+        )
     }
 
     pub fn envelope_with_tag(

@@ -25,7 +25,7 @@ func lenPrefix(b []byte) []byte {
 	return TLEB3EncodeLen(uint64(len(b)))
 }
 
-func BuildEnvelope(service, method string, payload []byte, aux []byte, aeadTag []byte, aeadOn bool, compress bool) []byte {
+func BuildEnvelopeWithMode(service, method string, modeBytes []byte, payload []byte, aux []byte, aeadTag []byte, aeadOn bool, compress bool) []byte {
 	out := make([]byte, 0)
 	out = append(out, lenPrefix(MAGIC_B2)...)
 	out = append(out, MAGIC_B2...)
@@ -34,9 +34,8 @@ func BuildEnvelope(service, method string, payload []byte, aux []byte, aeadTag [
 	out = append(out, lenPrefix(ver)...)
 	out = append(out, ver...)
 
-	mode := TritPack243([]byte{0})
-	out = append(out, lenPrefix(mode)...)
-	out = append(out, mode...)
+	out = append(out, lenPrefix(modeBytes)...)
+	out = append(out, modeBytes...)
 
 	flags := TritPack243(flagsTrits(aeadOn, compress))
 	out = append(out, lenPrefix(flags)...)
@@ -70,6 +69,11 @@ func BuildEnvelope(service, method string, payload []byte, aux []byte, aeadTag [
 	}
 
 	return out
+}
+
+func BuildEnvelope(service, method string, payload []byte, aux []byte, aeadTag []byte, aeadOn bool, compress bool) []byte {
+	defaultMode := TritPack243([]byte{0})
+	return BuildEnvelopeWithMode(service, method, defaultMode, payload, aux, aeadTag, aeadOn, compress)
 }
 
 func EnvelopeWithTag(service, method string, payload, aux []byte, key [32]byte, nonce [24]byte) ([]byte, []byte, error) {

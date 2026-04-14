@@ -1,5 +1,7 @@
 package tritrpcv1
 
+import "fmt"
+
 // Minimal Path-B decoders for strings and union index (subset used in fixtures)
 func PBDecodeLen(buf []byte, off int) (int, int) {
 	trits := []byte{}
@@ -20,6 +22,18 @@ func PBDecodeLen(buf []byte, off int) (int, int) {
 		} else {
 			ts, _ = TritUnpack243([]byte{b})
 		}
+		readCount := 1
+		if b >= 243 && b <= 246 {
+			readCount = 2
+		}
+		if off+readCount > len(buf) {
+			panic(fmt.Sprintf("truncated tail marker in PBDecodeLen at offset %d", off))
+		}
+		ts, err := TritUnpack243(buf[off : off+readCount])
+		if err != nil {
+			panic(fmt.Sprintf("TritUnpack243 error in PBDecodeLen: %v", err))
+		}
+		off += readCount
 		trits = append(trits, ts...)
 		if len(trits) >= 3 {
 			v := uint64(0)

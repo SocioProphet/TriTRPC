@@ -104,7 +104,13 @@ impl Control243 {
         let lane = (w % 3) as u8;
         w /= 3;
         let profile = (w % 3) as u8;
-        Ok(Control243 { profile, lane, evidence, fallback, routefmt })
+        Ok(Control243 {
+            profile,
+            lane,
+            evidence,
+            fallback,
+            routefmt,
+        })
     }
 }
 
@@ -188,7 +194,15 @@ impl HotUnaryFrame {
         let mut tag = [0u8; 16];
         tag.copy_from_slice(&data[payload_end..]);
 
-        Ok(HotUnaryFrame { control, kind, suite, epoch, route_handle, payload, tag })
+        Ok(HotUnaryFrame {
+            control,
+            kind,
+            suite,
+            epoch,
+            route_handle,
+            payload,
+            tag,
+        })
     }
 }
 
@@ -286,7 +300,13 @@ mod tests {
     }
 
     fn default_ctrl() -> Control243 {
-        Control243 { profile: 0, lane: 0, evidence: 0, fallback: 0, routefmt: 1 }
+        Control243 {
+            profile: 0,
+            lane: 0,
+            evidence: 0,
+            fallback: 0,
+            routefmt: 1,
+        }
     }
 
     #[test]
@@ -308,7 +328,10 @@ mod tests {
     #[test]
     fn hot_unary_roundtrip_utf8_handle() {
         let frame = HotUnaryFrame {
-            control: Control243 { routefmt: 0, ..Default::default() },
+            control: Control243 {
+                routefmt: 0,
+                ..Default::default()
+            },
             kind: FrameKind::Error,
             suite: CryptoSuite::Cnsa2Ready,
             epoch: 0,
@@ -336,7 +359,10 @@ mod tests {
         raw[3] = FrameKind::StreamOpen.as_byte();
         let result = HotUnaryFrame::parse(&raw);
         assert!(result.is_err());
-        assert!(result.unwrap_err().0.contains("hot unary frame received invalid kind"));
+        assert!(result
+            .unwrap_err()
+            .0
+            .contains("hot unary frame received invalid kind"));
     }
 
     #[test]

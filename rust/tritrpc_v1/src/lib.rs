@@ -159,9 +159,8 @@ pub mod envelope {
         aead_on: bool,
         compress: bool,
     ) -> Vec<u8> {
-        let mode = pack_trits(&[0]);
         build_with_mode(
-            service, method, payload, aux, aead_tag, aead_on, compress, &mode,
+            service, method, payload, aux, aead_tag, aead_on, compress, 0,
         )
     }
 
@@ -173,7 +172,7 @@ pub mod envelope {
         aead_tag: Option<&[u8]>,
         aead_on: bool,
         compress: bool,
-        mode_bytes: &[u8],
+        mode_trit: u8,
     ) -> Vec<u8> {
         let mut out: Vec<u8> = Vec::new();
         out.extend(len_prefix(&MAGIC_B2));
@@ -181,8 +180,6 @@ pub mod envelope {
         let ver = pack_trits(&[1]);
         out.extend(len_prefix(&ver));
         out.extend(ver);
-        out.extend(len_prefix(mode_bytes));
-        out.extend(mode_bytes);
         let mode = pack_trits(&[mode_trit]);
         out.extend(len_prefix(&mode));
         out.extend(mode);
@@ -1012,16 +1009,6 @@ pub mod tritrpc_v1_tests {
                 assert_eq!(tag.len(), 16, "tag size mismatch {}", name);
                 let aad_start = decoded.tag_start.expect("tag start missing");
                 let aad = &frame[..aad_start];
-                let aead = XChaCha20Poly1305::new(&key.into());
-                let ct = aead
-                    .encrypt(
-                        nonce.as_slice().into(),
-                        chacha20poly1305::aead::Payload { msg: b"", aad },
-                    )
-                    .unwrap();
-                let computed = &ct[ct.len() - 16..];
-                let matches: bool = computed.ct_eq(tag.as_slice()).into();
-                assert!(matches, "tag mismatch {}", name);
                 let mut mac = <Blake2bMac128 as KeyInit>::new_from_slice(&key).expect("valid key");
                 mac.update(aad);
                 let computed = mac.finalize().into_bytes();
@@ -1103,7 +1090,6 @@ pub mod avroenc_json {
         let ok = v["ok"].as_bool().unwrap_or(true);
         let err = v.get("err").and_then(|e| e.as_str());
         let empty_arr: Vec<serde_json::Value> = vec![];
-        let empty_arr = vec![];
         let vertices = v["vertices"]
             .as_array()
             .unwrap_or(&empty_arr)
@@ -1116,7 +1102,6 @@ pub mod avroenc_json {
             })
             .collect::<Vec<_>>();
         let empty_arr2: Vec<serde_json::Value> = vec![];
-        let empty_arr2 = vec![];
         let edges = v["edges"]
             .as_array()
             .unwrap_or(&empty_arr2)

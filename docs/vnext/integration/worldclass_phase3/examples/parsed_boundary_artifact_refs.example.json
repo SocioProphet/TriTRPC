@@ -1,0 +1,13 @@
+{
+  "actions": [
+    "env-cap",
+    "copy-to-artifact",
+    "artifact-commit"
+  ],
+  "bundle_refs": [
+    "acb-001"
+  ],
+  "semaphore_ids": [],
+  "sequence_id": "seq-artifact-commit-001",
+  "witness_refs": []
+}

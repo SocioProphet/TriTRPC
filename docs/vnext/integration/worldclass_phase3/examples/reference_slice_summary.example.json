@@ -1,0 +1,79 @@
+{
+  "benchmark": {
+    "description": "Shared-context multi-agent flow with typed beacons, semaphore grant, barrier release, and artifact commit",
+    "runs": [
+      {
+        "metrics": {
+          "artifact_commit_events": 1,
+          "barrier_events": 1,
+          "beacon_count": 3,
+          "mean_bytes_per_control_frame": 7,
+          "mean_bytes_per_data_frame": 96,
+          "semantic_reuse_rate": 0.83,
+          "semaphore_events": 2
+        },
+        "transport": "TriTRPC"
+      },
+      {
+        "metrics": {
+          "artifact_commit_events": 1,
+          "barrier_events": 0,
+          "beacon_count": 0,
+          "mean_bytes_per_control_frame": 21,
+          "mean_bytes_per_data_frame": 110,
+          "semantic_reuse_rate": 0.18,
+          "semaphore_events": 0
+        },
+        "transport": "gRPC+Proto"
+      }
+    ],
+    "scenario_id": "agentic-coordination-v1",
+    "summary": {
+      "metric_keys": [
+        "artifact_commit_events",
+        "barrier_events",
+        "beacon_count",
+        "mean_bytes_per_control_frame",
+        "mean_bytes_per_data_frame",
+        "semantic_reuse_rate",
+        "semaphore_events"
+      ],
+      "transport_a": "TriTRPC",
+      "transport_b": "gRPC+Proto"
+    }
+  },
+  "boundary": {
+    "refs": {
+      "actions": [
+        "env-cap",
+        "copy-to-artifact",
+        "artifact-commit"
+      ],
+      "bundle_refs": [
+        "acb-001"
+      ],
+      "semaphore_ids": [],
+      "witness_refs": []
+    },
+    "sequence_id": "seq-artifact-commit-001"
+  },
+  "semantic": {
+    "refs": {
+      "bundle_h": [
+        "bh:commit-ce1002-v1",
+        "bh:intent-ce1002-v1"
+      ],
+      "context_h": [
+        "ch:ce1002-prep-window"
+      ],
+      "route_h": [
+        "rh:precursor-evidence-stream"
+      ],
+      "semantic_refs": [
+        "cell-kairos-ce-001",
+        "tcell-chrono-001"
+      ]
+    },
+    "sequence_id": "seq-semantic-beacon-001"
+  }
+}

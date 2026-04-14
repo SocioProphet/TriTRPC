@@ -1,0 +1,19 @@
+{
+  "actions": [
+    "request",
+    "grant",
+    "barrier",
+    "beacon-commit"
+  ],
+  "bundle_refs": [
+    "bh:freeze-review-v1"
+  ],
+  "semaphore_ids": [
+    "sem:review-freeze"
+  ],
+  "sequence_id": "seq-semaphore-barrier-001",
+  "witness_refs": [
+    "review:ops-steward-01",
+    "review:secops-steward-01"
+  ]
+}

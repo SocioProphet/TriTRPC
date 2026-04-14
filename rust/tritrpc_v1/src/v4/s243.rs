@@ -35,8 +35,7 @@ pub fn decode_s243(data: &[u8], offset: usize) -> Result<(u64, usize), V4Error> 
             "invalid leading byte for canonical S243: {prefix}"
         )));
     }
-    let (inner, new_offset) =
-        tleb3::decode_len(data, offset + 1).map_err(|e| V4Error::new(e))?;
+    let (inner, new_offset) = tleb3::decode_len(data, offset + 1).map_err(|e| V4Error::new(e))?;
     Ok((243 + inner, new_offset))
 }
 

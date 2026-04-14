@@ -19,5 +19,7 @@ __MACOSX/
 ._*
 *.egg-info/
 .pytest_cache/
+
 # Rust build artifacts
 rust/tritrpc_v1/target/
+go/tritrpcv1/vendor/

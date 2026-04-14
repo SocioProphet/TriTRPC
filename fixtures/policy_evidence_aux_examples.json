@@ -1,0 +1,52 @@
+[
+  {
+    "name": "minimal-policy-evidence-aux",
+    "aux_object": {
+      "grant_ref": "grant://runtime/2026/04/04/g-001",
+      "policy_decision_ref": "decision://runtime/2026/04/04/pd-001",
+      "profile": "tritrpc.policy_evidence_aux.v1",
+      "runtime_evidence_refs": {
+        "event_ir_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "event_ir_ref": "eir://semantic/session-001",
+        "hdt_decision_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "hdt_decision_ref": "hdt://decision/session-001",
+        "semantic_proof_hash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+        "semantic_proof_ref": "proof://semantic/session-001"
+      }
+    },
+    "canonical_aux_json": "{\"grant_ref\":\"grant://runtime/2026/04/04/g-001\",\"policy_decision_ref\":\"decision://runtime/2026/04/04/pd-001\",\"profile\":\"tritrpc.policy_evidence_aux.v1\",\"runtime_evidence_refs\":{\"event_ir_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"event_ir_ref\":\"eir://semantic/session-001\",\"hdt_decision_hash\":\"sha256:2222222222222222222222222222222222222222222222222222222222222222\",\"hdt_decision_ref\":\"hdt://decision/session-001\",\"semantic_proof_hash\":\"sha256:3333333333333333333333333333333333333333333333333333333333333333\",\"semantic_proof_ref\":\"proof://semantic/session-001\"}}",
+    "notes": [
+      "Minimal carriage example.",
+      "Ports may still treat AUX as opaque bytes."
+    ]
+  },
+  {
+    "name": "full-policy-evidence-aux-with-attestation",
+    "aux_object": {
+      "attestation_bundle_ref": "attest://runtime/2026/04/04/ab-001",
+      "grant_ref": "grant://runtime/2026/04/04/g-002",
+      "notes": [
+        "Requires semantic proof and export readiness.",
+        "Bound to attested runtime."
+      ],
+      "policy_decision_ref": "decision://runtime/2026/04/04/pd-002",
+      "policy_hash": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "profile": "tritrpc.policy_evidence_aux.v1",
+      "runtime_evidence_refs": {
+        "attestation_bundle_hash": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "attestation_bundle_ref": "attest://runtime/2026/04/04/ab-001",
+        "event_ir_hash": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "event_ir_ref": "eir://semantic/session-002",
+        "hdt_decision_hash": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+        "hdt_decision_ref": "hdt://decision/session-002",
+        "semantic_proof_hash": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+        "semantic_proof_ref": "proof://semantic/session-002"
+      }
+    },
+    "canonical_aux_json": "{\"attestation_bundle_ref\":\"attest://runtime/2026/04/04/ab-001\",\"grant_ref\":\"grant://runtime/2026/04/04/g-002\",\"notes\":[\"Requires semantic proof and export readiness.\",\"Bound to attested runtime.\"],\"policy_decision_ref\":\"decision://runtime/2026/04/04/pd-002\",\"policy_hash\":\"sha256:4444444444444444444444444444444444444444444444444444444444444444\",\"profile\":\"tritrpc.policy_evidence_aux.v1\",\"runtime_evidence_refs\":{\"attestation_bundle_hash\":\"sha256:5555555555555555555555555555555555555555555555555555555555555555\",\"attestation_bundle_ref\":\"attest://runtime/2026/04/04/ab-001\",\"event_ir_hash\":\"sha256:6666666666666666666666666666666666666666666666666666666666666666\",\"event_ir_ref\":\"eir://semantic/session-002\",\"hdt_decision_hash\":\"sha256:7777777777777777777777777777777777777777777777777777777777777777\",\"hdt_decision_ref\":\"hdt://decision/session-002\",\"semantic_proof_hash\":\"sha256:8888888888888888888888888888888888888888888888888888888888888888\",\"semantic_proof_ref\":\"proof://semantic/session-002\"}}",
+    "notes": [
+      "Full carriage example with runtime attestation linkage.",
+      "Receipt-grade hashing of the AUX JSON itself follows the repo JCS+BLAKE3 rule."
+    ]
+  }
+]

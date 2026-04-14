@@ -5,10 +5,16 @@ func PBDecodeLen(buf []byte, off int) (int, int) {
 	trits := []byte{}
 	start := off
 	for {
+		if off >= len(buf) {
+			panic("EOF in PBDecodeLen")
+		}
 		b := buf[off]
 		off++
 		var ts []byte
 		if b >= 243 && b <= 246 {
+			if off >= len(buf) {
+				panic("truncated tail marker in PBDecodeLen")
+			}
 			ts, _ = TritUnpack243([]byte{b, buf[off]})
 			off++
 		} else {

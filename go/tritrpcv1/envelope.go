@@ -30,6 +30,9 @@ func BuildEnvelope(service, method string, payload []byte, aux []byte, aeadTag [
 }
 
 func BuildEnvelopeWithMode(service, method string, payload []byte, aux []byte, aeadTag []byte, aeadOn bool, compress bool, modeTrit byte) []byte {
+	if modeTrit > 2 {
+		panic("modeTrit must be 0..=2")
+	}
 	out := make([]byte, 0)
 	out = append(out, lenPrefix(MAGIC_B2)...)
 	out = append(out, MAGIC_B2...)

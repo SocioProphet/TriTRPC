@@ -1,0 +1,10 @@
+proof-claims = {
+  "typ": "triproof+jwt",
+  "ver": "1",
+  "jti": tstr,
+  "iat": int,
+  "htm": tstr,
+  "htu": tstr,
+  "nonce": tstr,
+  "cap_hash": tstr,
+}

@@ -1,0 +1,21 @@
+{
+  "service": "ExecutionBridgeService",
+  "method": "ResolveOrderToBundle",
+  "contextId": "ctx:aokc:v0.1",
+  "schemaId": "schema:order-descriptor:v0.1",
+  "request": {
+    "orderId": "order:promotion:github:SocioProphet/agentplane/docs/system-space.md",
+    "descriptorId": "asset:github:SocioProphet/agentplane/docs/system-space.md",
+    "policyPackRef": "policy:knowledge/promotion/v1",
+    "maxRunSeconds": 900
+  },
+  "response": {
+    "bundleRef": "bundle:aokc:promotion:system-space",
+    "executorIntent": "lima-process",
+    "preservedRefs": {
+      "orderId": "order:promotion:github:SocioProphet/agentplane/docs/system-space.md",
+      "descriptorId": "asset:github:SocioProphet/agentplane/docs/system-space.md"
+    },
+    "status": "resolved"
+  }
+}

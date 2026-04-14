@@ -82,27 +82,21 @@ pub mod tleb3 {
         tritpack243::pack(&trits)
     }
 
-    pub fn decode_len(bytes: &[u8], offset: usize) -> Result<(u64, usize), String> {
-        let start = offset;
-        let mut off = offset;
+    pub fn decode_len(bytes: &[u8], start: usize) -> Result<(u64, usize), String> {
         let mut trits: Vec<u8> = Vec::new();
+        let mut offset = start;
         loop {
-            if off >= bytes.len() {
+            if offset >= bytes.len() {
                 return Err("EOF in TLEB3".into());
             }
-            let b = bytes[off];
-            off += 1;
-            let chunk = if (243..=246).contains(&b) {
-                if off >= bytes.len() {
-                    return Err("truncated tail marker".into());
-                }
-                let next = bytes[off];
-                off += 1;
-                super::tritpack243::unpack(&[b, next])?
-            } else {
-                super::tritpack243::unpack(&[b])?
-            };
-            trits.extend_from_slice(&chunk);
+            let b = bytes[offset];
+            let read_count = if b >= 243 && b <= 246 { 2 } else { 1 };
+            if offset + read_count > bytes.len() {
+                return Err("EOF in TLEB3".into());
+            }
+            let ts = super::tritpack243::unpack(&bytes[offset..offset + read_count])?;
+            offset += read_count;
+            trits.extend_from_slice(&ts);
             if trits.len() < 3 {
                 continue;
             }
@@ -968,12 +962,16 @@ pub mod avrodec {
 }
 
 pub mod tritrpc_v1_tests {
-    use super::{envelope, tritpack243};
-    use blake2::{digest::FixedOutput, digest::KeyInit as B2KeyInit, digest::Update, Blake2bMac};
+    use super::envelope;
+    use blake2::{
+        digest::{consts::U16, KeyInit, Mac},
+        Blake2bMac,
+    };
     use std::fs;
-    use subtle::ConstantTimeEq;
 
-    pub fn verify_file(fx: &str, _nonces_path: &str) -> String {
+    type Blake2bMac128 = Blake2bMac<U16>;
+
+    pub fn verify_file(fx: &str) -> String {
         let key = [0u8; 32];
         let pairs = read_pairs(fx);
         let mut ok = 0usize;
@@ -991,9 +989,9 @@ pub mod tritrpc_v1_tests {
                 "context id mismatch {}",
                 name
             );
-            let mode_trit = tritpack243::unpack(&decoded.mode)
+            let mode_trit = super::tritpack243::unpack(&decoded.mode)
                 .ok()
-                .and_then(|ts| ts.into_iter().next())
+                .and_then(|t| t.into_iter().next())
                 .unwrap_or(0);
             let repacked = envelope::build_with_mode(
                 &decoded.service,
@@ -1011,12 +1009,14 @@ pub mod tritrpc_v1_tests {
                 assert_eq!(tag.len(), 16, "tag size mismatch {}", name);
                 let aad_start = decoded.tag_start.expect("tag start missing");
                 let aad = &frame[..aad_start];
-                let mut h = Blake2bMac::<blake2::digest::typenum::U16>::new_from_slice(&key)
-                    .expect("blake2b init");
-                h.update(aad);
-                let computed = h.finalize_fixed();
+                let mut mac = <Blake2bMac128 as KeyInit>::new_from_slice(&key).expect("valid key");
+                mac.update(aad);
+                let computed = mac.finalize().into_bytes();
                 assert!(
-                    bool::from(computed.as_slice().ct_eq(tag.as_slice())),
+                    bool::from(<[u8] as subtle::ConstantTimeEq>::ct_eq(
+                        computed.as_slice(),
+                        tag.as_slice(),
+                    )),
                     "tag mismatch {}",
                     name
                 );
@@ -1089,7 +1089,7 @@ pub mod avroenc_json {
     pub fn enc_HGResponse_json(v: &Value) -> Vec<u8> {
         let ok = v["ok"].as_bool().unwrap_or(true);
         let err = v.get("err").and_then(|e| e.as_str());
-        let empty_arr: Vec<Value> = vec![];
+        let empty_arr: Vec<serde_json::Value> = vec![];
         let vertices = v["vertices"]
             .as_array()
             .unwrap_or(&empty_arr)
@@ -1101,7 +1101,7 @@ pub mod avroenc_json {
                 )
             })
             .collect::<Vec<_>>();
-        let empty_arr2: Vec<Value> = vec![];
+        let empty_arr2: Vec<serde_json::Value> = vec![];
         let edges = v["edges"]
             .as_array()
             .unwrap_or(&empty_arr2)
@@ -1220,3 +1220,5 @@ pub mod pathb_dec {
         ((vid, label), o4 + 1)
     }
 }
+
+pub mod v4;

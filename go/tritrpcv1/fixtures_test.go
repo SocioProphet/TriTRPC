@@ -1,14 +1,16 @@
 package tritrpcv1
 
 import (
-	"bufio"
 	"crypto/subtle"
 	"encoding/hex"
-	"golang.org/x/crypto/blake2b"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"bufio"
+
+	"golang.org/x/crypto/blake2b"
 )
 
 func fixturePath(name string) string {
@@ -37,28 +39,6 @@ func readPairs(t *testing.T, path string) [][2][]byte {
 	return out
 }
 
-func readNonces(t *testing.T, path string) map[string][]byte {
-	t.Helper()
-	f, err := os.Open(path)
-	if err != nil {
-		t.Fatalf("open nonce file %s: %v", path, err)
-	}
-	defer f.Close()
-	sc := bufio.NewScanner(f)
-	out := map[string][]byte{}
-	for sc.Scan() {
-		ln := sc.Text()
-		if ln == "" {
-			continue
-		}
-		parts := strings.SplitN(ln, " ", 2)
-		key := parts[0]
-		b, _ := hex.DecodeString(parts[1])
-		out[key] = b
-	}
-	return out
-}
-
 func splitFields(buf []byte) [][]byte {
 	fields := [][]byte{}
 	off := 0
@@ -82,16 +62,16 @@ func aeadBit(flags []byte) bool {
 }
 
 func TestFixturesAEADAndPayloads(t *testing.T) {
-	sets := [][2]string{
-		{"vectors_hex.txt", "vectors_hex.txt.nonces"},
-		{"vectors_hex_stream_avrochunk.txt", "vectors_hex_stream_avrochunk.txt.nonces"},
-		{"vectors_hex_unary_rich.txt", "vectors_hex_unary_rich.txt.nonces"},
-		{"vectors_hex_stream_avronested.txt", "vectors_hex_stream_avronested.txt.nonces"},
-		{"vectors_hex_pathB.txt", "vectors_hex_pathB.txt.nonces"},
+	sets := []string{
+		"vectors_hex.txt",
+		"vectors_hex_stream_avrochunk.txt",
+		"vectors_hex_unary_rich.txt",
+		"vectors_hex_stream_avronested.txt",
+		"vectors_hex_pathB.txt",
 	}
 	key := [32]byte{}
-	for _, s := range sets {
-		pairs := readPairs(t, fixturePath(s[0]))
+	for _, fx := range sets {
+		pairs := readPairs(t, fixturePath(fx))
 		for _, p := range pairs {
 			name := string(p[0])
 			frame := p[1]
@@ -109,12 +89,7 @@ func TestFixturesAEADAndPayloads(t *testing.T) {
 			if hex.EncodeToString(env.Context) != hex.EncodeToString(CONTEXT_ID_32) {
 				t.Fatalf("context id mismatch %s", name)
 			}
-			modeTrits, _ := TritUnpack243(env.Mode)
-			var modeTrit byte
-			if len(modeTrits) > 0 {
-				modeTrit = modeTrits[0]
-			}
-			repacked := BuildEnvelopeWithMode(env.Service, env.Method, env.Payload, env.Aux, env.Tag, env.AeadOn, env.Compress, modeTrit)
+			repacked := BuildEnvelopeWithMode(env.Service, env.Method, env.Payload, env.Aux, env.Tag, env.AeadOn, env.Compress, env.Mode)
 			if hex.EncodeToString(repacked) != hex.EncodeToString(frame) {
 				t.Fatalf("repack mismatch %s", name)
 			}
@@ -128,9 +103,12 @@ func TestFixturesAEADAndPayloads(t *testing.T) {
 				if len(tag) != 16 {
 					t.Fatalf("tag size mismatch %s", name)
 				}
-				h, _ := blake2b.New(16, key[:])
-				h.Write(aad)
-				computed := h.Sum(nil)
+				mac, err := blake2b.New(16, key[:])
+				if err != nil {
+					t.Fatalf("blake2b init: %v", err)
+				}
+				mac.Write(aad)
+				computed := mac.Sum(nil)
 				if subtle.ConstantTimeCompare(computed, tag) != 1 {
 					t.Fatalf("tag mismatch for %s", name)
 				}

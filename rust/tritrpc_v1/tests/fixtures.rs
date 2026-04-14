@@ -82,6 +82,7 @@ fn verify_all_frames_and_payloads() {
                 decoded.tag.as_deref(),
                 decoded.aead_on,
                 decoded.compress,
+                &decoded.mode,
                 mode_trit,
             );
             assert_eq!(repacked, frame, "repack mismatch {}", name);

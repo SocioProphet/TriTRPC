@@ -27,10 +27,22 @@ func TLEB3EncodeLen(n uint64) []byte {
 
 func TLEB3DecodeLen(buf []byte, offset int) (val uint64, newOff int, err error) {
 	trits := []byte{}
-	off := offset
+	pos := offset
 	for {
-		if off >= len(buf) {
+		if pos >= len(buf) {
 			return 0, 0, errors.New("EOF in TLEB3")
+		}
+		b := buf[pos]
+		pos++
+		var ts []byte
+		if b >= 243 && b <= 246 {
+			if pos >= len(buf) {
+				return 0, 0, errors.New("truncated TLEB3 tail marker")
+			}
+			ts, _ = TritUnpack243([]byte{b, buf[pos]})
+			pos++
+		} else {
+			ts, _ = TritUnpack243([]byte{b})
 		}
 		b := buf[off]
 		readCount := 1

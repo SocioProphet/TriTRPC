@@ -11,8 +11,8 @@ GTNF is not presented here as a replacement for TriTRPC. It is captured as a gov
 - `governed_triparty_white_paper.md` — current canonical white paper.
 - `asi_snet_integration_manual.md` — implementation-facing ASI / SingularityNET integration manual.
 - `gtnf_one_page_external_overview_math.md` — short math-forward external overview.
-- `validation/` — validation substrate and runtime protocol.
-- `ibc/` — first Cosmos / IBC Classic build target and runtime handoff subset.
+- `validation/` — validation substrate, runtime protocol, reference model, adversarial fixtures, and scorecards.
+- `ibc/` — first Cosmos / IBC Classic build spec, version lock, implementation skeleton, and runtime handoff materials.
 
 ## Current status
 

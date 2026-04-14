@@ -1,0 +1,37 @@
+{
+  "trace_id": "trace_sp_replay_001",
+  "method": "replay.v1.Cairn/Materialize",
+  "request": {
+    "semantic_request_id": "srid:tenant_acme:case_1001:replay:001",
+    "cairn_ref": "cairn://case_1001/cairn_2",
+    "proof_refs": [
+      {
+        "proof_id": "proof:wv1:incl:controls021",
+        "proof_type": "inclusion",
+        "proof_version": "1"
+      }
+    ],
+    "transport": {
+      "route_id": "route://replay/materialize@v1",
+      "peer_id": "node://tenant-a-01",
+      "envelope_hash": "sha256:spreplay001",
+      "request_bytes": 1536
+    }
+  },
+  "response": {
+    "status": "ok",
+    "materialize_result": {
+      "cairn_ref": "cairn://case_1001/cairn_2",
+      "proof_ids_attached": [
+        "proof:wv1:incl:controls021"
+      ],
+      "replay_boundary_hash": "sha256:replayboundary001",
+      "failure_code": null
+    },
+    "transport": {
+      "latency_ms": 96,
+      "retry_count": 1,
+      "retry_reason": "deadline_exceeded"
+    }
+  }
+}

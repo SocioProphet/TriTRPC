@@ -82,26 +82,20 @@ pub mod tleb3 {
         tritpack243::pack(&trits)
     }
 
-    pub fn decode_len(bytes: &[u8], offset: usize) -> Result<(u64, usize), String> {
+    pub fn decode_len(bytes: &[u8], start: usize) -> Result<(u64, usize), String> {
         let mut trits: Vec<u8> = Vec::new();
-        let mut pos = offset;
+        let mut offset = start;
         loop {
-            if pos >= bytes.len() {
+            if offset >= bytes.len() {
                 return Err("EOF in TLEB3".into());
             }
-            let b = bytes[pos];
-            pos += 1;
-            // Tail-marker bytes (0xF3..=0xF6) span two bytes; pass both to unpack.
-            let ts = if (0xF3..=0xF6).contains(&b) {
-                if pos >= bytes.len() {
-                    return Err("truncated TLEB3 tail marker".into());
-                }
-                let b2 = bytes[pos];
-                pos += 1;
-                super::tritpack243::unpack(&[b, b2])?
-            } else {
-                super::tritpack243::unpack(&[b])?
-            };
+            let b = bytes[offset];
+            let read_count = if b >= 243 && b <= 246 { 2 } else { 1 };
+            if offset + read_count > bytes.len() {
+                return Err("EOF in TLEB3".into());
+            }
+            let ts = super::tritpack243::unpack(&bytes[offset..offset + read_count])?;
+            offset += read_count;
             trits.extend_from_slice(&ts);
             if trits.len() < 3 {
                 continue;
@@ -120,8 +114,8 @@ pub mod tleb3 {
                 }
             }
             if used_trits > 0 {
-                let new_off = offset + super::tritpack243::pack(&trits[..used_trits]).len();
-                return Ok((val, new_off));
+                let used_bytes = super::tritpack243::pack(&trits[..used_trits]).len();
+                return Ok((val, start + used_bytes));
             }
         }
     }
@@ -165,13 +159,28 @@ pub mod envelope {
         aead_on: bool,
         compress: bool,
     ) -> Vec<u8> {
+        build_with_mode(
+            service, method, payload, aux, aead_tag, aead_on, compress, 0,
+        )
+    }
+
+    pub fn build_with_mode(
+        service: &str,
+        method: &str,
+        payload: &[u8],
+        aux: Option<&[u8]>,
+        aead_tag: Option<&[u8]>,
+        aead_on: bool,
+        compress: bool,
+        mode_trit: u8,
+    ) -> Vec<u8> {
         let mut out: Vec<u8> = Vec::new();
         out.extend(len_prefix(&MAGIC_B2));
         out.extend(MAGIC_B2);
         let ver = pack_trits(&[1]);
         out.extend(len_prefix(&ver));
         out.extend(ver);
-        let mode = pack_trits(&[0]);
+        let mode = pack_trits(&[mode_trit]);
         out.extend(len_prefix(&mode));
         out.extend(mode);
         let flags = pack_trits(&super::envelope::flags_trits(aead_on, compress));
@@ -954,16 +963,17 @@ pub mod avrodec {
 
 pub mod tritrpc_v1_tests {
     use super::envelope;
-    use chacha20poly1305::aead::{Aead, KeyInit};
-    use chacha20poly1305::XChaCha20Poly1305;
-    use std::collections::HashMap;
+    use blake2::{
+        digest::{consts::U16, KeyInit, Mac},
+        Blake2bMac,
+    };
     use std::fs;
-    use subtle::ConstantTimeEq;
 
-    pub fn verify_file(fx: &str, nonces_path: &str) -> String {
+    type Blake2bMac128 = Blake2bMac<U16>;
+
+    pub fn verify_file(fx: &str) -> String {
         let key = [0u8; 32];
         let pairs = read_pairs(fx);
-        let nonces = read_nonces(nonces_path);
         let mut ok = 0usize;
         for (name, frame) in pairs {
             let decoded = envelope::decode(&frame).expect("decode envelope");
@@ -979,7 +989,11 @@ pub mod tritrpc_v1_tests {
                 "context id mismatch {}",
                 name
             );
-            let repacked = envelope::build(
+            let mode_trit = super::tritpack243::unpack(&decoded.mode)
+                .ok()
+                .and_then(|t| t.into_iter().next())
+                .unwrap_or(0);
+            let repacked = envelope::build_with_mode(
                 &decoded.service,
                 &decoded.method,
                 &decoded.payload,
@@ -987,26 +1001,22 @@ pub mod tritrpc_v1_tests {
                 decoded.tag.as_deref(),
                 decoded.aead_on,
                 decoded.compress,
+                mode_trit,
             );
             assert_eq!(repacked, frame, "repack mismatch {}", name);
             if decoded.aead_on {
                 let tag = decoded.tag.as_ref().expect("missing tag");
-                let nonce = nonces.get(&name).expect("nonce missing");
-                assert_eq!(nonce.len(), 24, "nonce size mismatch {}", name);
                 assert_eq!(tag.len(), 16, "tag size mismatch {}", name);
                 let aad_start = decoded.tag_start.expect("tag start missing");
                 let aad = &frame[..aad_start];
-                let aead = XChaCha20Poly1305::new(&key.into());
-                let ct = aead
-                    .encrypt(
-                        nonce.as_slice().into(),
-                        chacha20poly1305::aead::Payload { msg: b"", aad },
-                    )
-                    .unwrap();
-                let computed = &ct[ct.len() - 16..];
-                let matches: bool = computed.ct_eq(tag.as_slice()).into();
+                let mut mac = <Blake2bMac128 as KeyInit>::new_from_slice(&key).expect("valid key");
+                mac.update(aad);
+                let computed = mac.finalize().into_bytes();
                 assert!(
-                    matches,
+                    bool::from(<[u8] as subtle::ConstantTimeEq>::ct_eq(
+                        computed.as_slice(),
+                        tag.as_slice(),
+                    )),
                     "tag mismatch {}",
                     name
                 );
@@ -1026,18 +1036,6 @@ pub mod tritrpc_v1_tests {
                 let hexs = it.next().unwrap();
                 let bytes = hex::decode(hexs).unwrap();
                 (name, bytes)
-            })
-            .collect()
-    }
-    fn read_nonces(path: &str) -> HashMap<String, Vec<u8>> {
-        let txt = fs::read_to_string(path).expect("read nonces");
-        txt.lines()
-            .filter(|l| !l.is_empty())
-            .map(|l| {
-                let mut it = l.splitn(2, ' ');
-                let name = it.next().unwrap().to_string();
-                let hexs = it.next().unwrap();
-                (name, hex::decode(hexs).unwrap())
             })
             .collect()
     }
@@ -1091,7 +1089,7 @@ pub mod avroenc_json {
     pub fn enc_HGResponse_json(v: &Value) -> Vec<u8> {
         let ok = v["ok"].as_bool().unwrap_or(true);
         let err = v.get("err").and_then(|e| e.as_str());
-        let empty_arr = vec![];
+        let empty_arr: Vec<serde_json::Value> = vec![];
         let vertices = v["vertices"]
             .as_array()
             .unwrap_or(&empty_arr)
@@ -1103,7 +1101,7 @@ pub mod avroenc_json {
                 )
             })
             .collect::<Vec<_>>();
-        let empty_arr2 = vec![];
+        let empty_arr2: Vec<serde_json::Value> = vec![];
         let edges = v["edges"]
             .as_array()
             .unwrap_or(&empty_arr2)

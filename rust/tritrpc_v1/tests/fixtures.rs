@@ -7,10 +7,6 @@ use tritrpc_v1::{avrodec, envelope, tleb3, tritpack243};
 
 type Blake2bMac128 = Blake2bMac<U16>;
 
-fn fixture_path(name: &str) -> String {
-    format!("{}/../../fixtures/{}", env!("CARGO_MANIFEST_DIR"), name)
-}
-
 fn read_pairs(path: &str) -> Vec<(String, Vec<u8>)> {
     let txt = fs::read_to_string(path).expect("read fixtures");
     txt.lines()
@@ -46,16 +42,17 @@ fn aead_bit(flags_bytes: &[u8]) -> bool {
 
 #[test]
 fn verify_all_frames_and_payloads() {
+    let root = concat!(env!("CARGO_MANIFEST_DIR"), "/../../fixtures");
     let sets = vec![
-        "vectors_hex.txt",
-        "vectors_hex_stream_avrochunk.txt",
-        "vectors_hex_unary_rich.txt",
-        "vectors_hex_stream_avronested.txt",
-        "vectors_hex_pathB.txt",
+        format!("{}/vectors_hex.txt", root),
+        format!("{}/vectors_hex_stream_avrochunk.txt", root),
+        format!("{}/vectors_hex_unary_rich.txt", root),
+        format!("{}/vectors_hex_stream_avronested.txt", root),
+        format!("{}/vectors_hex_pathB.txt", root),
     ];
     let key = [0u8; 32];
     for fx in sets {
-        let pairs = read_pairs(&fixture_path(fx));
+        let pairs = read_pairs(&fx);
         for (name, frame) in pairs {
             let fields = split_fields(&frame);
             assert!(fields.len() >= 9, "{}", name);

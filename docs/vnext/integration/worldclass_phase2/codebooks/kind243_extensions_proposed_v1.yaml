@@ -1,0 +1,27 @@
+version: kind243.extensions.proposed.v1
+description: >
+  Proposed additional KIND243 allocations for typed beacon, semaphore, and barrier coordination work.
+kinds:
+  - value: 9
+    key: beacon_load
+    purpose: queue pressure and service posture
+  - value: 10
+    key: beacon_semaphore
+    purpose: semaphore request, grant, revoke, and release signaling
+  - value: 11
+    key: beacon_epoch
+    purpose: semantic/policy/codebook epoch rollover and invalidation
+  - value: 12
+    key: beacon_novelty
+    purpose: novelty and contradiction regime shift signaling
+  - value: 13
+    key: barrier
+    purpose: explicit barrier or quorum synchronization
+  - value: 14
+    key: credit_grant
+    purpose: capacity or budget grant semantics
+  - value: 15
+    key: lease_revoke
+    purpose: preemptive lease revocation under governed policy
+notes: >
+  Values are intentionally staged as a proposed extension set rather than canonical allocations.

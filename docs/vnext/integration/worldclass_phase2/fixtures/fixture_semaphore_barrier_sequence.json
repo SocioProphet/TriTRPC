@@ -1,0 +1,31 @@
+{
+  "sequence_id": "seq-semaphore-barrier-001",
+  "events": [
+    {
+      "kind": "beacon-semaphore",
+      "semaphore_id": "sem:review-freeze",
+      "action": "request",
+      "permit_class": "exclusive"
+    },
+    {
+      "kind": "beacon-semaphore",
+      "semaphore_id": "sem:review-freeze",
+      "action": "grant",
+      "holder": "agent:review-coordinator"
+    },
+    {
+      "kind": "barrier",
+      "semaphore_id": "sem:review-freeze",
+      "quorum_size": 2,
+      "witness_refs": [
+        "review:secops-steward-01",
+        "review:ops-steward-01"
+      ]
+    },
+    {
+      "kind": "beacon-commit",
+      "bundle_h": "bh:freeze-review-v1",
+      "result": "released"
+    }
+  ]
+}

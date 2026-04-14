@@ -8,8 +8,12 @@ func PBDecodeLen(buf []byte, off int) (int, int) {
 	start := off
 	for {
 		b := buf[off]
-		off++
-		ts, _ := TritUnpack243([]byte{b})
+		readCount := 1
+		if b >= 243 && b <= 246 {
+			readCount = 2
+		}
+		ts, _ := TritUnpack243(buf[off : off+readCount])
+		off += readCount
 		trits = append(trits, ts...)
 		if len(trits) >= 3 {
 			v := uint64(0)

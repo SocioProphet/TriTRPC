@@ -33,8 +33,18 @@ func TLEB3DecodeLen(buf []byte, offset int) (val uint64, newOff int, err error) 
 			return 0, 0, errors.New("EOF in TLEB3")
 		}
 		b := buf[off]
-		off++
-		ts, _ := TritUnpack243([]byte{b})
+		readCount := 1
+		if b >= 243 && b <= 246 {
+			readCount = 2
+		}
+		if off+readCount > len(buf) {
+			return 0, 0, errors.New("EOF in TLEB3")
+		}
+		ts, e := TritUnpack243(buf[off : off+readCount])
+		if e != nil {
+			return 0, 0, e
+		}
+		off += readCount
 		trits = append(trits, ts...)
 		if len(trits) < 3 {
 			continue
@@ -57,7 +67,7 @@ func TLEB3DecodeLen(buf []byte, offset int) (val uint64, newOff int, err error) 
 		if used > 0 {
 			pack := TritPack243(trits[:used])
 			usedBytes := len(pack)
-			return v, offset + usedBytes - 1 + (off - offset), nil
+			return v, offset + usedBytes, nil
 		}
 	}
 }

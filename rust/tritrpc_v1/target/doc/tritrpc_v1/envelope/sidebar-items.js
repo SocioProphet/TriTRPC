@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["CONTEXT_ID_32","SCHEMA_ID_32"],"fn":["build","decode","envelope_with_tag","flags_trits"],"struct":["DecodedEnvelope"]};

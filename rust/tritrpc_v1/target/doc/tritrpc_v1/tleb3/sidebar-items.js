@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["decode_len","encode_len"]};

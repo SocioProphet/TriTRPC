@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["dec_len","dec_string","dec_union_index","dec_vertex"]};

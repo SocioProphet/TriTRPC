@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["avrodec","avroenc","avroenc_json","envelope","pathb","pathb_dec","tleb3","tritpack243","tritrpc_v1_tests"]};

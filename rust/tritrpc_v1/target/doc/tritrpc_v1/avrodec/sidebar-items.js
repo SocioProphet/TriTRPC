@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["dec_array_strings","dec_bool","dec_bytes","dec_hg_request","dec_hg_response","dec_hyperedge","dec_int","dec_long","dec_map_strings","dec_string","dec_union_index","dec_varint","dec_vertex","enc_hg_request","enc_hg_response"],"struct":["HGRequest","HGResponse","Hyperedge","Vertex"]};

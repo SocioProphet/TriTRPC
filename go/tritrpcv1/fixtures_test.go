@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"crypto/subtle"
 	"encoding/hex"
-	"golang.org/x/crypto/chacha20poly1305"
+	"golang.org/x/crypto/blake2b"
 	"os"
 	"path/filepath"
 	"strings"
@@ -92,7 +92,6 @@ func TestFixturesAEADAndPayloads(t *testing.T) {
 	key := [32]byte{}
 	for _, s := range sets {
 		pairs := readPairs(t, fixturePath(s[0]))
-		nonces := readNonces(t, fixturePath(s[1]))
 		for _, p := range pairs {
 			name := string(p[0])
 			frame := p[1]
@@ -110,7 +109,12 @@ func TestFixturesAEADAndPayloads(t *testing.T) {
 			if hex.EncodeToString(env.Context) != hex.EncodeToString(CONTEXT_ID_32) {
 				t.Fatalf("context id mismatch %s", name)
 			}
-			repacked := BuildEnvelope(env.Service, env.Method, env.Payload, env.Aux, env.Tag, env.AeadOn, env.Compress)
+			modeTrits, _ := TritUnpack243(env.Mode)
+			var modeTrit byte
+			if len(modeTrits) > 0 {
+				modeTrit = modeTrits[0]
+			}
+			repacked := BuildEnvelopeWithMode(env.Service, env.Method, env.Payload, env.Aux, env.Tag, env.AeadOn, env.Compress, modeTrit)
 			if hex.EncodeToString(repacked) != hex.EncodeToString(frame) {
 				t.Fatalf("repack mismatch %s", name)
 			}
@@ -121,21 +125,13 @@ func TestFixturesAEADAndPayloads(t *testing.T) {
 					t.Fatalf("aad error %s: %v", name, err)
 				}
 				tag := env.Tag
-				n := nonces[name]
-				if len(n) != 24 {
-					t.Fatalf("nonce size mismatch %s", name)
-				}
 				if len(tag) != 16 {
 					t.Fatalf("tag size mismatch %s", name)
 				}
-				a, _ := chacha20poly1305.NewX(key[:])
-				strict := os.Getenv("STRICT_AEAD") == "1"
-				ct := a.Seal(nil, n, []byte{}, aad)
-				computed := ct[len(ct)-16:]
+				h, _ := blake2b.New(16, key[:])
+				h.Write(aad)
+				computed := h.Sum(nil)
 				if subtle.ConstantTimeCompare(computed, tag) != 1 {
-					if strict {
-						t.Fatalf("strict AEAD tag mismatch for %s", name)
-					}
 					t.Fatalf("tag mismatch for %s", name)
 				}
 			}

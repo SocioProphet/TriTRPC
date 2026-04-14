@@ -1,0 +1,35 @@
+name: pr27 conflict cleanup
+
+on:
+  push:
+    branches:
+      - hotfix/pr27-conflict-cleanup-20260414
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply-cleanup:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: hotfix/pr27-conflict-cleanup-20260414
+
+      - name: Apply vetted file restores
+        run: bash tools/apply_pr27_conflict_cleanup.sh
+
+      - name: Commit and push if files changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet; then
+            git add go/tritrpcv1/fixtures_test.go go/tritrpcv1/pathb_dec.go go/tritrpcv1/tleb3.go rust/tritrpc_v1/src/lib.rs rust/tritrpc_v1/tests/fixtures.rs
+            git commit -m "fix(tritrpc): restore coherent files after PR #27 conflict merge"
+            git push
+          else
+            echo "No restore changes detected"
+          fi

@@ -1,9 +1,11 @@
-use chacha20poly1305::aead::{Aead, KeyInit};
-use chacha20poly1305::XChaCha20Poly1305;
-use std::collections::HashMap;
+use blake2::{
+    digest::{consts::U16, KeyInit, Mac},
+    Blake2bMac,
+};
 use std::fs;
-use subtle::ConstantTimeEq;
-use tritrpc_v1::{avrodec, avroenc, envelope, tleb3, tritpack243};
+use tritrpc_v1::{avrodec, envelope, tleb3, tritpack243};
+
+type Blake2bMac128 = Blake2bMac<U16>;
 
 fn fixture_path(name: &str) -> String {
     format!("{}/../../fixtures/{}", env!("CARGO_MANIFEST_DIR"), name)
@@ -23,20 +25,7 @@ fn read_pairs(path: &str) -> Vec<(String, Vec<u8>)> {
         .collect()
 }
 
-fn read_nonces(path: &str) -> HashMap<String, Vec<u8>> {
-    let txt = fs::read_to_string(path).expect("read nonces");
-    txt.lines()
-        .filter(|l| !l.is_empty())
-        .map(|l| {
-            let mut it = l.splitn(2, ' ');
-            let name = it.next().unwrap().to_string();
-            let hexs = it.next().unwrap();
-            (name, hex::decode(hexs).unwrap())
-        })
-        .collect()
-}
-
-fn split_fields(mut buf: &[u8]) -> Vec<Vec<u8>> {
+fn split_fields(buf: &[u8]) -> Vec<Vec<u8>> {
     let mut off = 0usize;
     let mut fields: Vec<Vec<u8>> = Vec::new();
     while off < buf.len() {
@@ -58,25 +47,15 @@ fn aead_bit(flags_bytes: &[u8]) -> bool {
 #[test]
 fn verify_all_frames_and_payloads() {
     let sets = vec![
-        ("vectors_hex.txt", "vectors_hex.txt.nonces"),
-        (
-            "vectors_hex_stream_avrochunk.txt",
-            "vectors_hex_stream_avrochunk.txt.nonces",
-        ),
-        (
-            "vectors_hex_unary_rich.txt",
-            "vectors_hex_unary_rich.txt.nonces",
-        ),
-        (
-            "vectors_hex_stream_avronested.txt",
-            "vectors_hex_stream_avronested.txt.nonces",
-        ),
-        ("vectors_hex_pathB.txt", "vectors_hex_pathB.txt.nonces"),
+        "vectors_hex.txt",
+        "vectors_hex_stream_avrochunk.txt",
+        "vectors_hex_unary_rich.txt",
+        "vectors_hex_stream_avronested.txt",
+        "vectors_hex_pathB.txt",
     ];
     let key = [0u8; 32];
-    for (fx, nx) in sets {
+    for fx in sets {
         let pairs = read_pairs(&fixture_path(fx));
-        let nonces = read_nonces(&fixture_path(nx));
         for (name, frame) in pairs {
             let fields = split_fields(&frame);
             assert!(fields.len() >= 9, "{}", name);
@@ -94,7 +73,11 @@ fn verify_all_frames_and_payloads() {
                 name
             );
 
-            let repacked = envelope::build(
+            let mode_trit = tritpack243::unpack(&decoded.mode)
+                .ok()
+                .and_then(|t| t.into_iter().next())
+                .unwrap_or(0);
+            let repacked = envelope::build_with_mode(
                 &decoded.service,
                 &decoded.method,
                 &decoded.payload,
@@ -102,6 +85,7 @@ fn verify_all_frames_and_payloads() {
                 decoded.tag.as_deref(),
                 decoded.aead_on,
                 decoded.compress,
+                mode_trit,
             );
             assert_eq!(repacked, frame, "repack mismatch {}", name);
 
@@ -110,24 +94,17 @@ fn verify_all_frames_and_payloads() {
             if has_aead {
                 let tag = decoded.tag.as_ref().expect("missing tag");
                 assert_eq!(tag.len(), 16, "tag size mismatch {}", name);
-                let nonce = nonces.get(&name).expect("nonce missing");
-                assert_eq!(nonce.len(), 24, "nonce size mismatch {}", name);
                 let aad_start = decoded.tag_start.expect("tag start missing");
                 let aad = &frame[..aad_start];
-                let strict = std::env::var("STRICT_AEAD").ok().as_deref() == Some("1");
-                let aead = XChaCha20Poly1305::new(&key.into());
-                let ct = aead
-                    .encrypt(
-                        nonce.as_slice().into(),
-                        chacha20poly1305::aead::Payload { msg: b"", aad },
-                    )
-                    .unwrap();
-                let computed = &ct[ct.len() - 16..];
-                let matches: bool = computed.ct_eq(tag.as_slice()).into();
-                assert!(matches, "tag mismatch for {}", name);
-                if strict {
-                    assert!(matches, "strict tag mismatch for {}", name);
-                }
+                let mut mac = <Blake2bMac128 as KeyInit>::new_from_slice(&key).expect("valid key");
+                mac.update(aad);
+                let computed = mac.finalize().into_bytes();
+                assert_eq!(
+                    computed.as_slice(),
+                    tag.as_slice(),
+                    "tag mismatch for {}",
+                    name
+                );
             }
 
             if decoded.method.ends_with(".REQ") {

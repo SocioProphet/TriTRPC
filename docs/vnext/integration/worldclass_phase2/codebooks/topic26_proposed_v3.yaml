@@ -1,0 +1,60 @@
+version: topic26.proposed.v3
+description: >
+  Proposed evolution of topic23/topic25 for unified-v4 review, adding first-class temporal and boundary/artifact lanes
+  while keeping environment/toolchain separate.
+topics:
+  - key: idn
+    name: identity
+  - key: rte
+    name: routing
+  - key: pol
+    name: policy
+  - key: trs
+    name: trust
+  - key: rsk
+    name: risk
+  - key: asr
+    name: assurance
+  - key: nov
+    name: novelty
+  - key: cmp
+    name: competence
+  - key: cap
+    name: capability
+  - key: prv
+    name: provenance
+  - key: sch
+    name: schema
+  - key: wrd
+    name: world_model
+  - key: wrk
+    name: workflow
+  - key: lrn
+    name: learning
+  - key: mem
+    name: memory
+  - key: ret
+    name: retrieval
+  - key: pln
+    name: planning
+  - key: act
+    name: actuation
+  - key: inc
+    name: incident
+  - key: cau
+    name: causality
+  - key: sem
+    name: semantics
+  - key: gov
+    name: governance
+  - key: tmp
+    name: temporal
+  - key: env
+    name: environment_toolchain
+  - key: bnd
+    name: boundary_artifact
+  - key: rev
+    name: review_coordination
+notes: >
+  This draft is intentionally staged for unified-v4 review. The main structural question is whether review_coordination
+  deserves its own topic or should remain encoded primarily via State243 and semaphore/barrier control objects.

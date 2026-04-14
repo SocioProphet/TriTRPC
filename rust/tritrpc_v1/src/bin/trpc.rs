@@ -1,7 +1,7 @@
 use std::env;
 use std::fs;
 use std::process::exit;
-use tritrpc_v1::{avroenc, envelope};
+use tritrpc_v1::{avroenc_json, envelope};
 
 fn hex_to_bytes(s: &str) -> Vec<u8> {
     let s = s.trim();
@@ -16,7 +16,7 @@ fn hex_to_bytes(s: &str) -> Vec<u8> {
 
 fn usage() {
     eprintln!("trpc pack --service S --method M --json path.json --nonce HEX --key HEX");
-    eprintln!("trpc verify --fixtures fixtures/vectors_hex_unary_rich.txt --nonces fixtures/vectors_hex_unary_rich.txt.nonces");
+    eprintln!("trpc verify --fixtures fixtures/vectors_hex_unary_rich.txt");
 }
 
 fn main() {
@@ -71,12 +71,12 @@ fn main() {
             let js = fs::read_to_string(&jsonp).expect("read json");
             let v: serde_json::Value = serde_json::from_str(&js).expect("json");
             let payload = if m.ends_with(".REQ") || m.ends_with(".Req") || m.ends_with(".Request") {
-                avroenc::enc_HGRequest(&v)
+                avroenc_json::enc_HGRequest(&v)
             } else if m.ends_with(".RSP") || m.ends_with(".Resp") || m.ends_with(".Response") {
-                avroenc::enc_HGResponse_json(&v)
+                avroenc_json::enc_HGResponse_json(&v)
             } else {
                 // raw: assume request
-                avroenc::enc_HGRequest(&v)
+                avroenc_json::enc_HGRequest(&v)
             };
             let keyb = hex_to_bytes(&key_hex);
             let nonceb = hex_to_bytes(&nonce_hex);
@@ -89,7 +89,6 @@ fn main() {
         }
         "verify" => {
             let mut fixtures = String::new();
-            let mut nonces = String::new();
             let mut i = 2;
             while i < args.len() {
                 match args[i].as_str() {
@@ -97,19 +96,15 @@ fn main() {
                         i += 1;
                         fixtures = args[i].clone();
                     }
-                    "--nonces" => {
-                        i += 1;
-                        nonces = args[i].clone();
-                    }
                     _ => {}
                 }
                 i += 1;
             }
-            if fixtures.is_empty() || nonces.is_empty() {
+            if fixtures.is_empty() {
                 usage();
                 exit(3);
             }
-            let out = tritrpc_v1_tests::verify_file(&fixtures, &nonces);
+            let out = tritrpc_v1::tritrpc_v1_tests::verify_file(&fixtures);
             println!("{}", out);
         }
         _ => {

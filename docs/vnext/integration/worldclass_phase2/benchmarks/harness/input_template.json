@@ -1,0 +1,22 @@
+{
+  "scenario_id": "agentic-coordination-v1",
+  "description": "Shared-context multi-agent flow with typed beacons, semaphore grant, barrier release, and artifact commit",
+  "runs": [
+    {
+      "transport": "TriTRPC",
+      "capture_ref": "capture:tritrpc-run-001"
+    },
+    {
+      "transport": "gRPC+Proto",
+      "capture_ref": "capture:grpc-proto-run-001"
+    },
+    {
+      "transport": "ThriftCompact",
+      "capture_ref": "capture:thrift-run-001"
+    },
+    {
+      "transport": "AvroRPC",
+      "capture_ref": "capture:avro-run-001"
+    }
+  ]
+}

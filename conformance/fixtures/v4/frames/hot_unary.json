@@ -1,0 +1,167 @@
+{
+  "fixture_type": "frame",
+  "feature_id": "V4-005",
+  "feature_name": "HotUnaryFrame",
+  "oracle_module": "tritrpc_requirements_impl.frames",
+  "oracle_symbol": "HotUnaryFrame/parse_frame/serialize_frame",
+  "cases": [
+    {
+      "id": "hot-unary-sample-vector-direct-handle",
+      "kind": "positive",
+      "semantic_input": {
+        "control": {
+          "profile": 0,
+          "lane": 0,
+          "evidence": 0,
+          "fallback": 0,
+          "routefmt": 1
+        },
+        "kind": 0,
+        "suite": 0,
+        "epoch": 1,
+        "route_handle": {
+          "type": "direct",
+          "value": 18
+        },
+        "payload_hex": "7b226f70223a226164642d766572746578222c226964223a2261227d",
+        "tag_hex": "4bcf6e1b01f174e964b9d22dfc5195aa"
+      },
+      "expected_frame_hex": "f32a01000001121c7b226f70223a226164642d766572746578222c226964223a2261227d4bcf6e1b01f174e964b9d22dfc5195aa",
+      "expected_parse": {
+        "control": {
+          "profile": 0,
+          "lane": 0,
+          "evidence": 0,
+          "fallback": 0,
+          "routefmt": 1
+        },
+        "kind": 0,
+        "suite": 0,
+        "epoch": 1,
+        "route_handle": {
+          "type": "direct",
+          "value": 18
+        },
+        "payload_hex": "7b226f70223a226164642d766572746578222c226964223a2261227d",
+        "tag_hex": "4bcf6e1b01f174e964b9d22dfc5195aa"
+      }
+    },
+    {
+      "id": "hot-unary-unary-rsp-direct-handle-empty-payload",
+      "kind": "positive",
+      "semantic_input": {
+        "control": {
+          "profile": 0,
+          "lane": 0,
+          "evidence": 0,
+          "fallback": 0,
+          "routefmt": 1
+        },
+        "kind": 1,
+        "suite": 1,
+        "epoch": 0,
+        "route_handle": {
+          "type": "direct",
+          "value": 0
+        },
+        "payload_hex": "",
+        "tag_hex": "00000000000000000000000000000000"
+      },
+      "expected_frame_hex": "f32a01010100000000000000000000000000000000000000",
+      "expected_parse": {
+        "control": {
+          "profile": 0,
+          "lane": 0,
+          "evidence": 0,
+          "fallback": 0,
+          "routefmt": 1
+        },
+        "kind": 1,
+        "suite": 1,
+        "epoch": 0,
+        "route_handle": {
+          "type": "direct",
+          "value": 0
+        },
+        "payload_hex": "",
+        "tag_hex": "00000000000000000000000000000000"
+      }
+    },
+    {
+      "id": "hot-unary-error-utf8-handle-empty-payload",
+      "kind": "positive",
+      "semantic_input": {
+        "control": {
+          "profile": 0,
+          "lane": 0,
+          "evidence": 0,
+          "fallback": 0,
+          "routefmt": 0
+        },
+        "kind": 8,
+        "suite": 2,
+        "epoch": 1,
+        "route_handle": {
+          "type": "utf8",
+          "value": "a"
+        },
+        "payload_hex": "",
+        "tag_hex": "11111111111111111111111111111111"
+      },
+      "expected_frame_hex": "f32a00080201f401610011111111111111111111111111111111",
+      "expected_parse": {
+        "control": {
+          "profile": 0,
+          "lane": 0,
+          "evidence": 0,
+          "fallback": 0,
+          "routefmt": 0
+        },
+        "kind": 8,
+        "suite": 2,
+        "epoch": 1,
+        "route_handle": {
+          "type": "utf8",
+          "value": "a"
+        },
+        "payload_hex": "",
+        "tag_hex": "11111111111111111111111111111111"
+      }
+    },
+    {
+      "id": "hot-unary-invalid-frame-kind-stream-open",
+      "kind": "negative",
+      "operation": "parse",
+      "input_hex": "f32a0102000112000000000000000000000000000000000000",
+      "expected_error_contains": "hot unary frame received invalid kind"
+    },
+    {
+      "id": "hot-unary-invalid-suite-byte-4",
+      "kind": "negative",
+      "operation": "parse",
+      "input_hex": "f32a0100040112000000000000000000000000000000000000",
+      "expected_error": "invalid suite byte 4"
+    },
+    {
+      "id": "hot-unary-invalid-magic",
+      "kind": "negative",
+      "operation": "parse",
+      "input_hex": "00000101000112000000000000000000000000000000000000",
+      "expected_error": "invalid magic"
+    },
+    {
+      "id": "hot-unary-truncated-tag",
+      "kind": "negative",
+      "operation": "parse",
+      "input_hex": "f32a010101000000000000000000000000000000000000",
+      "expected_error": "truncated or overlong unary frame"
+    },
+    {
+      "id": "hot-unary-overlong-frame",
+      "kind": "negative",
+      "operation": "parse",
+      "input_hex": "f32a010101000000000000000000000000000000000000000000",
+      "expected_error": "truncated or overlong unary frame"
+    }
+  ]
+}

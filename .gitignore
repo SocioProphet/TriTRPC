@@ -19,3 +19,4 @@ __MACOSX/
 ._*
 *.egg-info/
 .pytest_cache/
+rust/tritrpc_v1/target/

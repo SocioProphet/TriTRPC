@@ -98,11 +98,11 @@ fn verify_all_frames_and_payloads() {
                 &decoded.service,
                 &decoded.method,
                 &decoded.payload,
-                &decoded.mode,
                 decoded.aux.as_deref(),
                 decoded.tag.as_deref(),
                 decoded.aead_on,
                 decoded.compress,
+                decoded.mode_trit,
             );
             assert_eq!(repacked, frame, "repack mismatch {}", name);
 

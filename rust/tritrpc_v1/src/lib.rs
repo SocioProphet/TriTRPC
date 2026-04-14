@@ -156,15 +156,29 @@ pub mod envelope {
         [if aead { 2 } else { 0 }, if compress { 2 } else { 0 }, 0]
     }
 
-    pub fn build_with_mode(
+    pub fn build(
         service: &str,
         method: &str,
         payload: &[u8],
-        mode_bytes: &[u8],
         aux: Option<&[u8]>,
         aead_tag: Option<&[u8]>,
         aead_on: bool,
         compress: bool,
+    ) -> Vec<u8> {
+        build_with_mode(
+            service, method, payload, aux, aead_tag, aead_on, compress, 0,
+        )
+    }
+
+    pub fn build_with_mode(
+        service: &str,
+        method: &str,
+        payload: &[u8],
+        aux: Option<&[u8]>,
+        aead_tag: Option<&[u8]>,
+        aead_on: bool,
+        compress: bool,
+        mode_trit: u8,
     ) -> Vec<u8> {
         let mut out: Vec<u8> = Vec::new();
         out.extend(len_prefix(&MAGIC_B2));
@@ -172,8 +186,9 @@ pub mod envelope {
         let ver = pack_trits(&[1]);
         out.extend(len_prefix(&ver));
         out.extend(ver);
-        out.extend(len_prefix(mode_bytes));
-        out.extend(mode_bytes);
+        let mode = pack_trits(&[mode_trit]);
+        out.extend(len_prefix(&mode));
+        out.extend(mode);
         let flags = pack_trits(&super::envelope::flags_trits(aead_on, compress));
         out.extend(len_prefix(&flags));
         out.extend(flags);
@@ -200,28 +215,6 @@ pub mod envelope {
             out.extend(tag);
         }
         out
-    }
-
-    pub fn build(
-        service: &str,
-        method: &str,
-        payload: &[u8],
-        aux: Option<&[u8]>,
-        aead_tag: Option<&[u8]>,
-        aead_on: bool,
-        compress: bool,
-    ) -> Vec<u8> {
-        let default_mode = pack_trits(&[0]);
-        build_with_mode(
-            service,
-            method,
-            payload,
-            &default_mode,
-            aux,
-            aead_tag,
-            aead_on,
-            compress,
-        )
     }
 
     pub fn envelope_with_tag(
@@ -253,6 +246,7 @@ pub mod envelope {
         pub magic: Vec<u8>,
         pub version: Vec<u8>,
         pub mode: Vec<u8>,
+        pub mode_trit: u8,
         pub flags: Vec<u8>,
         pub schema: Vec<u8>,
         pub context: Vec<u8>,
@@ -302,6 +296,9 @@ pub mod envelope {
         let aead_on = trits.get(0) == Some(&2u8);
         let compress = trits.get(1) == Some(&2u8);
 
+        let mode_trits = tritpack243::unpack(&mode)?;
+        let mode_trit = mode_trits.first().copied().unwrap_or(0);
+
         let mut aux: Option<Vec<u8>> = None;
         let mut tag: Option<Vec<u8>> = None;
         let mut tag_start: Option<usize> = None;
@@ -335,6 +332,7 @@ pub mod envelope {
             magic,
             version,
             mode,
+            mode_trit,
             flags,
             schema,
             context,
@@ -1001,7 +999,7 @@ pub mod tritrpc_v1_tests {
                 "context id mismatch {}",
                 name
             );
-            let repacked = envelope::build(
+            let repacked = envelope::build_with_mode(
                 &decoded.service,
                 &decoded.method,
                 &decoded.payload,
@@ -1009,6 +1007,7 @@ pub mod tritrpc_v1_tests {
                 decoded.tag.as_deref(),
                 decoded.aead_on,
                 decoded.compress,
+                decoded.mode_trit,
             );
             assert_eq!(repacked, frame, "repack mismatch {}", name);
             if decoded.aead_on {

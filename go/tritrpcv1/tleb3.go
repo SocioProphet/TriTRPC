@@ -36,6 +36,7 @@ func TLEB3DecodeLen(buf []byte, offset int) (val uint64, newOff int, err error) 
 		off++
 		var ts []byte
 		if b >= 243 && b <= 246 {
+			// Tail-marker byte spans two bytes; consume the value byte as well.
 			if off >= len(buf) {
 				return 0, 0, errors.New("truncated TLEB3 tail marker")
 			}
@@ -66,8 +67,7 @@ func TLEB3DecodeLen(buf []byte, offset int) (val uint64, newOff int, err error) 
 		}
 		if used > 0 {
 			pack := TritPack243(trits[:used])
-			usedBytes := len(pack)
-			return v, offset + usedBytes, nil
+			return v, offset + len(pack), nil
 		}
 	}
 }

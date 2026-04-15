@@ -1,0 +1,318 @@
+diff --git a/reference/experimental/tritrpc_requirements_impl_v4/README.md b/reference/experimental/tritrpc_requirements_impl_v4/README.md
+--- a/reference/experimental/tritrpc_requirements_impl_v4/README.md
++++ b/reference/experimental/tritrpc_requirements_impl_v4/README.md
+@@
+-# TriTRPC vNext requirements + reference implementation (v0.2)
++# TriTRPC vNext requirements + reference implementation (v0.4)
+@@
+-```bash
+-cd tritrpc_requirements_impl_v2
++```bash
++cd tritrpc_requirements_impl_v4
+ PYTHONPATH=src python -m tritrpc_requirements_impl validate configs/fips_classical.yaml
+ PYTHONPATH=src python -m tritrpc_requirements_impl validate configs/fips_classical.yaml --relaxed
+ PYTHONPATH=src python -m tritrpc_requirements_impl validate-boundary configs/openssl_fips_boundary.yaml --require-certificate
+ PYTHONPATH=src python -m tritrpc_requirements_impl validate-deployment configs/standards_inspired.yaml
+-PYTHONPATH=src python -m tritrpc_requirements_impl emit-vectors generated/sample_vectors_v2.json --null-tag
+-PYTHONPATH=src python -m tritrpc_requirements_impl emit-audit generated/sample_audit_chain.json --null-tag
++PYTHONPATH=src python -m tritrpc_requirements_impl emit-vectors generated/sample_vectors_v4.json --null-tag
++PYTHONPATH=src python -m tritrpc_requirements_impl emit-audit generated/sample_audit_chain_v4.json --null-tag
+ pytest
+ ```
+@@
+-```bash
+-PYTHONPATH=src python -m tritrpc_requirements_impl compare-transports generated/transport_comparison_v3.json --markdown generated/transport_comparison_v3.md
+-```
++```bash
++PYTHONPATH=src python -m tritrpc_requirements_impl compare-transports generated/transport_comparison_v4.json --markdown generated/transport_comparison_v4.md
++PYTHONPATH=src python -m tritrpc_requirements_impl compare-braid-cadence generated/braid_cadence_comparison_v4.json --markdown generated/braid_cadence_comparison_v4.md
++```
++
++## v4.1 governance and telemetry layer
++
++This package keeps the hot wire invariant and extends TriTRPC v4 with:
++
++- route-level governance and observability defaults;
++- telemetry profiles, redaction profiles, and retention profiles;
++- widened chained event records for control-plane observability;
++- typed beacon semantic deltas for CAP / INTENT / COMMIT lanes;
++- derived operational views such as run cards and policy posture reports.
++
++diff --git a/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/codec.py b/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/codec.py
++--- a/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/codec.py
+++++ b/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/codec.py
++@@
++ from dataclasses import dataclass
++ from enum import IntEnum
++ from typing import Sequence, Tuple
++
+++WIRE_CANON_VERSION = "tritrpc.vnext.wire.v4"
+++WIRE_INVARIANT = True
+++SEMAPHORE_LAYER = "hot"
++
++ class TritPack243Error(ValueError):
++     """Raised when a TritPack243/TLEB3 canonicality rule is violated."""
++
++diff --git a/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/registry.py b/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/registry.py
++--- a/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/registry.py
+++++ b/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/registry.py
++@@
++ @dataclass(frozen=True)
++ class RouteDescriptor:
++     service: str
++     method: str
++     schema: str
++     context_policy: str
++     default_profile: str
++     reply_semantics: str
+++    semantic_topic: int | None = None
+++    default_braid: int | None = None
+++    default_state_policy: str | None = None
+++    observability_class: str = "standard"
+++    privacy_class: str = "internal"
+++    retention_class: str = "canonical"
+++    evidence_min_grade: str = "exact"
+++    policy_bundle_ref: str | None = None
+++    telemetry_profile_ref: str | None = None
+++    allowed_execution_venues: tuple[str, ...] = ()
+++    allowed_tool_origins: tuple[str, ...] = ()
+++    default_semaphores: tuple[str, ...] = ()
+++    latched_semaphores: tuple[str, ...] = ()
+++    allowed_overrides: tuple[str, ...] = ()
++
++diff --git a/reference/experimental/tritrpc_requirements_impl_v4/configs/sample_registry.yaml b/reference/experimental/tritrpc_requirements_impl_v4/configs/sample_registry.yaml
++--- a/reference/experimental/tritrpc_requirements_impl_v4/configs/sample_registry.yaml
+++++ b/reference/experimental/tritrpc_requirements_impl_v4/configs/sample_registry.yaml
++@@
++ routes:
++   7:
++     service: hyper.v1
++     method: AddVertex
++     schema: sha256:1111111111111111111111111111111111111111111111111111111111111111
++     context_policy: tenant-default
++     default_profile: Path-A
++     reply_semantics: unary-rsp
+++    semantic_topic: 22
+++    observability_class: standard
+++    privacy_class: internal
+++    retention_class: canonical
+++    evidence_min_grade: exact
+++    policy_bundle_ref: policy.default.v1
+++    telemetry_profile_ref: telemetry.default.v1
+++    allowed_execution_venues: [local_terminal, cloud_web]
+++    allowed_tool_origins: [client, server]
+++    default_semaphores: [admission:open, review_mode:auto]
+++    latched_semaphores: [provenance_state:attested]
+++    allowed_overrides: [context_health]
++   19:
++     service: beacon.v1
++     method: Commit
++     schema: sha256:2222222222222222222222222222222222222222222222222222222222222222
++     context_policy: control-plane
++     default_profile: Path-H
++     reply_semantics: none
+++    semantic_topic: 23
+++    observability_class: forensic
+++    privacy_class: internal
+++    retention_class: canonical
+++    evidence_min_grade: verified
+++    policy_bundle_ref: policy.control.v1
+++    telemetry_profile_ref: telemetry.strict.v1
+++    allowed_execution_venues: [local_terminal, remote_control, cloud_web]
+++    allowed_tool_origins: [client, server, mcp]
+++    default_semaphores: [admission:leased, review_mode:human_required]
+++    latched_semaphores: [incident_mode:contain, route_validity:valid]
+++    allowed_overrides: [capability_state]
++ identities:
++   19:
++     canonical_id: sp.agentplane.runtime.workflow.executor[t03+t11]@e18.p4.f14.verified+l3#prod.use1
++
++diff --git a/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/policy.py b/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/policy.py
++--- a/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/policy.py
+++++ b/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/policy.py
++@@
++ class ValidationFinding:
++     requirement_id: str
++     severity: str
++     message: str
+++
+++
+++@dataclass(frozen=True)
+++class TelemetryProfile:
+++    schema_version: str
+++    redaction_profile: str
+++    retention_profile: str
+++    otel_export_profile: str | None = None
+++    control_snapshot_required: bool = True
+++    event_ledger_required: bool = True
+++    release_attestation_required: bool = True
+++    context_management_logging: bool = True
+++    subagent_lineage_required: bool = True
+++    materialized_views: tuple[str, ...] = ()
+++
+++    @classmethod
+++    def from_mapping(cls, mapping: dict[str, Any]) -> "TelemetryProfile":
+++        return cls(
+++            schema_version=str(mapping["schema_version"]),
+++            redaction_profile=str(mapping["redaction_profile"]),
+++            retention_profile=str(mapping["retention_profile"]),
+++            otel_export_profile=mapping.get("otel_export_profile"),
+++            control_snapshot_required=bool(mapping.get("control_snapshot_required", True)),
+++            event_ledger_required=bool(mapping.get("event_ledger_required", True)),
+++            release_attestation_required=bool(mapping.get("release_attestation_required", True)),
+++            context_management_logging=bool(mapping.get("context_management_logging", True)),
+++            subagent_lineage_required=bool(mapping.get("subagent_lineage_required", True)),
+++            materialized_views=tuple(mapping.get("materialized_views", [])),
+++        )
+++
+++    def to_mapping(self) -> dict[str, Any]:
+++        return asdict(self)
+++
+++
+++@dataclass(frozen=True)
+++class SemaphorePolicy:
+++    advisory: tuple[str, ...] = ()
+++    gating: tuple[str, ...] = ()
+++    latched: tuple[str, ...] = ()
+++    beacon_required: tuple[str, ...] = ()
+++    commit_required: tuple[str, ...] = ()
++@@
++ def has_errors(findings: Iterable[ValidationFinding]) -> bool:
++     return any(f.severity == Severity.ERROR for f in findings)
+++
+++
+++def validate_telemetry_profile(config: TelemetryProfile) -> list[ValidationFinding]:
+++    findings: list[ValidationFinding] = []
+++    if not config.schema_version.strip():
+++        _append(findings, "REQ-TELEM-001", Severity.ERROR, "Telemetry profile must declare schema_version")
+++    if not config.redaction_profile.strip():
+++        _append(findings, "REQ-TELEM-002", Severity.ERROR, "Telemetry profile must declare redaction_profile")
+++    if not config.retention_profile.strip():
+++        _append(findings, "REQ-TELEM-003", Severity.ERROR, "Telemetry profile must declare retention_profile")
+++    return findings
++
++diff --git a/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/boundary.py b/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/boundary.py
++--- a/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/boundary.py
+++++ b/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/boundary.py
++@@
++     fail_closed: bool = False
++     zeroization_attempted: bool = False
++     key_separation_documented: bool = False
+++    execution_venues: tuple[str, ...] = ()
+++    filesystem_boundary: str | None = None
+++    network_boundary: str | None = None
+++    mcp_locality: str | None = None
+++    allowed_hook_domains: tuple[str, ...] = ()
+++    allowed_hook_env_vars: tuple[str, ...] = ()
+++    remote_control_allowed: bool = False
+++    cloud_execution_allowed: bool = False
+++    data_residency: str | None = None
+++    tool_boundary_manifest: str | None = None
++     notes: dict[str, Any] = field(default_factory=dict)
++     base_dir: str | None = None
++
++diff --git a/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/deployment.py b/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/deployment.py
++--- a/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/deployment.py
+++++ b/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/deployment.py
++@@
++     algorithm_transition_plan_path: str | None
++     key_management_plan_path: str | None
++     logging_plan_path: str | None
++     cscrm_plan_path: str | None
+++    telemetry_profile_path: str | None
+++    redaction_profile_path: str | None
+++    retention_profile_path: str | None
+++    otel_export_profile_path: str | None
++     ssdf_aligned: bool
++     ai_profile_aligned: bool
++     separate_research_build: bool
++     provenance_attested: bool
++     cryptographic_inventory: bool
++     manifest_signed: bool
++     incident_response_hooks: bool
+++    control_snapshot_required: bool
+++    event_ledger_required: bool
+++    release_attestation_required: bool
+++    materialized_views: tuple[str, ...]
++     base_dir: str
++
++diff --git a/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/audit.py b/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/audit.py
++--- a/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/audit.py
+++++ b/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/audit.py
++@@
++ class AuditRecord:
++@@
+++@dataclass(frozen=True)
+++class EventRecordV2:
+++    sequence: int
+++    timestamp: str
+++    event_name: str
+++    decision: str
+++    suite: str
+++    schema_version: str
+++    resource_id: str | None = None
+++    build_id: str | None = None
+++    session_id: str | None = None
+++    run_id: str | None = None
+++    request_id: str | None = None
+++    tool_use_id: str | None = None
+++    parent_tool_use_id: str | None = None
+++    agent_id: str | None = None
+++    subagent_id: str | None = None
+++    frame_kind: str | None = None
+++    braided_identity: str | None = None
+++    control_snapshot_id: str | None = None
+++    usage_snapshot_id: str | None = None
+++    policy_bundle_hash: str | None = None
+++    semaphore_family: str | None = None
+++    old_state: str | None = None
+++    new_state: str | None = None
+++    reason_code: str | None = None
+++    details: dict[str, Any] = field(default_factory=dict)
+++    body_ref: str | None = None
+++    previous_hash: str = ""
+++    record_hash: str = ""
++
++diff --git a/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/frames.py b/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/frames.py
++--- a/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/frames.py
+++++ b/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/frames.py
++@@
++ from dataclasses import dataclass
++ from enum import IntEnum
++ from typing import Protocol
+++import json
++@@
+++@dataclass(frozen=True)
+++class SemaphoreOp:
+++    family: str
+++    op: str
+++    value: str
+++
+++
+++@dataclass(frozen=True)
+++class TypedBeaconDeltaV1:
+++    schema_version: str
+++    delta_class: str
+++    epoch: int
+++    phase: int | None = None
+++    topic: int | None = None
+++    state243: int | None = None
+++    route_handle: int | None = None
+++    context_handle: int | None = None
+++    semaphore_ops: tuple[SemaphoreOp, ...] = ()
+++    policy_bundle_ref: str | None = None
++
++diff --git a/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/cli.py b/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/cli.py
++--- a/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/cli.py
+++++ b/reference/experimental/tritrpc_requirements_impl_v4/src/tritrpc_requirements_impl/cli.py
++@@
++ from .naming import BraidedId, CycleRegistry, TopicRegistry
++-from .policy import ProfileConfig, has_errors, validate_profile
+++from .policy import ProfileConfig, TelemetryProfile, has_errors, validate_profile, validate_telemetry_profile
++ from .compare import (
++     generate_transport_comparison,
++     render_transport_comparison_markdown,
++     generate_braid_cadence_comparison,
++     render_braid_cadence_markdown,
++ )
+++from .views import render_run_card, render_policy_posture

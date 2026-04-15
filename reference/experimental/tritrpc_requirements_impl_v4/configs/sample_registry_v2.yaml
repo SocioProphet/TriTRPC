@@ -1,0 +1,42 @@
+routes:
+  7:
+    service: hyper.v1
+    method: AddVertex
+    schema: sha256:1111111111111111111111111111111111111111111111111111111111111111
+    context_policy: tenant-default
+    default_profile: Path-A
+    reply_semantics: unary-rsp
+    semantic_topic: 22
+    observability_class: standard
+    privacy_class: internal
+    retention_class: canonical
+    evidence_min_grade: exact
+    policy_bundle_ref: policy.default.v1
+    telemetry_profile_ref: telemetry.default.v1
+    allowed_execution_venues: [local_terminal, cloud_web]
+    allowed_tool_origins: [client, server]
+    default_semaphores: [admission:open, review_mode:auto]
+    latched_semaphores: [provenance_state:attested]
+    allowed_overrides: [context_health]
+  19:
+    service: beacon.v1
+    method: Commit
+    schema: sha256:2222222222222222222222222222222222222222222222222222222222222222
+    context_policy: control-plane
+    default_profile: Path-H
+    reply_semantics: none
+    semantic_topic: 23
+    observability_class: forensic
+    privacy_class: internal
+    retention_class: canonical
+    evidence_min_grade: verified
+    policy_bundle_ref: policy.control.v1
+    telemetry_profile_ref: telemetry.strict.v1
+    allowed_execution_venues: [local_terminal, remote_control, cloud_web]
+    allowed_tool_origins: [client, server, mcp]
+    default_semaphores: [admission:leased, review_mode:human_required]
+    latched_semaphores: [incident_mode:contain, route_validity:valid]
+    allowed_overrides: [capability_state]
+identities:
+  19:
+    canonical_id: sp.agentplane.runtime.workflow.executor[t03+t11]@e18.p4.f14.verified+l3#prod.use1

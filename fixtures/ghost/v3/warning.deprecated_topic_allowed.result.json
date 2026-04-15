@@ -1,0 +1,4 @@
+{
+  "status": "ADMITTED_WITH_WARNING",
+  "reason_codes": ["deprecated_topic:allowed_by_policy"]
+}

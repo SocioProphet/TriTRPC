@@ -1,0 +1,31 @@
+{
+  "event_count": 4,
+  "fixture_family": "semantic_beacon_sequence",
+  "required_assertions": [
+    {
+      "braid": "str.sch",
+      "index": 0,
+      "kind": "stream-open",
+      "state": "verified-review-local"
+    },
+    {
+      "bundle_h": "bh:intent-ce1002-v1",
+      "index": 1,
+      "kind": "beacon-intent",
+      "semantic_refs": [
+        "cell-kairos-ce-001",
+        "tcell-chrono-001"
+      ]
+    },
+    {
+      "index": 2,
+      "kind": "stream-data"
+    },
+    {
+      "bundle_h": "bh:commit-ce1002-v1",
+      "index": 3,
+      "kind": "beacon-commit"
+    }
+  ],
+  "sequence_id": "seq-semantic-beacon-001"
+}

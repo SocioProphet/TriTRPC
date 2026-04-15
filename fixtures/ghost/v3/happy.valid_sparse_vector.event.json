@@ -1,0 +1,25 @@
+{
+  "event_id": "evt_v3_happy_0001",
+  "event_type": "triad_assert",
+  "run_id": "run_v3_happy_0001",
+  "trace_id": "trace_v3_happy_0001",
+  "span_id": "span_v3_happy_0001",
+  "timestamp": "2026-04-11T16:00:00Z",
+  "layer_id": "S2",
+  "prime_registry_ref": "sp.prime_topic_registry.v1@1.1.0",
+  "prime_registry_state_hash": "sha256:REGISTRYSTATE",
+  "event_ir_hash": "sha256:EVENTIR",
+  "prime_vector": [
+    { "basis_index": 0, "topic_id": "topic:identity_prime", "prime": 2, "exponent": 1 },
+    { "basis_index": 4, "topic_id": "topic:witness", "prime": 11, "exponent": 1 }
+  ],
+  "artifact_refs": [],
+  "canonical_hash": null,
+  "payload": {
+    "source_ref": "source:alpha",
+    "interaction_ref": "interaction:beta",
+    "observer_ref": "observer:gamma",
+    "trit_state": -1,
+    "confidence": 0.91
+  }
+}

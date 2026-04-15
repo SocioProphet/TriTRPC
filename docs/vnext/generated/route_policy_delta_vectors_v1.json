@@ -1,0 +1,263 @@
+{
+  "name": "TriTRPC route policy delta vectors v1",
+  "status": "Reference-only",
+  "notes": [
+    "These vectors exercise the authority split between advisory degradation, authoritative route policy, subsequent hot-frame control posture, and durable commit receipts.",
+    "CTRL243 uses the published five-trit ordering: [profile, lane, evidence, fallback, routefmt].",
+    "Candidate bytes used here follow the current packing arithmetic from the vNext mini-spec."
+  ],
+  "vectors": [
+    {
+      "vector_id": "authorize_fallback",
+      "summary": "Sampled timeout pressure advises fallback; trusted policy delta authorizes classical fallback; subsequent hot request carries fallback=1.",
+      "sequence": [
+        {
+          "destination": "hot_frame",
+          "kind243": 0,
+          "ctrl243_trits": [0, 0, 0, 0, 1],
+          "ctrl243_byte": 1,
+          "route_h": 17,
+          "note": "baseline exact classical handle-routed request"
+        },
+        {
+          "destination": "beacon",
+          "kind243": 5,
+          "ctrl243_trits": [0, 0, 1, 0, 0],
+          "ctrl243_byte": 9,
+          "delta_type": "degradation.cluster.v1",
+          "payload": {
+            "epoch": 42,
+            "scope": "cohort",
+            "route_h": 17,
+            "degradation_kind": "timeout",
+            "window_ms": 30000,
+            "population_n": 10,
+            "recommendation": {
+              "kind": "consider_fallback",
+              "target": "classical-fallback-ok"
+            },
+            "evidence": "sampled"
+          }
+        },
+        {
+          "destination": "beacon",
+          "kind243": 5,
+          "ctrl243_trits": [0, 0, 0, 0, 1],
+          "ctrl243_byte": 1,
+          "delta_type": "route_policy_delta.v1",
+          "payload": {
+            "epoch": 42,
+            "scope": "cohort",
+            "route_h": 17,
+            "policy_h": 3,
+            "update_kind": "fallback",
+            "fallback_policy": {
+              "value": "classical-fallback-ok",
+              "reason_class": "timeout",
+              "ttl_ms": 60000
+            },
+            "attestation": {
+              "attestation_type": "policy_attestation.v1",
+              "authority_h": 3,
+              "policy_h": 3,
+              "issuer_h": 9,
+              "scope": "route",
+              "decision_class": "fallback",
+              "issued_at_ms": 1710000000000,
+              "effective_from_epoch": 42,
+              "effective_until_epoch": 43,
+              "receipt_ref": null,
+              "proof_ref": "sha256:policy-fallback-42",
+              "replay_ref": "policy-epoch-42",
+              "signature_ref": "sig:policy-42",
+              "evidence_grade": "exact",
+              "reason_code": "timeout-cluster"
+            }
+          }
+        },
+        {
+          "destination": "hot_frame",
+          "kind243": 0,
+          "ctrl243_trits": [0, 0, 0, 1, 1],
+          "ctrl243_byte": 4,
+          "route_h": 17,
+          "note": "subsequent request after policy authorization"
+        },
+        {
+          "destination": "beacon",
+          "kind243": 7,
+          "ctrl243_trits": [0, 0, 2, 0, 1],
+          "ctrl243_byte": 19,
+          "delta_type": "semantic.commit.v1",
+          "payload": {
+            "epoch": 42,
+            "scope": "cohort",
+            "route_h": 17,
+            "commit_kind": "receipt",
+            "receipt_ref": "rcpt-8841",
+            "proof_ref": "sha256:demo",
+            "replay_ref": "replay-17-8841",
+            "evidence_to": "verified"
+          }
+        }
+      ]
+    },
+    {
+      "vector_id": "revoke_fallback",
+      "summary": "A trusted authority revokes previously allowed fallback; subsequent hot requests return to fallback=0.",
+      "sequence": [
+        {
+          "destination": "beacon",
+          "kind243": 5,
+          "ctrl243_trits": [0, 0, 0, 0, 1],
+          "ctrl243_byte": 1,
+          "delta_type": "route_policy_delta.v1",
+          "payload": {
+            "epoch": 44,
+            "scope": "cohort",
+            "route_h": 17,
+            "policy_h": 3,
+            "update_kind": "fallback",
+            "fallback_policy": {
+              "value": "none",
+              "reason_class": "manual",
+              "ttl_ms": 0
+            },
+            "attestation": {
+              "attestation_type": "policy_attestation.v1",
+              "authority_h": 3,
+              "policy_h": 3,
+              "issuer_h": 9,
+              "scope": "route",
+              "decision_class": "fallback",
+              "issued_at_ms": 1710000060000,
+              "effective_from_epoch": 44,
+              "effective_until_epoch": 45,
+              "receipt_ref": null,
+              "proof_ref": "sha256:policy-revoke-44",
+              "replay_ref": "policy-epoch-44",
+              "signature_ref": "sig:policy-44",
+              "evidence_grade": "exact",
+              "reason_code": "manual-revoke"
+            }
+          }
+        },
+        {
+          "destination": "hot_frame",
+          "kind243": 0,
+          "ctrl243_trits": [0, 0, 0, 0, 1],
+          "ctrl243_byte": 1,
+          "route_h": 17,
+          "note": "subsequent request after fallback revocation"
+        }
+      ]
+    },
+    {
+      "vector_id": "pause_route",
+      "summary": "Authority pauses a route after degradation and hot traffic ceases in favor of a policy beacon.",
+      "sequence": [
+        {
+          "destination": "beacon",
+          "kind243": 5,
+          "ctrl243_trits": [0, 0, 1, 0, 0],
+          "ctrl243_byte": 9,
+          "delta_type": "degradation.cluster.v1",
+          "payload": {
+            "epoch": 51,
+            "scope": "global",
+            "route_h": 24,
+            "degradation_kind": "capacity",
+            "window_ms": 15000,
+            "population_n": 24,
+            "recommendation": {
+              "kind": "pause_route",
+              "target": "none"
+            },
+            "evidence": "sampled"
+          }
+        },
+        {
+          "destination": "beacon",
+          "kind243": 5,
+          "ctrl243_trits": [0, 0, 0, 0, 1],
+          "ctrl243_byte": 1,
+          "delta_type": "route_policy_delta.v1",
+          "payload": {
+            "epoch": 51,
+            "scope": "global",
+            "route_h": 24,
+            "policy_h": 5,
+            "update_kind": "pause",
+            "attestation": {
+              "attestation_type": "policy_attestation.v1",
+              "authority_h": 5,
+              "policy_h": 5,
+              "issuer_h": 11,
+              "scope": "route",
+              "decision_class": "pause",
+              "issued_at_ms": 1710000120000,
+              "effective_from_epoch": 51,
+              "effective_until_epoch": 52,
+              "receipt_ref": null,
+              "proof_ref": "sha256:policy-pause-51",
+              "replay_ref": "policy-epoch-51",
+              "signature_ref": "sig:policy-51",
+              "evidence_grade": "exact",
+              "reason_code": "capacity-pause"
+            }
+          }
+        }
+      ],
+      "expected_behavior": "New hot requests for route_h=24 should be denied or redirected by the route dictionary and policy surface until a resume or rebind arrives."
+    },
+    {
+      "vector_id": "dictionary_rebind",
+      "summary": "Authority rebinds a route handle to a new dictionary epoch and route target.",
+      "sequence": [
+        {
+          "destination": "beacon",
+          "kind243": 5,
+          "ctrl243_trits": [0, 0, 0, 0, 1],
+          "ctrl243_byte": 1,
+          "delta_type": "route_policy_delta.v1",
+          "payload": {
+            "epoch": 60,
+            "scope": "global",
+            "route_h": 31,
+            "policy_h": 7,
+            "update_kind": "dictionary_rebind",
+            "route_target": {
+              "route_h_new": 44,
+              "dictionary_epoch": 61
+            },
+            "attestation": {
+              "attestation_type": "policy_attestation.v1",
+              "authority_h": 7,
+              "policy_h": 7,
+              "issuer_h": 13,
+              "scope": "dictionary",
+              "decision_class": "rebind",
+              "issued_at_ms": 1710000180000,
+              "effective_from_epoch": 61,
+              "effective_until_epoch": 0,
+              "receipt_ref": null,
+              "proof_ref": "sha256:policy-rebind-60",
+              "replay_ref": "policy-epoch-60",
+              "signature_ref": "sig:policy-60",
+              "evidence_grade": "exact",
+              "reason_code": "dictionary-rollover"
+            }
+          }
+        },
+        {
+          "destination": "hot_frame",
+          "kind243": 0,
+          "ctrl243_trits": [0, 0, 0, 0, 1],
+          "ctrl243_byte": 1,
+          "route_h": 44,
+          "note": "subsequent request after dictionary rebind"
+        }
+      ]
+    }
+  ]
+}

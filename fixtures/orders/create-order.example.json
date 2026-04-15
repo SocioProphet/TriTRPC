@@ -1,0 +1,49 @@
+{
+  "service": "OrderService",
+  "method": "CreateOrder",
+  "contextId": "ctx:aokc:v0.1",
+  "schemaId": "schema:order-descriptor:v0.1",
+  "request": {
+    "order": {
+      "apiVersion": "orders.socioprophet.org/v0.1",
+      "kind": "OrderDescriptor",
+      "metadata": {
+        "id": "order:promotion:matrix-thread:incident-8421",
+        "name": "promote-incident-thread-to-canonical-asset",
+        "createdAt": "2026-04-05T00:00:00Z",
+        "createdBy": "principal:matrix-user:alice"
+      },
+      "spec": {
+        "orderType": "AssetPromotionOrder",
+        "action": "promote_to_canonical_asset",
+        "targets": [
+          {
+            "targetRef": "conversation:matrix:room123/thread456",
+            "targetType": "ConversationAsset"
+          }
+        ],
+        "inputs": {
+          "requestedOutputType": "RunbookAsset",
+          "contentSpace": "content-space:identity-auth",
+          "destinationRepo": "SocioProphet/open-knowledge-commons"
+        },
+        "lifecycle": {
+          "state": "requested",
+          "allowedTransitions": ["classified", "validated", "approved", "published"]
+        },
+        "validation": {
+          "requiredChecks": ["source-provenance-present", "policy-check-passed", "human-review-complete"],
+          "humanGateRequired": true,
+          "maxRunSeconds": 900
+        },
+        "outputs": {
+          "expectedArtifacts": ["ValidationArtifact", "PublicationArtifact", "ReplayArtifact"]
+        }
+      }
+    }
+  },
+  "response": {
+    "orderId": "order:promotion:matrix-thread:incident-8421",
+    "status": "created"
+  }
+}

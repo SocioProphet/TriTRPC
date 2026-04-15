@@ -1,0 +1,4 @@
+{
+  "status": "BLOCKED",
+  "reason_codes": ["prime_vector:duplicate_basis_index"]
+}

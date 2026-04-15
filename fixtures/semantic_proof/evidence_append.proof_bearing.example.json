@@ -1,0 +1,40 @@
+{
+  "trace_id": "trace_sp_append_001",
+  "method": "evidence.v1.Event/Append",
+  "request": {
+    "semantic_request_id": "srid:tenant_acme:case_1001:append:001",
+    "policy_snapshot_id": "policy_snap_1",
+    "worldview_id": "wv:2026-04-05:001",
+    "proof_refs": [
+      {
+        "proof_id": "proof:wv1:incl:controls021",
+        "proof_type": "inclusion",
+        "proof_version": "1"
+      }
+    ],
+    "verifier_expectations": {
+      "failure_codes_namespace": "semantic-proof-core:1",
+      "treat_transport_and_semantic_failures_as_distinct": true
+    },
+    "transport": {
+      "route_id": "route://evidence/append@v1",
+      "peer_id": "node://tenant-a-01",
+      "envelope_hash": "sha256:spappend001",
+      "request_bytes": 1792
+    }
+  },
+  "response": {
+    "status": "ok",
+    "event_id": "evt_semantic_append_001",
+    "transport": {
+      "latency_ms": 84,
+      "retry_count": 0
+    },
+    "semantic_result": {
+      "proof_ids_accepted": [
+        "proof:wv1:incl:controls021"
+      ],
+      "failure_code": null
+    }
+  }
+}

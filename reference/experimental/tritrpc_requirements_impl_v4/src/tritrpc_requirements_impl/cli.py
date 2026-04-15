@@ -42,6 +42,7 @@ from .compare import (
     generate_braid_cadence_comparison,
     render_braid_cadence_markdown,
 )
+from .route_policy_vector_validator import validate_vector_file
 
 
 
@@ -196,8 +197,6 @@ def cmd_emit_audit(args: argparse.Namespace) -> int:
 
 
 
-
-
 def cmd_compare_transports(args: argparse.Namespace) -> int:
     payload = generate_transport_comparison()
     output = Path(args.output)
@@ -231,6 +230,13 @@ def cmd_emit_codebooks(args: argparse.Namespace) -> int:
     cycle_path.write_text(yaml.safe_dump(CycleRegistry().to_mapping(), sort_keys=False), encoding="utf-8")
     print(topic_path)
     print(cycle_path)
+    return 0
+
+
+
+def cmd_validate_route_policy_vectors(args: argparse.Namespace) -> int:
+    payload = [validate_vector_file(path) for path in args.paths]
+    print(json.dumps(payload, indent=2, sort_keys=True))
     return 0
 
 
@@ -270,6 +276,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_codebooks = sub.add_parser("emit-codebooks")
     p_codebooks.add_argument("output_dir")
     p_codebooks.set_defaults(func=cmd_emit_codebooks)
+
+    p_route_policy = sub.add_parser("validate-route-policy-vectors")
+    p_route_policy.add_argument("paths", nargs="+")
+    p_route_policy.set_defaults(func=cmd_validate_route_policy_vectors)
 
     p_audit = sub.add_parser("emit-audit")
     p_audit.add_argument("output")

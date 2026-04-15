@@ -1,26 +1,27 @@
 package tritrpcv1
 
-import "fmt"
-
 // Minimal Path-B decoders for strings and union index (subset used in fixtures)
 func PBDecodeLen(buf []byte, off int) (int, int) {
+	// TLEB3 decode for length: reuse TLEB3 decoder by repacking; here we assume small inputs and just reuse TritUnpack on a byte-by-byte basis
+	// NOTE: For production, implement a proper scanner.
 	trits := []byte{}
 	start := off
 	for {
-		if off >= len(buf) {
-			panic("EOF in PBDecodeLen")
-		}
 		b := buf[off]
-		off++
 		var ts []byte
+		var err error
 		if b >= 243 && b <= 246 {
-			if off >= len(buf) {
-				panic(fmt.Sprintf("truncated tail marker in PBDecodeLen at offset %d", off))
+			if off+1 >= len(buf) {
+				panic("truncated tail marker")
 			}
-			ts, _ = TritUnpack243([]byte{b, buf[off]})
-			off++
+			ts, err = TritUnpack243(buf[off : off+2])
+			off += 2
 		} else {
-			ts, _ = TritUnpack243([]byte{b})
+			ts, err = TritUnpack243([]byte{b})
+			off++
+		}
+		if err != nil {
+			panic(err)
 		}
 		trits = append(trits, ts...)
 		if len(trits) >= 3 {

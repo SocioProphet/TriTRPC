@@ -1,0 +1,5 @@
+{
+  "scopeRef": "planning://scope/planning.scope.hdt.export.001",
+  "targetRef": "semantic://program-candidate/progcand.hdt.export.001",
+  "reasoningClass": "ABSTRACT"
+}

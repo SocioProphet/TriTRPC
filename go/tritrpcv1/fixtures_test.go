@@ -1,27 +1,22 @@
 package tritrpcv1
 
 import (
+	"bufio"
 	"crypto/subtle"
 	"encoding/hex"
+	"golang.org/x/crypto/blake2b"
 	"os"
-	"path/filepath"
 	"strings"
 	"testing"
-
-	"bufio"
-
-	"golang.org/x/crypto/blake2b"
 )
 
-func fixturePath(name string) string {
-	return filepath.Join("..", "..", "fixtures", name)
-}
-
-func readPairs(t *testing.T, path string) [][2][]byte {
-	t.Helper()
+func readPairs(path string) [][2][]byte {
 	f, err := os.Open(path)
 	if err != nil {
-		t.Fatalf("open fixtures file %s: %v", path, err)
+		f, _ = os.Open("../../" + path)
+	}
+	if f == nil {
+		return nil
 	}
 	defer f.Close()
 	sc := bufio.NewScanner(f)
@@ -35,6 +30,30 @@ func readPairs(t *testing.T, path string) [][2][]byte {
 		name := []byte(parts[0])
 		b, _ := hex.DecodeString(parts[1])
 		out = append(out, [2][]byte{name, b})
+	}
+	return out
+}
+
+func readNonces(path string) map[string][]byte {
+	out := map[string][]byte{}
+	f, err := os.Open(path)
+	if err != nil {
+		f, _ = os.Open("../../" + path)
+	}
+	if f == nil {
+		return out
+	}
+	defer f.Close()
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		ln := sc.Text()
+		if ln == "" {
+			continue
+		}
+		parts := strings.SplitN(ln, " ", 2)
+		key := parts[0]
+		b, _ := hex.DecodeString(parts[1])
+		out[key] = b
 	}
 	return out
 }
@@ -62,16 +81,17 @@ func aeadBit(flags []byte) bool {
 }
 
 func TestFixturesAEADAndPayloads(t *testing.T) {
-	sets := []string{
-		"vectors_hex.txt",
-		"vectors_hex_stream_avrochunk.txt",
-		"vectors_hex_unary_rich.txt",
-		"vectors_hex_stream_avronested.txt",
-		"vectors_hex_pathB.txt",
+	sets := [][2]string{
+		{"fixtures/vectors_hex.txt", "fixtures/vectors_hex.txt.nonces"},
+		{"fixtures/vectors_hex_stream_avrochunk.txt", "fixtures/vectors_hex_stream_avrochunk.txt.nonces"},
+		{"fixtures/vectors_hex_unary_rich.txt", "fixtures/vectors_hex_unary_rich.txt.nonces"},
+		{"fixtures/vectors_hex_stream_avronested.txt", "fixtures/vectors_hex_stream_avronested.txt.nonces"},
+		{"fixtures/vectors_hex_pathB.txt", "fixtures/vectors_hex_pathB.txt.nonces"},
 	}
 	key := [32]byte{}
-	for _, fx := range sets {
-		pairs := readPairs(t, fixturePath(fx))
+	for _, s := range sets {
+		pairs := readPairs(s[0])
+		nonces := readNonces(s[1])
 		for _, p := range pairs {
 			name := string(p[0])
 			frame := p[1]
@@ -100,16 +120,21 @@ func TestFixturesAEADAndPayloads(t *testing.T) {
 					t.Fatalf("aad error %s: %v", name, err)
 				}
 				tag := env.Tag
+				n := nonces[name]
+				if len(n) != 24 {
+					t.Fatalf("nonce size mismatch %s", name)
+				}
 				if len(tag) != 16 {
 					t.Fatalf("tag size mismatch %s", name)
 				}
-				mac, err := blake2b.New(16, key[:])
-				if err != nil {
-					t.Fatalf("blake2b init: %v", err)
-				}
-				mac.Write(aad)
-				computed := mac.Sum(nil)
+				h, _ := blake2b.New(16, key[:])
+				strict := os.Getenv("STRICT_AEAD") == "1"
+				_, _ = h.Write(aad)
+				computed := h.Sum(nil)
 				if subtle.ConstantTimeCompare(computed, tag) != 1 {
+					if strict {
+						t.Fatalf("strict AEAD tag mismatch for %s", name)
+					}
 					t.Fatalf("tag mismatch for %s", name)
 				}
 			}

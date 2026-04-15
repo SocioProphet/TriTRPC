@@ -82,20 +82,27 @@ pub mod tleb3 {
         tritpack243::pack(&trits)
     }
 
-    pub fn decode_len(bytes: &[u8], start: usize) -> Result<(u64, usize), String> {
+    pub fn decode_len(bytes: &[u8], mut offset: usize) -> Result<(u64, usize), String> {
+        let start = offset;
         let mut trits: Vec<u8> = Vec::new();
-        let mut offset = start;
         loop {
             if offset >= bytes.len() {
                 return Err("EOF in TLEB3".into());
             }
             let b = bytes[offset];
-            let read_count = if b >= 243 && b <= 246 { 2 } else { 1 };
-            if offset + read_count > bytes.len() {
-                return Err("EOF in TLEB3".into());
-            }
-            let ts = super::tritpack243::unpack(&bytes[offset..offset + read_count])?;
-            offset += read_count;
+            let chunk = if (243..=246).contains(&b) {
+                if offset + 1 >= bytes.len() {
+                    return Err("truncated tail marker".into());
+                }
+                let out = super::tritpack243::unpack(&bytes[offset..offset + 2])?;
+                offset += 2;
+                out
+            } else {
+                let out = super::tritpack243::unpack(&[b])?;
+                offset += 1;
+                out
+            };
+            let ts = chunk;
             trits.extend_from_slice(&ts);
             if trits.len() < 3 {
                 continue;
@@ -115,7 +122,8 @@ pub mod tleb3 {
             }
             if used_trits > 0 {
                 let used_bytes = super::tritpack243::pack(&trits[..used_trits]).len();
-                return Ok((val, start + used_bytes));
+                let new_off = start + used_bytes;
+                return Ok((val, new_off));
             }
         }
     }
@@ -123,8 +131,8 @@ pub mod tleb3 {
 
 pub mod envelope {
     use super::{tleb3, tritpack243};
-    use chacha20poly1305::aead::{Aead, KeyInit};
-    use chacha20poly1305::XChaCha20Poly1305;
+    use blake2::digest::{consts::U16, Mac};
+    use blake2::Blake2bMac;
 
     const MAGIC_B2: [u8; 2] = [0xF3, 0x2A];
     pub const SCHEMA_ID_32: [u8; 32] = [
@@ -220,17 +228,10 @@ pub mod envelope {
         nonce: &[u8; 24],
     ) -> (Vec<u8>, Vec<u8>) {
         let aad = build(service, method, payload, aux, None, true, false);
-        let aead = XChaCha20Poly1305::new(key.into());
-        let ct = aead
-            .encrypt(
-                nonce.into(),
-                chacha20poly1305::aead::Payload {
-                    msg: b"",
-                    aad: &aad,
-                },
-            )
-            .expect("encrypt");
-        let tag = ct[ct.len() - 16..].to_vec();
+        let _ = nonce;
+        let mut mac = <Blake2bMac<U16> as Mac>::new_from_slice(key).expect("blake2b key");
+        mac.update(&aad);
+        let tag = mac.finalize().into_bytes().to_vec();
         let frame = build(service, method, payload, aux, Some(&tag), true, false);
         (frame, tag)
     }
@@ -963,17 +964,16 @@ pub mod avrodec {
 
 pub mod tritrpc_v1_tests {
     use super::envelope;
-    use blake2::{
-        digest::{consts::U16, KeyInit, Mac},
-        Blake2bMac,
-    };
+    use blake2::digest::{consts::U16, Mac};
+    use blake2::Blake2bMac;
+    use std::collections::HashMap;
     use std::fs;
+    use subtle::ConstantTimeEq;
 
-    type Blake2bMac128 = Blake2bMac<U16>;
-
-    pub fn verify_file(fx: &str) -> String {
+    pub fn verify_file(fx: &str, nonces_path: &str) -> String {
         let key = [0u8; 32];
         let pairs = read_pairs(fx);
+        let nonces = read_nonces(nonces_path);
         let mut ok = 0usize;
         for (name, frame) in pairs {
             let decoded = envelope::decode(&frame).expect("decode envelope");
@@ -990,8 +990,9 @@ pub mod tritrpc_v1_tests {
                 name
             );
             let mode_trit = super::tritpack243::unpack(&decoded.mode)
-                .ok()
-                .and_then(|t| t.into_iter().next())
+                .expect("decode mode trit")
+                .first()
+                .copied()
                 .unwrap_or(0);
             let repacked = envelope::build_with_mode(
                 &decoded.service,
@@ -1006,17 +1007,16 @@ pub mod tritrpc_v1_tests {
             assert_eq!(repacked, frame, "repack mismatch {}", name);
             if decoded.aead_on {
                 let tag = decoded.tag.as_ref().expect("missing tag");
+                let nonce = nonces.get(&name).expect("nonce missing");
+                assert_eq!(nonce.len(), 24, "nonce size mismatch {}", name);
                 assert_eq!(tag.len(), 16, "tag size mismatch {}", name);
                 let aad_start = decoded.tag_start.expect("tag start missing");
                 let aad = &frame[..aad_start];
-                let mut mac = <Blake2bMac128 as KeyInit>::new_from_slice(&key).expect("valid key");
+                let mut mac = <Blake2bMac<U16> as Mac>::new_from_slice(&key).expect("blake2b key");
                 mac.update(aad);
                 let computed = mac.finalize().into_bytes();
                 assert!(
-                    bool::from(<[u8] as subtle::ConstantTimeEq>::ct_eq(
-                        computed.as_slice(),
-                        tag.as_slice(),
-                    )),
+                    bool::from(computed.as_slice().ct_eq(tag.as_slice())),
                     "tag mismatch {}",
                     name
                 );
@@ -1036,6 +1036,18 @@ pub mod tritrpc_v1_tests {
                 let hexs = it.next().unwrap();
                 let bytes = hex::decode(hexs).unwrap();
                 (name, bytes)
+            })
+            .collect()
+    }
+    fn read_nonces(path: &str) -> HashMap<String, Vec<u8>> {
+        let txt = fs::read_to_string(path).expect("read nonces");
+        txt.lines()
+            .filter(|l| !l.is_empty())
+            .map(|l| {
+                let mut it = l.splitn(2, ' ');
+                let name = it.next().unwrap().to_string();
+                let hexs = it.next().unwrap();
+                (name, hex::decode(hexs).unwrap())
             })
             .collect()
     }
@@ -1089,10 +1101,10 @@ pub mod avroenc_json {
     pub fn enc_HGResponse_json(v: &Value) -> Vec<u8> {
         let ok = v["ok"].as_bool().unwrap_or(true);
         let err = v.get("err").and_then(|e| e.as_str());
-        let empty_arr: Vec<serde_json::Value> = vec![];
+        let empty_vertices = Vec::new();
         let vertices = v["vertices"]
             .as_array()
-            .unwrap_or(&empty_arr)
+            .unwrap_or(&empty_vertices)
             .iter()
             .map(|x| {
                 (
@@ -1101,10 +1113,10 @@ pub mod avroenc_json {
                 )
             })
             .collect::<Vec<_>>();
-        let empty_arr2: Vec<serde_json::Value> = vec![];
+        let empty_edges = Vec::new();
         let edges = v["edges"]
             .as_array()
-            .unwrap_or(&empty_arr2)
+            .unwrap_or(&empty_edges)
             .iter()
             .map(|x| {
                 let eid = x["eid"].as_str().unwrap();

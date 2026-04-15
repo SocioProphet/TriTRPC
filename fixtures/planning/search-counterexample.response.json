@@ -1,0 +1,7 @@
+{
+  "scopeRef": "planning://scope/planning.scope.hdt.export.001",
+  "counterexampleRefs": [
+    "semantic://counterexample/counterexample.hdt.export.001"
+  ],
+  "result": "FOUND"
+}

@@ -1,15 +1,10 @@
 #!/usr/bin/env python3
-# Verifies that every fixture line's AEAD tag == XChaCha20-Poly1305(key=0x00*32, nonce from .nonces, AAD=frame minus AEAD field)
+# Verifies that every fixture line's AEAD tag == BLAKE2b-MAC(key=0x00*32, digest_size=16, AAD=frame minus AEAD field)
 # Exits non-zero on the first mismatch.
 import sys
+import hashlib
 from pathlib import Path
 from typing import Tuple
-try:
-    from cryptography.hazmat.primitives.ciphers.aead import XChaCha20Poly1305
-except Exception as e:
-    print("ERROR: cryptography package with XChaCha20-Poly1305 is required for this hook.", file=sys.stderr)
-    print("Try:  pip install cryptography", file=sys.stderr)
-    sys.exit(2)
 
 ROOT = Path(__file__).resolve().parents[1]
 FX = ROOT / "fixtures"
@@ -94,7 +89,7 @@ def verify_file(fx_name: str, nx_name: str) -> None:
         if name not in nonce:
             print(f"[FAIL] Nonce missing for {fx_name}:{name}", file=sys.stderr)
             sys.exit(3)
-        calc = XChaCha20Poly1305(KEY).encrypt(nonce[name], b"", aad)[-16:]
+        calc = hashlib.blake2b(aad, key=KEY, digest_size=16).digest()
         if calc != tag:
             print(f"[FAIL] AEAD tag mismatch: {fx_name}:{name}", file=sys.stderr)
             sys.exit(4)
@@ -109,7 +104,7 @@ def main():
         ("vectors_hex_pathB_stream.txt","vectors_hex_pathB_stream.txt.nonces"),
     ]
     for f,n in sets: verify_file(f,n)
-    print("[OK] All fixture AEAD tags verified under XChaCha20-Poly1305.")
+    print("[OK] All fixture AEAD tags verified under BLAKE2b-MAC.")
 
 if __name__ == "__main__":
     main()

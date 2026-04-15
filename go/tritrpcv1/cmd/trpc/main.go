@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	tr "github.com/example/tritrpcv1"
-	"golang.org/x/crypto/chacha20poly1305"
+	"golang.org/x/crypto/blake2b"
 )
 
 func main() {
@@ -72,10 +72,10 @@ func main() {
 					fmt.Println("aad error for", name, ":", err)
 					os.Exit(2)
 				}
-				nonce := nmap[name]
-				a, _ := chacha20poly1305.NewX(key[:])
-				ct := a.Seal(nil, nonce, []byte{}, aad)
-				computed := ct[len(ct)-16:]
+				_ = nmap[name]
+				h, _ := blake2b.New(16, key[:])
+				_, _ = h.Write(aad)
+				computed := h.Sum(nil)
 				if subtle.ConstantTimeCompare(computed, env.Tag) != 1 {
 					fmt.Println("tag mismatch for", name)
 					os.Exit(2)

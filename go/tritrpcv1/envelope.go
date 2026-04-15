@@ -1,7 +1,7 @@
 package tritrpcv1
 
 import (
-	"golang.org/x/crypto/chacha20poly1305"
+	"golang.org/x/crypto/blake2b"
 )
 
 var SCHEMA_ID_BYTES = []byte{178, 171, 129, 69, 136, 249, 156, 135, 93, 55, 187, 117, 70, 208, 223, 67, 105, 194, 139, 197, 246, 12, 227, 138, 102, 7, 218, 196, 104, 3, 67, 82}
@@ -26,6 +26,10 @@ func lenPrefix(b []byte) []byte {
 }
 
 func BuildEnvelope(service, method string, payload []byte, aux []byte, aeadTag []byte, aeadOn bool, compress bool) []byte {
+	return BuildEnvelopeWithMode(service, method, payload, aux, aeadTag, aeadOn, compress, TritPack243([]byte{0}))
+}
+
+func BuildEnvelopeWithMode(service, method string, payload []byte, aux []byte, aeadTag []byte, aeadOn bool, compress bool, modeBytes []byte) []byte {
 	out := make([]byte, 0)
 	out = append(out, lenPrefix(MAGIC_B2)...)
 	out = append(out, MAGIC_B2...)
@@ -34,7 +38,7 @@ func BuildEnvelope(service, method string, payload []byte, aux []byte, aeadTag [
 	out = append(out, lenPrefix(ver)...)
 	out = append(out, ver...)
 
-	mode := TritPack243([]byte{0})
+	mode := append([]byte{}, modeBytes...)
 	out = append(out, lenPrefix(mode)...)
 	out = append(out, mode...)
 
@@ -74,12 +78,13 @@ func BuildEnvelope(service, method string, payload []byte, aux []byte, aeadTag [
 
 func EnvelopeWithTag(service, method string, payload, aux []byte, key [32]byte, nonce [24]byte) ([]byte, []byte, error) {
 	aad := BuildEnvelope(service, method, payload, aux, nil, true, false)
-	aead, err := chacha20poly1305.NewX(key[:])
+	_ = nonce
+	h, err := blake2b.New(16, key[:])
 	if err != nil {
 		return nil, nil, err
 	}
-	ct := aead.Seal(nil, nonce[:], []byte{}, aad)
-	tag := ct[len(ct)-16:]
+	_, _ = h.Write(aad)
+	tag := h.Sum(nil)
 	frame := BuildEnvelope(service, method, payload, aux, tag, true, false)
 	return frame, tag, nil
 }

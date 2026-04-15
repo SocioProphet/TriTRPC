@@ -1,12 +1,14 @@
-use chacha20poly1305::aead::{Aead, KeyInit};
-use chacha20poly1305::XChaCha20Poly1305;
+use blake2::digest::{consts::U16, Mac};
+use blake2::Blake2bMac;
 use std::collections::HashMap;
 use std::fs;
 use subtle::ConstantTimeEq;
 use tritrpc_v1::{avrodec, avroenc, envelope, tleb3, tritpack243};
 
 fn read_pairs(path: &str) -> Vec<(String, Vec<u8>)> {
-    let txt = fs::read_to_string(path).expect("read fixtures");
+    let txt = fs::read_to_string(path)
+        .or_else(|_| fs::read_to_string(format!("{}/../../{}", env!("CARGO_MANIFEST_DIR"), path)));
+    let txt = txt.expect("read fixtures");
     txt.lines()
         .filter(|l| !l.is_empty() && !l.starts_with('#'))
         .map(|l| {
@@ -20,7 +22,9 @@ fn read_pairs(path: &str) -> Vec<(String, Vec<u8>)> {
 }
 
 fn read_nonces(path: &str) -> HashMap<String, Vec<u8>> {
-    let txt = fs::read_to_string(path).expect("read nonces");
+    let txt = fs::read_to_string(path)
+        .or_else(|_| fs::read_to_string(format!("{}/../../{}", env!("CARGO_MANIFEST_DIR"), path)));
+    let txt = txt.expect("read nonces");
     txt.lines()
         .filter(|l| !l.is_empty())
         .map(|l| {
@@ -96,7 +100,12 @@ fn verify_all_frames_and_payloads() {
                 name
             );
 
-            let repacked = envelope::build(
+            let mode_trit = tritpack243::unpack(&decoded.mode)
+                .expect("decode mode trit")
+                .first()
+                .copied()
+                .unwrap_or(0);
+            let repacked = envelope::build_with_mode(
                 &decoded.service,
                 &decoded.method,
                 &decoded.payload,
@@ -104,6 +113,7 @@ fn verify_all_frames_and_payloads() {
                 decoded.tag.as_deref(),
                 decoded.aead_on,
                 decoded.compress,
+                mode_trit,
             );
             assert_eq!(repacked, frame, "repack mismatch {}", name);
 
@@ -117,15 +127,10 @@ fn verify_all_frames_and_payloads() {
                 let aad_start = decoded.tag_start.expect("tag start missing");
                 let aad = &frame[..aad_start];
                 let strict = std::env::var("STRICT_AEAD").ok().as_deref() == Some("1");
-                let aead = XChaCha20Poly1305::new(&key.into());
-                let ct = aead
-                    .encrypt(
-                        nonce.as_slice().into(),
-                        chacha20poly1305::aead::Payload { msg: b"", aad },
-                    )
-                    .unwrap();
-                let computed = &ct[ct.len() - 16..];
-                let matches = computed.ct_eq(tag.as_slice()).into();
+                let mut mac = <Blake2bMac<U16> as Mac>::new_from_slice(&key).expect("blake2b key");
+                mac.update(aad);
+                let computed = mac.finalize().into_bytes();
+                let matches = bool::from(computed.as_slice().ct_eq(tag.as_slice()));
                 assert!(matches, "tag mismatch for {}", name);
                 if strict {
                     assert!(matches, "strict tag mismatch for {}", name);

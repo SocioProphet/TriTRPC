@@ -1,0 +1,134 @@
+syntax = "proto3";
+package socioprophet.heller.v1;
+
+enum EventType {
+  EVENT_TYPE_UNSPECIFIED = 0;
+  EVENT_TYPE_MINT = 1;
+  EVENT_TYPE_BURN = 2;
+  EVENT_TYPE_STAKE = 3;
+  EVENT_TYPE_SETTLE = 4;
+  EVENT_TYPE_SLASH = 5;
+  EVENT_TYPE_TRANSFER_PRICE = 6;
+  EVENT_TYPE_COLLATERALIZE = 7;
+  EVENT_TYPE_GOVERNANCE_FEE = 8;
+  EVENT_TYPE_RESERVE_RECOVERY = 9;
+  EVENT_TYPE_DOCUMENTATION_DECAY = 10;
+  EVENT_TYPE_BRIDGE_TOP_UP = 11;
+}
+
+enum TokenTier {
+  TOKEN_TIER_UNSPECIFIED = 0;
+  TOKEN_TIER_MICRO = 1;
+  TOKEN_TIER_CREDIT = 2;
+  TOKEN_TIER_RESERVE = 3;
+  TOKEN_TIER_NONE = 4;
+}
+
+enum Denomination {
+  DENOMINATION_UNSPECIFIED = 0;
+  DENOMINATION_MICRO = 1;
+  DENOMINATION_CREDIT = 2;
+  DENOMINATION_RESERVE = 3;
+}
+
+message QualityCQSP {
+  double C = 1;
+  double Q = 2;
+  double S = 3;
+  double P = 4;
+}
+
+message Recipient {
+  string recipient_id = 1;
+  double weight = 2;
+}
+
+message EventPayload {
+  double amount = 1;
+  string class_id = 2;
+  Denomination denomination = 3;
+  string exposure_id = 4;
+  string metadata_uri = 5;
+  string reason = 6;
+}
+
+message HellerEventEnvelope {
+  string schema_version = 1;
+  string event_id = 2;
+  string scenario_id = 3;
+  uint32 epoch = 4;
+  EventType event_type = 5;
+  string proof_ref = 6;
+  uint32 sphere_from = 7;
+  uint32 sphere_to = 8;
+  TokenTier token_tier = 9;
+  double delta_ep = 10;
+  QualityCQSP quality = 11;
+  repeated Recipient recipients = 12;
+  EventPayload payload = 13;
+}
+
+message SupplyVector {
+  double micro = 1;
+  double credit = 2;
+  double reserve = 3;
+}
+
+message KnowledgeVector {
+  double C = 1;
+  double Q = 2;
+  double S = 3;
+  double P = 4;
+  double K = 5;
+}
+
+message ValuationVector {
+  double V_U = 1;
+  double V_C = 2;
+  double V_G = 3;
+  double V_total = 4;
+}
+
+message ShareVector {
+  double U = 1;
+  double C = 2;
+  double G = 3;
+}
+
+message Exposure {
+  string exposure_id = 1;
+  double credit_outstanding = 2;
+  double collateral_posted = 3;
+  double alpha_required = 4;
+  double coverage_ratio = 5;
+  bool is_open = 6;
+}
+
+message InvariantFlags {
+  bool supply_nonnegative = 1;
+  bool signed_share_sum_ok = 2;
+  bool simplex_sum_ok = 3;
+  bool collateral_ok = 4;
+  bool epoch_monotone = 5;
+  bool unique_events = 6;
+  bool all_ok = 7;
+}
+
+message HellerStateSnapshot {
+  string schema_version = 1;
+  string domain_id = 2;
+  string scenario_id = 3;
+  uint32 epoch = 4;
+  SupplyVector base_supply = 5;
+  SupplyVector delta_supply = 6;
+  SupplyVector absolute_supply = 7;
+  KnowledgeVector knowledge = 8;
+  ValuationVector valuations = 9;
+  ShareVector signed_shares = 10;
+  ShareVector simplex_shares = 11;
+  repeated double loop_state = 12;
+  repeated Exposure open_exposures = 13;
+  InvariantFlags invariants = 14;
+  repeated string event_ids_applied = 15;
+  string checkpoint_hash = 16;
+}

@@ -2,8 +2,8 @@
 """Check checked-in Avro LOM DOT diagrams for schema coverage drift.
 
 The diagrams are non-normative views over `.avsc` sources. This checker enforces
-that every rendered Avro field name and expected type label remains represented
-in the checked-in DOT artifact. It is intentionally stable for hand-tuned DOT
+that every Avro field name and expected field type label remains represented in
+the checked-in DOT artifact. It is intentionally stable for hand-tuned DOT
 layouts while still failing when a schema evolves and the diagram is not updated.
 """
 from __future__ import annotations
@@ -12,7 +12,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Any, Iterable, List, Set, Tuple
+from typing import Any, Iterable, Set, Tuple
 
 ROOT = Path(__file__).resolve().parents[1]
 PRIMITIVES = {"null", "boolean", "int", "long", "float", "double", "bytes", "string"}
@@ -54,8 +54,6 @@ def type_label(avro_type: Any) -> str:
         return str(obj)
     if kind == "logical":
         return f"{obj.get('type')}({obj.get('logicalType')})"
-    if kind == "record":
-        return f"record {qualified_name(obj)}"
     if kind == "enum":
         return f"enum {obj.get('name')}"
     if kind == "fixed":
@@ -66,6 +64,8 @@ def type_label(avro_type: Any) -> str:
         return "values{}"
     if kind == "union":
         return " | ".join(type_label(option) for option in obj)
+    if kind == "record":
+        return obj.get("name", "record")
     return json.dumps(obj, sort_keys=True)
 
 
@@ -95,30 +95,33 @@ def collect_expected_labels(schema: dict[str, Any]) -> Set[str]:
             return normalize(registry[obj])
         return kind, obj
 
-    def visit_type(avro_type: Any) -> None:
+    def visit_field_type(avro_type: Any) -> None:
         kind, obj = resolve(avro_type)
         labels.add(type_label(avro_type))
         if kind == "record":
-            labels.add(obj.get("name", "record"))
             for field_obj in obj.get("fields", []):
                 labels.add(field_obj["name"])
-                visit_type(field_obj["type"])
+                visit_field_type(field_obj["type"])
         elif kind == "array":
             labels.add("items[]")
-            visit_type(obj.get("items"))
+            item_kind, item_obj = resolve(obj.get("items"))
+            if item_kind == "record":
+                for field_obj in item_obj.get("fields", []):
+                    labels.add(field_obj["name"])
+                    visit_field_type(field_obj["type"])
+            else:
+                visit_field_type(obj.get("items"))
         elif kind == "map":
             labels.add("values{}")
-            visit_type(obj.get("values"))
+            visit_field_type(obj.get("values"))
         elif kind == "union":
             labels.add("union")
-            for option in obj:
-                visit_type(option)
-        elif kind == "enum":
-            labels.add(f"enum {obj.get('name')}")
 
     register(schema)
-    visit_type(schema)
-    return {label for label in labels if label and label != "record"}
+    for field_obj in schema.get("fields", []):
+        labels.add(field_obj["name"])
+        visit_field_type(field_obj["type"])
+    return {label for label in labels if label}
 
 
 def check_pair(schema_rel: str, diagram_rel: str) -> bool:

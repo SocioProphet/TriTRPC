@@ -65,7 +65,7 @@ def type_label(avro_type: Any) -> str:
     if kind == "union":
         return " | ".join(type_label(option) for option in obj)
     if kind == "record":
-        return obj.get("name", "record")
+        return "record"
     return json.dumps(obj, sort_keys=True)
 
 
@@ -97,7 +97,8 @@ def collect_expected_labels(schema: dict[str, Any]) -> Set[str]:
 
     def visit_field_type(avro_type: Any) -> None:
         kind, obj = resolve(avro_type)
-        labels.add(type_label(avro_type))
+        if kind != "record":
+            labels.add(type_label(avro_type))
         if kind == "record":
             for field_obj in obj.get("fields", []):
                 labels.add(field_obj["name"])
@@ -121,7 +122,7 @@ def collect_expected_labels(schema: dict[str, Any]) -> Set[str]:
     for field_obj in schema.get("fields", []):
         labels.add(field_obj["name"])
         visit_field_type(field_obj["type"])
-    return {label for label in labels if label}
+    return {label for label in labels if label and label != "record"}
 
 
 def check_pair(schema_rel: str, diagram_rel: str) -> bool:

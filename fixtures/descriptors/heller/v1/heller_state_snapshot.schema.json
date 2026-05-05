@@ -1,0 +1,309 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://socioprophet.example/schemas/heller/state-snapshot.schema.json",
+  "title": "Heller Domain State Snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "domain_id",
+    "scenario_id",
+    "epoch",
+    "base_supply",
+    "delta_supply",
+    "absolute_supply",
+    "knowledge",
+    "valuations",
+    "signed_shares",
+    "simplex_shares",
+    "loop_state",
+    "open_exposures",
+    "invariants",
+    "event_ids_applied"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "domain_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scenario_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_:-]{3,128}$"
+    },
+    "epoch": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "base_supply": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "micro",
+        "credit",
+        "reserve"
+      ],
+      "properties": {
+        "micro": {
+          "type": "number",
+          "minimum": 0
+        },
+        "credit": {
+          "type": "number",
+          "minimum": 0
+        },
+        "reserve": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "delta_supply": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "micro",
+        "credit",
+        "reserve"
+      ],
+      "properties": {
+        "micro": {
+          "type": "number"
+        },
+        "credit": {
+          "type": "number"
+        },
+        "reserve": {
+          "type": "number"
+        }
+      }
+    },
+    "absolute_supply": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "micro",
+        "credit",
+        "reserve"
+      ],
+      "properties": {
+        "micro": {
+          "type": "number",
+          "minimum": 0
+        },
+        "credit": {
+          "type": "number",
+          "minimum": 0
+        },
+        "reserve": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "knowledge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "C",
+        "Q",
+        "S",
+        "P",
+        "K"
+      ],
+      "properties": {
+        "C": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "Q": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "S": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "P": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "K": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "valuations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "V_U",
+        "V_C",
+        "V_G",
+        "V_total"
+      ],
+      "properties": {
+        "V_U": {
+          "type": "number"
+        },
+        "V_C": {
+          "type": "number"
+        },
+        "V_G": {
+          "type": "number"
+        },
+        "V_total": {
+          "type": "number"
+        }
+      }
+    },
+    "signed_shares": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "U",
+        "C",
+        "G"
+      ],
+      "properties": {
+        "U": {
+          "type": "number"
+        },
+        "C": {
+          "type": "number"
+        },
+        "G": {
+          "type": "number"
+        }
+      }
+    },
+    "simplex_shares": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "U",
+        "C",
+        "G"
+      ],
+      "properties": {
+        "U": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "C": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "G": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "loop_state": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 11,
+      "maxItems": 11
+    },
+    "open_exposures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "exposure_id",
+          "credit_outstanding",
+          "collateral_posted",
+          "alpha_required",
+          "coverage_ratio",
+          "is_open"
+        ],
+        "properties": {
+          "exposure_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "credit_outstanding": {
+            "type": "number",
+            "minimum": 0
+          },
+          "collateral_posted": {
+            "type": "number",
+            "minimum": 0
+          },
+          "alpha_required": {
+            "type": "number",
+            "minimum": 1
+          },
+          "coverage_ratio": {
+            "type": "number",
+            "minimum": 0
+          },
+          "is_open": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "invariants": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "supply_nonnegative",
+        "signed_share_sum_ok",
+        "simplex_sum_ok",
+        "collateral_ok",
+        "epoch_monotone",
+        "unique_events",
+        "all_ok"
+      ],
+      "properties": {
+        "supply_nonnegative": {
+          "type": "boolean"
+        },
+        "signed_share_sum_ok": {
+          "type": "boolean"
+        },
+        "simplex_sum_ok": {
+          "type": "boolean"
+        },
+        "collateral_ok": {
+          "type": "boolean"
+        },
+        "epoch_monotone": {
+          "type": "boolean"
+        },
+        "unique_events": {
+          "type": "boolean"
+        },
+        "all_ok": {
+          "type": "boolean"
+        }
+      }
+    },
+    "event_ids_applied": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "checkpoint_hash": {
+      "type": "string"
+    }
+  }
+}

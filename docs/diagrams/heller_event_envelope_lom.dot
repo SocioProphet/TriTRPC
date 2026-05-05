@@ -1,0 +1,126 @@
+digraph avro_lom_schema {
+  graph [rankdir=LR, splines=ortho, nodesep="0.35", ranksep="0.70", labelloc="b", label="LOM-style Avro schema view: socioprophet.heller.v1.HellerEventEnvelope"];
+  node [fontname="Helvetica", fontsize="10"];
+  edge [color="black", arrowsize="0.6"];
+
+  lane_0 [shape=plaintext, label="Schema"];
+  lane_1 [shape=plaintext, label="Category"];
+  lane_2 [shape=plaintext, label="Aggregate Element"];
+  lane_3 [shape=plaintext, label="Simple Data Element"];
+  lane_4 [shape=plaintext, label="Datatype"];
+  lane_5 [shape=plaintext, label="Value"];
+
+  root [shape=box, style="rounded", label="socioprophet.heller.v1\nHellerEventEnvelope"];
+
+  schema_version [shape=box, style="rounded", label="schema_version"];
+  event_id [shape=box, style="rounded", label="event_id"];
+  scenario_id [shape=box, style="rounded", label="scenario_id"];
+  epoch [shape=box, style="rounded", label="epoch"];
+  event_type [shape=box, style="rounded", label="event_type"];
+  proof_ref [shape=box, style="rounded", label="proof_ref"];
+  sphere_from [shape=box, style="rounded", label="sphere_from"];
+  sphere_to [shape=box, style="rounded", label="sphere_to"];
+  token_tier [shape=box, style="rounded", label="token_tier"];
+  delta_ep [shape=box, style="rounded", label="delta_ep"];
+  quality [shape=box, style="rounded", label="quality"];
+  recipients [shape=box, style="rounded", label="recipients"];
+  payload [shape=box, style="rounded", label="payload"];
+
+  quality_C [shape=box, style="rounded", label="C"];
+  quality_Q [shape=box, style="rounded", label="Q"];
+  quality_S [shape=box, style="rounded", label="S"];
+  quality_P [shape=box, style="rounded", label="P"];
+  recipients_items [shape=box, style="rounded", label="items[]"];
+  recipient_id [shape=box, style="rounded", label="recipient_id"];
+  recipient_weight [shape=box, style="rounded", label="weight"];
+  payload_amount [shape=box, style="rounded", label="amount"];
+  payload_class_id [shape=box, style="rounded", label="class_id"];
+  payload_denomination [shape=box, style="rounded", label="denomination"];
+  payload_exposure_id [shape=box, style="rounded", label="exposure_id"];
+  payload_metadata_uri [shape=box, style="rounded", label="metadata_uri"];
+  payload_reason [shape=box, style="rounded", label="reason"];
+
+  type_string [shape=box, style="solid", label="string"];
+  type_int [shape=box, style="solid", label="int"];
+  type_double [shape=box, style="solid", label="double"];
+  type_event_type [shape=box, style="solid", label="enum EventType"];
+  type_token_tier [shape=box, style="solid", label="enum TokenTier"];
+  type_denomination_union [shape=box, style="solid", label="null | enum Denomination"];
+  type_null_string [shape=box, style="solid", label="null | string"];
+
+  value_placeholder [shape=plaintext, label="..."];
+
+  { rank=same; lane_0; root; }
+  { rank=same; lane_1; schema_version; event_id; scenario_id; epoch; event_type; proof_ref; sphere_from; sphere_to; token_tier; delta_ep; quality; recipients; payload; }
+  { rank=same; lane_2; quality_C; quality_Q; quality_S; quality_P; recipients_items; payload_amount; payload_class_id; payload_denomination; payload_exposure_id; payload_metadata_uri; payload_reason; }
+  { rank=same; lane_3; recipient_id; recipient_weight; }
+  { rank=same; lane_4; type_string; type_int; type_double; type_event_type; type_token_tier; type_denomination_union; type_null_string; }
+  { rank=same; lane_5; value_placeholder; }
+
+  lane_0 -> lane_1 [style=invis, weight=20];
+  lane_1 -> lane_2 [style=invis, weight=20];
+  lane_2 -> lane_3 [style=invis, weight=20];
+  lane_3 -> lane_4 [style=invis, weight=20];
+  lane_4 -> lane_5 [style=invis, weight=20];
+
+  root -> schema_version;
+  root -> event_id;
+  root -> scenario_id;
+  root -> epoch;
+  root -> event_type;
+  root -> proof_ref;
+  root -> sphere_from;
+  root -> sphere_to;
+  root -> token_tier;
+  root -> delta_ep;
+  root -> quality;
+  root -> recipients;
+  root -> payload;
+
+  schema_version -> type_string;
+  event_id -> type_string;
+  scenario_id -> type_string;
+  epoch -> type_int;
+  event_type -> type_event_type;
+  proof_ref -> type_string;
+  sphere_from -> type_int;
+  sphere_to -> type_int;
+  token_tier -> type_token_tier;
+  delta_ep -> type_double;
+
+  quality -> quality_C;
+  quality -> quality_Q;
+  quality -> quality_S;
+  quality -> quality_P;
+  quality_C -> type_double;
+  quality_Q -> type_double;
+  quality_S -> type_double;
+  quality_P -> type_double;
+
+  recipients -> recipients_items;
+  recipients_items -> recipient_id;
+  recipients_items -> recipient_weight;
+  recipient_id -> type_string;
+  recipient_weight -> type_double;
+
+  payload -> payload_amount;
+  payload -> payload_class_id;
+  payload -> payload_denomination;
+  payload -> payload_exposure_id;
+  payload -> payload_metadata_uri;
+  payload -> payload_reason;
+  payload_amount -> type_double;
+  payload_class_id -> type_string;
+  payload_denomination -> type_denomination_union;
+  payload_exposure_id -> type_null_string;
+  payload_metadata_uri -> type_null_string;
+  payload_reason -> type_null_string;
+
+  type_string -> value_placeholder;
+  type_int -> value_placeholder;
+  type_double -> value_placeholder;
+  type_event_type -> value_placeholder;
+  type_token_tier -> value_placeholder;
+  type_denomination_union -> value_placeholder;
+  type_null_string -> value_placeholder;
+}

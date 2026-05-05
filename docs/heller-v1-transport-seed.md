@@ -8,11 +8,20 @@ This patch seeds transport-adjacent artifacts for the Heller contract family wit
 
 - `fixtures/descriptors/heller/v1/heller_wire_v1.proto`
 - `fixtures/descriptors/heller/v1/heller_wire_v1_descriptor.pb`
+- `fixtures/descriptors/heller/v1/heller_event_envelope.avsc`
+- `fixtures/descriptors/heller/v1/heller_state_snapshot.avsc`
+- `fixtures/descriptors/heller/v1/heller_event_envelope.schema.json`
+- `fixtures/descriptors/heller/v1/heller_state_snapshot.schema.json`
+- `fixtures/descriptors/heller/v1/sample_event_envelope_v8.json`
+- `fixtures/descriptors/heller/v1/sample_state_snapshot_v8.json`
 - `fixtures/descriptors/heller/v1/encoded_payload_manifest_v8.json`
-- `fixtures/descriptors/heller/v1/sample_event_envelope_v1.avro.bin`
-- `fixtures/descriptors/heller/v1/sample_state_snapshot_v1.avro.bin`
-- `fixtures/descriptors/heller/v1/sample_event_envelope_v1.protobuf.bin`
-- `fixtures/descriptors/heller/v1/sample_state_snapshot_v1.protobuf.bin`
+- `docs/diagrams/heller_event_envelope_lom.dot`
+
+## Embedded encoded payloads
+
+`encoded_payload_manifest_v8.json` records the Avro and protobuf binary payloads as embedded base64 strings with their expected byte sizes and SHA-256 hashes.
+
+The manifest may still name logical payload files such as `sample_event_envelope_v1.avro.bin`, but those binary payload references are satisfied by the embedded `*_base64`, `*_size_bytes`, and `*_sha256` fields. `tools/check_descriptor_manifest_refs.py` validates those embedded payloads in strict mode.
 
 ## Boundary
 

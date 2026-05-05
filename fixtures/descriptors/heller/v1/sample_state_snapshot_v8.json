@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0.0",
+  "domain_id": "packaging_education_domain",
+  "scenario_id": "packaging_to_education",
+  "epoch": 0,
+  "base_supply": {
+    "micro": 300.0,
+    "credit": 50.0,
+    "reserve": 20.0
+  },
+  "delta_supply": {
+    "micro": 19.5,
+    "credit": 1.0,
+    "reserve": 0.2
+  },
+  "absolute_supply": {
+    "micro": 319.5,
+    "credit": 51.0,
+    "reserve": 20.2
+  },
+  "knowledge": {
+    "C": 0.8,
+    "Q": 0.9,
+    "S": 0.8,
+    "P": 0.7,
+    "K": 0.4032
+  },
+  "valuations": {
+    "V_U": 25.0,
+    "V_C": 1.0,
+    "V_G": 0.15000000000000002,
+    "V_total": 26.15
+  },
+  "signed_shares": {
+    "U": 0.9560229445506693,
+    "C": 0.03824091778202677,
+    "G": 0.005736137667304016
+  },
+  "simplex_shares": {
+    "U": 0.9560229445506693,
+    "C": 0.03824091778202677,
+    "G": 0.005736137667304016
+  },
+  "loop_state": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.735736411345153,
+    0.08046565794917825,
+    0.0,
+    0.0
+  ],
+  "open_exposures": [
+    {
+      "exposure_id": "expo-pack-edu-0001",
+      "credit_outstanding": 0.1,
+      "collateral_posted": 0.2,
+      "alpha_required": 1.5,
+      "coverage_ratio": 2.0,
+      "is_open": true
+    }
+  ],
+  "invariants": {
+    "supply_nonnegative": true,
+    "signed_share_sum_ok": true,
+    "simplex_sum_ok": true,
+    "collateral_ok": true,
+    "epoch_monotone": true,
+    "unique_events": true,
+    "all_ok": true
+  },
+  "event_ids_applied": [
+    "packaging_to_education:epoch:00"
+  ],
+  "checkpoint_hash": "sha256:placeholder"
+}

@@ -1,0 +1,175 @@
+{
+  "type": "record",
+  "name": "HellerEventEnvelope",
+  "namespace": "socioprophet.heller.v1",
+  "fields": [
+    {
+      "name": "schema_version",
+      "type": "string"
+    },
+    {
+      "name": "event_id",
+      "type": "string"
+    },
+    {
+      "name": "scenario_id",
+      "type": "string"
+    },
+    {
+      "name": "epoch",
+      "type": "int"
+    },
+    {
+      "name": "event_type",
+      "type": {
+        "type": "enum",
+        "name": "EventType",
+        "symbols": [
+          "mint",
+          "burn",
+          "stake",
+          "settle",
+          "slash",
+          "transfer_price",
+          "collateralize",
+          "governance_fee",
+          "reserve_recovery",
+          "documentation_decay",
+          "bridge_top_up"
+        ]
+      }
+    },
+    {
+      "name": "proof_ref",
+      "type": "string"
+    },
+    {
+      "name": "sphere_from",
+      "type": "int"
+    },
+    {
+      "name": "sphere_to",
+      "type": "int"
+    },
+    {
+      "name": "token_tier",
+      "type": {
+        "type": "enum",
+        "name": "TokenTier",
+        "symbols": [
+          "micro",
+          "credit",
+          "reserve",
+          "none"
+        ]
+      }
+    },
+    {
+      "name": "delta_ep",
+      "type": "double"
+    },
+    {
+      "name": "quality",
+      "type": {
+        "type": "record",
+        "name": "QualityCQSP",
+        "fields": [
+          {
+            "name": "C",
+            "type": "double"
+          },
+          {
+            "name": "Q",
+            "type": "double"
+          },
+          {
+            "name": "S",
+            "type": "double"
+          },
+          {
+            "name": "P",
+            "type": "double"
+          }
+        ]
+      }
+    },
+    {
+      "name": "recipients",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "Recipient",
+          "fields": [
+            {
+              "name": "recipient_id",
+              "type": "string"
+            },
+            {
+              "name": "weight",
+              "type": "double"
+            }
+          ]
+        }
+      },
+      "default": []
+    },
+    {
+      "name": "payload",
+      "type": {
+        "type": "record",
+        "name": "EventPayload",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "double"
+          },
+          {
+            "name": "class_id",
+            "type": "string"
+          },
+          {
+            "name": "denomination",
+            "type": [
+              "null",
+              {
+                "type": "enum",
+                "name": "Denomination",
+                "symbols": [
+                  "micro",
+                  "credit",
+                  "reserve"
+                ]
+              }
+            ],
+            "default": null
+          },
+          {
+            "name": "exposure_id",
+            "type": [
+              "null",
+              "string"
+            ],
+            "default": null
+          },
+          {
+            "name": "metadata_uri",
+            "type": [
+              "null",
+              "string"
+            ],
+            "default": null
+          },
+          {
+            "name": "reason",
+            "type": [
+              "null",
+              "string"
+            ],
+            "default": null
+          }
+        ]
+      }
+    }
+  ]
+}

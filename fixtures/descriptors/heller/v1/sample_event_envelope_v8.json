@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "event_id": "packaging_to_education:epoch:00",
+  "scenario_id": "packaging_to_education",
+  "epoch": 0,
+  "event_type": "mint",
+  "proof_ref": "proof://repro/build/packaging-education-0001",
+  "sphere_from": 8,
+  "sphere_to": 9,
+  "token_tier": "micro",
+  "delta_ep": 10.0,
+  "quality": {
+    "C": 0.8,
+    "Q": 0.9,
+    "S": 0.8,
+    "P": 0.7
+  },
+  "payload": {
+    "amount": 30.0,
+    "class_id": "Knowledge+Attribution",
+    "denomination": "micro",
+    "exposure_id": "expo-pack-edu-0001",
+    "metadata_uri": "meta://packaging/education/showcase",
+    "reason": "Packaging reproducibility event with education spillover"
+  }
+}

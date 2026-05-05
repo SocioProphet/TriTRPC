@@ -1,0 +1,227 @@
+{
+  "type": "record",
+  "name": "HellerStateSnapshot",
+  "namespace": "socioprophet.heller.v1",
+  "fields": [
+    {
+      "name": "schema_version",
+      "type": "string"
+    },
+    {
+      "name": "domain_id",
+      "type": "string"
+    },
+    {
+      "name": "scenario_id",
+      "type": "string"
+    },
+    {
+      "name": "epoch",
+      "type": "int"
+    },
+    {
+      "name": "base_supply",
+      "type": {
+        "type": "record",
+        "name": "SupplyVector",
+        "fields": [
+          {
+            "name": "micro",
+            "type": "double"
+          },
+          {
+            "name": "credit",
+            "type": "double"
+          },
+          {
+            "name": "reserve",
+            "type": "double"
+          }
+        ]
+      }
+    },
+    {
+      "name": "delta_supply",
+      "type": "SupplyVector"
+    },
+    {
+      "name": "absolute_supply",
+      "type": "SupplyVector"
+    },
+    {
+      "name": "knowledge",
+      "type": {
+        "type": "record",
+        "name": "KnowledgeVector",
+        "fields": [
+          {
+            "name": "C",
+            "type": "double"
+          },
+          {
+            "name": "Q",
+            "type": "double"
+          },
+          {
+            "name": "S",
+            "type": "double"
+          },
+          {
+            "name": "P",
+            "type": "double"
+          },
+          {
+            "name": "K",
+            "type": "double"
+          }
+        ]
+      }
+    },
+    {
+      "name": "valuations",
+      "type": {
+        "type": "record",
+        "name": "ValuationVector",
+        "fields": [
+          {
+            "name": "V_U",
+            "type": "double"
+          },
+          {
+            "name": "V_C",
+            "type": "double"
+          },
+          {
+            "name": "V_G",
+            "type": "double"
+          },
+          {
+            "name": "V_total",
+            "type": "double"
+          }
+        ]
+      }
+    },
+    {
+      "name": "signed_shares",
+      "type": {
+        "type": "record",
+        "name": "ShareVector",
+        "fields": [
+          {
+            "name": "U",
+            "type": "double"
+          },
+          {
+            "name": "C",
+            "type": "double"
+          },
+          {
+            "name": "G",
+            "type": "double"
+          }
+        ]
+      }
+    },
+    {
+      "name": "simplex_shares",
+      "type": "ShareVector"
+    },
+    {
+      "name": "loop_state",
+      "type": {
+        "type": "array",
+        "items": "double"
+      }
+    },
+    {
+      "name": "open_exposures",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "Exposure",
+          "fields": [
+            {
+              "name": "exposure_id",
+              "type": "string"
+            },
+            {
+              "name": "credit_outstanding",
+              "type": "double"
+            },
+            {
+              "name": "collateral_posted",
+              "type": "double"
+            },
+            {
+              "name": "alpha_required",
+              "type": "double"
+            },
+            {
+              "name": "coverage_ratio",
+              "type": "double"
+            },
+            {
+              "name": "is_open",
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      "default": []
+    },
+    {
+      "name": "invariants",
+      "type": {
+        "type": "record",
+        "name": "InvariantFlags",
+        "fields": [
+          {
+            "name": "supply_nonnegative",
+            "type": "boolean"
+          },
+          {
+            "name": "signed_share_sum_ok",
+            "type": "boolean"
+          },
+          {
+            "name": "simplex_sum_ok",
+            "type": "boolean"
+          },
+          {
+            "name": "collateral_ok",
+            "type": "boolean"
+          },
+          {
+            "name": "epoch_monotone",
+            "type": "boolean"
+          },
+          {
+            "name": "unique_events",
+            "type": "boolean"
+          },
+          {
+            "name": "all_ok",
+            "type": "boolean"
+          }
+        ]
+      }
+    },
+    {
+      "name": "event_ids_applied",
+      "type": {
+        "type": "array",
+        "items": "string"
+      }
+    },
+    {
+      "name": "checkpoint_hash",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null
+    }
+  ]
+}

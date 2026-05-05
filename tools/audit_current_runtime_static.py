@@ -60,14 +60,14 @@ def audit_no_conflict_markers() -> None:
     for path in CRITICAL_PATHS:
         body = read(path)
         for marker in markers:
-            require(path, marker not in body, f"contains unresolved merge marker {marker!r}")
+  require(path, marker not in body, f"contains unresolved merge marker {marker!r}")
 
 
 def audit_go_runtime_shape() -> None:
     envelope = "go/tritrpcv1/envelope.go"
     regex(
         envelope,
-        r"func\s+BuildEnvelopeWithMode\([^\n]*modeBytes\s+\[\]byte\)",
+        r"func\s+BuildEnvelopeWithMode\s*\([^)]*modeBytes\s+\[\]byte\s*\)\s+\[\]byte",
         "Go envelope builder should currently accept packed modeBytes []byte",
     )
     contains(envelope, "golang.org/x/crypto/blake2b", "Go envelope should use BLAKE2b MAC dependency")
@@ -76,7 +76,11 @@ def audit_go_runtime_shape() -> None:
     fixtures = "go/tritrpcv1/fixtures_test.go"
     contains(fixtures, "env.Mode", "Go fixture repack should preserve decoded packed mode bytes")
     not_contains(fixtures, "modeTrit :=", "Go fixtures should not reintroduce stale decoded modeTrit merge residue")
-    not_contains(fixtures, "BuildEnvelopeWithMode(env.Service, env.Method, env.Payload, env.Aux, env.Tag, env.AeadOn, env.Compress, modeTrit)", "Go fixtures should not call BuildEnvelopeWithMode with decoded modeTrit")
+    not_contains(
+        fixtures,
+        "BuildEnvelopeWithMode(env.Service, env.Method, env.Payload, env.Aux, env.Tag, env.AeadOn, env.Compress, modeTrit)",
+        "Go fixtures should not call BuildEnvelopeWithMode with decoded modeTrit",
+    )
 
     tleb3 = "go/tritrpcv1/tleb3.go"
     contains(tleb3, "TritUnpack243(buf[off : off+2])", "Go TLEB3 decoder should preserve two-byte tail-marker handling")
@@ -91,7 +95,7 @@ def audit_rust_runtime_shape() -> None:
     lib = "rust/tritrpc_v1/src/lib.rs"
     regex(
         lib,
-        r"pub\s+fn\s+build_with_mode\([^\)]*mode_trit\s*:\s*u8",
+        r"pub\s+fn\s+build_with_mode\s*\([^)]*mode_trit\s*:\s*u8",
         "Rust envelope builder should currently accept decoded mode_trit: u8",
     )
     contains(lib, "Blake2bMac", "Rust envelope should use BLAKE2b MAC dependency")
@@ -128,7 +132,7 @@ def main() -> int:
     if errors:
         print("current runtime static audit failed:", file=sys.stderr)
         for err in errors:
-            print(f"- {err}", file=sys.stderr)
+  print(f"- {err}", file=sys.stderr)
         return 1
 
     print("current runtime static audit passed")

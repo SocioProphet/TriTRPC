@@ -1,6 +1,6 @@
-.PHONY: verify fmt rust-fmt go-fmt rust-test go-test fixtures integration-audit
+.PHONY: verify fmt rust-fmt go-fmt rust-test go-test fixtures aux-shape integration-audit
 
-verify: fmt rust-test go-test fixtures
+verify: fmt rust-test go-test fixtures aux-shape
 
 fmt: rust-fmt go-fmt
 
@@ -19,6 +19,8 @@ go-test:
 fixtures:
 	python tools/verify_fixtures_strict.py
 
+aux-shape:
+	python tools/verify_policy_evidence_aux_shape.py
 
 integration-audit:
 	./tools/audit_branch_pr_integration.sh main HEAD

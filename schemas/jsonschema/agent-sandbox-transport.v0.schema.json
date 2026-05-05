@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.socioprophet.example/tritrpc/agent-sandbox-transport.v0.schema.json",
+  "title": "TriTRPC Agent Sandbox Transport Blob v0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "blob_id",
+    "media_type",
+    "semantic_schema_ref",
+    "payload_digest"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "tritrpc-agent-sandbox-transport.v0" },
+    "blob_id": { "type": "string", "minLength": 1 },
+    "media_type": {
+      "type": "string",
+      "enum": [
+        "application/vnd.socioprophet.agent-sandbox-spec+json;v=0",
+        "application/vnd.socioprophet.agent-genesis-manifest+json;v=0",
+        "application/vnd.socioprophet.agent-failure-bundle+json;v=0",
+        "application/vnd.socioprophet.agent-sandbox-receipt+json;v=0"
+      ]
+    },
+    "semantic_schema_ref": { "type": "string", "pattern": "^capability-fabric:agent-sandbox-lifecycle\\.v0#/.+" },
+    "payload_digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "payload": { "type": "object" },
+    "payload_ref": { "type": "string" },
+    "attestation_ref": { "type": "string" },
+    "parent_ref": { "type": "string" }
+  },
+  "oneOf": [
+    { "required": ["payload"] },
+    { "required": ["payload_ref"] }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "profile": "tritrpc.heller.transport_admission.v0.1",
+  "transport_authority": "SocioProphet/TriTRPC",
+  "semantic_authority": "external",
+  "descriptor_refs": {
+    "protobuf": "fixtures/descriptors/heller/v1/heller_wire_v1.proto",
+    "payload_manifest": "fixtures/descriptors/heller/v1/encoded_payload_manifest_v8.json"
+  },
+  "service": "heller.v1.Transport",
+  "bindings": [
+    {
+      "binding_id": "heller.event_envelope.avro.v1",
+      "payload_family": "event_envelope",
+      "method": "EventEnvelope.Avro",
+      "payload_codec": "avro-binary",
+      "message_ref": "heller_event_envelope.avsc#HellerEventEnvelope",
+      "sample_payload_file": "sample_event_envelope_v1.avro.bin",
+      "sample_payload_sha256": "fba232ba000ff2d26ba47d11a7ca60b780520d52c5f25a1f06218f3272087443",
+      "schema_id_policy": "derive-sha256-32:message_ref+payload_codec+profile",
+      "context_id_policy": "derive-sha256-32:service+method+binding_id"
+    },
+    {
+      "binding_id": "heller.event_envelope.protobuf.v1",
+      "payload_family": "event_envelope",
+      "method": "EventEnvelope.Protobuf",
+      "payload_codec": "protobuf-binary",
+      "message_ref": "socioprophet.heller.v1.HellerEventEnvelope",
+      "sample_payload_file": "sample_event_envelope_v1.protobuf.bin",
+      "sample_payload_sha256": "4c7faf0e8ce2b71d2d71c238872d1cb057e76c02382976cdcdd436cb442fd261",
+      "schema_id_policy": "derive-sha256-32:message_ref+payload_codec+profile",
+      "context_id_policy": "derive-sha256-32:service+method+binding_id"
+    },
+    {
+      "binding_id": "heller.state_snapshot.avro.v1",
+      "payload_family": "state_snapshot",
+      "method": "StateSnapshot.Avro",
+      "payload_codec": "avro-binary",
+      "message_ref": "heller_state_snapshot.avsc#HellerStateSnapshot",
+      "sample_payload_file": "sample_state_snapshot_v1.avro.bin",
+      "sample_payload_sha256": "7fbf1b4c51f7edfdfeb1c0513e8d9b6342542a19127338f1abe3c2bb1f2700c4",
+      "schema_id_policy": "derive-sha256-32:message_ref+payload_codec+profile",
+      "context_id_policy": "derive-sha256-32:service+method+binding_id"
+    },
+    {
+      "binding_id": "heller.state_snapshot.protobuf.v1",
+      "payload_family": "state_snapshot",
+      "method": "StateSnapshot.Protobuf",
+      "payload_codec": "protobuf-binary",
+      "message_ref": "socioprophet.heller.v1.HellerStateSnapshot",
+      "sample_payload_file": "sample_state_snapshot_v1.protobuf.bin",
+      "sample_payload_sha256": "3d75baf61e92c3fc141450022ec243ce749d0ccf976ff049a5509fe61ec6df27",
+      "schema_id_policy": "derive-sha256-32:message_ref+payload_codec+profile",
+      "context_id_policy": "derive-sha256-32:service+method+binding_id"
+    }
+  ],
+  "canonical_frame_vectors": {
+    "status": "not-yet-emitted",
+    "next_step": "generate deterministic TritRPC frames from these bindings and sample payloads"
+  },
+  "verifier_expectations": {
+    "rust_go_decode_repack_parity_required": true,
+    "payload_hash_check_required": true,
+    "fixture_nonce_strategy": "pending"
+  }
+}

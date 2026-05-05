@@ -1,0 +1,33 @@
+name: validate-heller-transport-admission
+
+on:
+  pull_request:
+    paths:
+      - "docs/heller-v1-transport-admission-v0.1.md"
+      - "fixtures/descriptors/heller/v1/transport_admission_manifest_v0.1.json"
+      - "fixtures/descriptors/heller/v1/encoded_payload_manifest_v8.json"
+      - "tools/verify_heller_transport_admission.py"
+      - ".github/workflows/validate-heller-transport-admission.yml"
+  push:
+    branches: [ main ]
+    paths:
+      - "docs/heller-v1-transport-admission-v0.1.md"
+      - "fixtures/descriptors/heller/v1/transport_admission_manifest_v0.1.json"
+      - "fixtures/descriptors/heller/v1/encoded_payload_manifest_v8.json"
+      - "tools/verify_heller_transport_admission.py"
+      - ".github/workflows/validate-heller-transport-admission.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate Heller transport admission manifest
+        run: python tools/verify_heller_transport_admission.py

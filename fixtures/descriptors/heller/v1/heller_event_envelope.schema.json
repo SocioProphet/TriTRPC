@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://socioprophet.example/schemas/heller/event-envelope.schema.json",
+  "title": "Heller Event Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "scenario_id",
+    "epoch",
+    "event_type",
+    "proof_ref",
+    "sphere_from",
+    "sphere_to",
+    "token_tier",
+    "delta_ep",
+    "quality",
+    "payload"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "event_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]{6,128}$"
+    },
+    "scenario_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_:-]{3,128}$"
+    },
+    "epoch": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "mint",
+        "burn",
+        "stake",
+        "settle",
+        "slash",
+        "transfer_price",
+        "collateralize",
+        "governance_fee",
+        "reserve_recovery",
+        "documentation_decay",
+        "bridge_top_up"
+      ]
+    },
+    "proof_ref": {
+      "type": "string",
+      "minLength": 3
+    },
+    "sphere_from": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 11
+    },
+    "sphere_to": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 11
+    },
+    "token_tier": {
+      "type": "string",
+      "enum": [
+        "micro",
+        "credit",
+        "reserve",
+        "none"
+      ]
+    },
+    "delta_ep": {
+      "type": "number"
+    },
+    "quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "C",
+        "Q",
+        "S",
+        "P"
+      ],
+      "properties": {
+        "C": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "Q": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "S": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "P": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "recipients": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "recipient_id",
+          "weight"
+        ],
+        "properties": {
+          "recipient_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "amount",
+        "class_id"
+      ],
+      "properties": {
+        "amount": {
+          "type": "number"
+        },
+        "class_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "denomination": {
+          "type": "string",
+          "enum": [
+            "micro",
+            "credit",
+            "reserve"
+          ]
+        },
+        "exposure_id": {
+          "type": "string"
+        },
+        "metadata_uri": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

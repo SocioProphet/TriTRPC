@@ -1,6 +1,6 @@
-.PHONY: verify fmt rust-fmt go-fmt rust-test go-test fixtures descriptor-manifest-refs aux-shape integration-audit
+.PHONY: verify fmt rust-fmt go-fmt rust-test go-test fixtures descriptor-manifest-refs aux-shape avro-lom-diagrams integration-audit
 
-verify: fmt rust-test go-test fixtures aux-shape
+verify: fmt rust-test go-test fixtures aux-shape avro-lom-diagrams
 
 fmt: rust-fmt go-fmt
 
@@ -24,6 +24,9 @@ descriptor-manifest-refs:
 
 aux-shape:
 	python tools/verify_policy_evidence_aux_shape.py
+
+avro-lom-diagrams:
+	python tools/check_avro_lom_diagrams.py
 
 integration-audit:
 	./tools/audit_branch_pr_integration.sh main HEAD

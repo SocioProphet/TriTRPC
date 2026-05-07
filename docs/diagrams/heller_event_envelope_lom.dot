@@ -2,125 +2,98 @@ digraph avro_lom_schema {
   graph [rankdir=LR, splines=ortho, nodesep="0.35", ranksep="0.70", labelloc="b", label="LOM-style Avro schema view: socioprophet.heller.v1.HellerEventEnvelope"];
   node [fontname="Helvetica", fontsize="10"];
   edge [color="black", arrowsize="0.6"];
-
   lane_0 [shape=plaintext, label="Schema"];
   lane_1 [shape=plaintext, label="Category"];
   lane_2 [shape=plaintext, label="Aggregate Element"];
   lane_3 [shape=plaintext, label="Simple Data Element"];
   lane_4 [shape=plaintext, label="Datatype"];
   lane_5 [shape=plaintext, label="Value"];
-
-  root [shape=box, style="rounded", label="socioprophet.heller.v1\nHellerEventEnvelope"];
-
-  schema_version [shape=box, style="rounded", label="schema_version"];
-  event_id [shape=box, style="rounded", label="event_id"];
-  scenario_id [shape=box, style="rounded", label="scenario_id"];
-  epoch [shape=box, style="rounded", label="epoch"];
-  event_type [shape=box, style="rounded", label="event_type"];
-  proof_ref [shape=box, style="rounded", label="proof_ref"];
-  sphere_from [shape=box, style="rounded", label="sphere_from"];
-  sphere_to [shape=box, style="rounded", label="sphere_to"];
-  token_tier [shape=box, style="rounded", label="token_tier"];
-  delta_ep [shape=box, style="rounded", label="delta_ep"];
-  quality [shape=box, style="rounded", label="quality"];
-  recipients [shape=box, style="rounded", label="recipients"];
-  payload [shape=box, style="rounded", label="payload"];
-
-  quality_C [shape=box, style="rounded", label="C"];
-  quality_Q [shape=box, style="rounded", label="Q"];
-  quality_S [shape=box, style="rounded", label="S"];
-  quality_P [shape=box, style="rounded", label="P"];
-  recipients_items [shape=box, style="rounded", label="items[]"];
-  recipient_id [shape=box, style="rounded", label="recipient_id"];
-  recipient_weight [shape=box, style="rounded", label="weight"];
-  payload_amount [shape=box, style="rounded", label="amount"];
-  payload_class_id [shape=box, style="rounded", label="class_id"];
-  payload_denomination [shape=box, style="rounded", label="denomination"];
-  payload_exposure_id [shape=box, style="rounded", label="exposure_id"];
-  payload_metadata_uri [shape=box, style="rounded", label="metadata_uri"];
-  payload_reason [shape=box, style="rounded", label="reason"];
-
-  type_string [shape=box, style="solid", label="string"];
-  type_int [shape=box, style="solid", label="int"];
-  type_double [shape=box, style="solid", label="double"];
-  type_event_type [shape=box, style="solid", label="enum EventType"];
-  type_token_tier [shape=box, style="solid", label="enum TokenTier"];
-  type_denomination_union [shape=box, style="solid", label="null | enum Denomination"];
-  type_null_string [shape=box, style="solid", label="null | string"];
-
-  value_placeholder [shape=plaintext, label="..."];
-
-  { rank=same; lane_0; root; }
-  { rank=same; lane_1; schema_version; event_id; scenario_id; epoch; event_type; proof_ref; sphere_from; sphere_to; token_tier; delta_ep; quality; recipients; payload; }
-  { rank=same; lane_2; quality_C; quality_Q; quality_S; quality_P; recipients_items; payload_amount; payload_class_id; payload_denomination; payload_exposure_id; payload_metadata_uri; payload_reason; }
-  { rank=same; lane_3; recipient_id; recipient_weight; }
-  { rank=same; lane_4; type_string; type_int; type_double; type_event_type; type_token_tier; type_denomination_union; type_null_string; }
-  { rank=same; lane_5; value_placeholder; }
-
+  socioprophet_heller_v1_HellerEventEnvelope_0 [shape=box, style="rounded", label="socioprophet.heller.v1\\nHellerEventEnvelope"];
+  socioprophet_heller_v1_HellerEventEnvelope_schema_version_1 [shape=box, style="rounded", label="schema_version"];
+  socioprophet_heller_v1_HellerEventEnvelope_schema_version_datatype_2 [shape=box, style="solid", label="string"];
+  socioprophet_heller_v1_HellerEventEnvelope_schema_version_value_3 [shape=plaintext, style="solid", label="..."];
+  socioprophet_heller_v1_HellerEventEnvelope_event_id_4 [shape=box, style="rounded", label="event_id"];
+  socioprophet_heller_v1_HellerEventEnvelope_event_id_datatype_5 [shape=box, style="solid", label="string"];
+  socioprophet_heller_v1_HellerEventEnvelope_event_id_value_6 [shape=plaintext, style="solid", label="..."];
+  socioprophet_heller_v1_HellerEventEnvelope_scenario_id_7 [shape=box, style="rounded", label="scenario_id"];
+  socioprophet_heller_v1_HellerEventEnvelope_scenario_id_datatype_8 [shape=box, style="solid", label="string"];
+  socioprophet_heller_v1_HellerEventEnvelope_scenario_id_value_9 [shape=plaintext, style="solid", label="..."];
+  socioprophet_heller_v1_HellerEventEnvelope_epoch_10 [shape=box, style="rounded", label="epoch"];
+  socioprophet_heller_v1_HellerEventEnvelope_epoch_datatype_11 [shape=box, style="solid", label="int"];
+  socioprophet_heller_v1_HellerEventEnvelope_epoch_value_12 [shape=plaintext, style="solid", label="..."];
+  socioprophet_heller_v1_HellerEventEnvelope_event_type_13 [shape=box, style="rounded", label="event_type"];
+  socioprophet_heller_v1_HellerEventEnvelope_event_type_datatype_14 [shape=box, style="solid", label="enum EventType"];
+  socioprophet_heller_v1_HellerEventEnvelope_event_type_value_15 [shape=plaintext, style="solid", label="..."];
+  socioprophet_heller_v1_HellerEventEnvelope_proof_ref_16 [shape=box, style="rounded", label="proof_ref"];
+  socioprophet_heller_v1_HellerEventEnvelope_proof_ref_datatype_17 [shape=box, style="solid", label="string"];
+  socioprophet_heller_v1_HellerEventEnvelope_proof_ref_value_18 [shape=plaintext, style="solid", label="..."];
+  socioprophet_heller_v1_HellerEventEnvelope_sphere_from_19 [shape=box, style="rounded", label="sphere_from"];
+  socioprophet_heller_v1_HellerEventEnvelope_sphere_from_datatype_20 [shape=box, style="solid", label="int"];
+  socioprophet_heller_v1_HellerEventEnvelope_sphere_from_value_21 [shape=plaintext, style="solid", label="..."];
+  socioprophet_heller_v1_HellerEventEnvelope_sphere_to_22 [shape=box, style="rounded", label="sphere_to"];
+  socioprophet_heller_v1_HellerEventEnvelope_sphere_to_datatype_23 [shape=box, style="solid", label="int"];
+  socioprophet_heller_v1_HellerEventEnvelope_sphere_to_value_24 [shape=plaintext, style="solid", label="..."];
+  socioprophet_heller_v1_HellerEventEnvelope_token_tier_25 [shape=box, style="rounded", label="token_tier"];
+  socioprophet_heller_v1_HellerEventEnvelope_token_tier_datatype_26 [shape=box, style="solid", label="enum TokenTier"];
+  socioprophet_heller_v1_HellerEventEnvelope_token_tier_value_27 [shape=plaintext, style="solid", label="..."];
+  socioprophet_heller_v1_HellerEventEnvelope_delta_ep_28 [shape=box, style="rounded", label="delta_ep"];
+  socioprophet_heller_v1_HellerEventEnvelope_delta_ep_datatype_29 [shape=box, style="solid", label="double"];
+  socioprophet_heller_v1_HellerEventEnvelope_delta_ep_value_30 [shape=plaintext, style="solid", label="..."];
+  socioprophet_heller_v1_HellerEventEnvelope_quality_31 [shape=box, style="rounded", label="quality"];
+  socioprophet_heller_v1_HellerEventEnvelope_quality_datatype_32 [shape=box, style="solid", label="record QualityCQSP"];
+  socioprophet_heller_v1_HellerEventEnvelope_quality_value_33 [shape=plaintext, style="solid", label="..."];
+  socioprophet_heller_v1_HellerEventEnvelope_recipients_34 [shape=box, style="rounded", label="recipients"];
+  socioprophet_heller_v1_HellerEventEnvelope_recipients_datatype_35 [shape=box, style="solid", label="array<record Recipient>"];
+  socioprophet_heller_v1_HellerEventEnvelope_recipients_value_36 [shape=plaintext, style="solid", label="..."];
+  socioprophet_heller_v1_HellerEventEnvelope_payload_37 [shape=box, style="rounded", label="payload"];
+  socioprophet_heller_v1_HellerEventEnvelope_payload_datatype_38 [shape=box, style="solid", label="record EventPayload"];
+  socioprophet_heller_v1_HellerEventEnvelope_payload_value_39 [shape=plaintext, style="solid", label="..."];
+  { rank=same; lane_0; socioprophet_heller_v1_HellerEventEnvelope_0; }
+  { rank=same; lane_1; socioprophet_heller_v1_HellerEventEnvelope_schema_version_1; socioprophet_heller_v1_HellerEventEnvelope_event_id_4; socioprophet_heller_v1_HellerEventEnvelope_scenario_id_7; socioprophet_heller_v1_HellerEventEnvelope_epoch_10; socioprophet_heller_v1_HellerEventEnvelope_event_type_13; socioprophet_heller_v1_HellerEventEnvelope_proof_ref_16; socioprophet_heller_v1_HellerEventEnvelope_sphere_from_19; socioprophet_heller_v1_HellerEventEnvelope_sphere_to_22; socioprophet_heller_v1_HellerEventEnvelope_token_tier_25; socioprophet_heller_v1_HellerEventEnvelope_delta_ep_28; socioprophet_heller_v1_HellerEventEnvelope_quality_31; socioprophet_heller_v1_HellerEventEnvelope_recipients_34; socioprophet_heller_v1_HellerEventEnvelope_payload_37; }
+  { rank=same; lane_4; socioprophet_heller_v1_HellerEventEnvelope_schema_version_datatype_2; socioprophet_heller_v1_HellerEventEnvelope_event_id_datatype_5; socioprophet_heller_v1_HellerEventEnvelope_scenario_id_datatype_8; socioprophet_heller_v1_HellerEventEnvelope_epoch_datatype_11; socioprophet_heller_v1_HellerEventEnvelope_event_type_datatype_14; socioprophet_heller_v1_HellerEventEnvelope_proof_ref_datatype_17; socioprophet_heller_v1_HellerEventEnvelope_sphere_from_datatype_20; socioprophet_heller_v1_HellerEventEnvelope_sphere_to_datatype_23; socioprophet_heller_v1_HellerEventEnvelope_token_tier_datatype_26; socioprophet_heller_v1_HellerEventEnvelope_delta_ep_datatype_29; socioprophet_heller_v1_HellerEventEnvelope_quality_datatype_32; socioprophet_heller_v1_HellerEventEnvelope_recipients_datatype_35; socioprophet_heller_v1_HellerEventEnvelope_payload_datatype_38; }
+  { rank=same; lane_5; socioprophet_heller_v1_HellerEventEnvelope_schema_version_value_3; socioprophet_heller_v1_HellerEventEnvelope_event_id_value_6; socioprophet_heller_v1_HellerEventEnvelope_scenario_id_value_9; socioprophet_heller_v1_HellerEventEnvelope_epoch_value_12; socioprophet_heller_v1_HellerEventEnvelope_event_type_value_15; socioprophet_heller_v1_HellerEventEnvelope_proof_ref_value_18; socioprophet_heller_v1_HellerEventEnvelope_sphere_from_value_21; socioprophet_heller_v1_HellerEventEnvelope_sphere_to_value_24; socioprophet_heller_v1_HellerEventEnvelope_token_tier_value_27; socioprophet_heller_v1_HellerEventEnvelope_delta_ep_value_30; socioprophet_heller_v1_HellerEventEnvelope_quality_value_33; socioprophet_heller_v1_HellerEventEnvelope_recipients_value_36; socioprophet_heller_v1_HellerEventEnvelope_payload_value_39; }
   lane_0 -> lane_1 [style=invis, weight=20];
   lane_1 -> lane_2 [style=invis, weight=20];
   lane_2 -> lane_3 [style=invis, weight=20];
   lane_3 -> lane_4 [style=invis, weight=20];
   lane_4 -> lane_5 [style=invis, weight=20];
-
-  root -> schema_version;
-  root -> event_id;
-  root -> scenario_id;
-  root -> epoch;
-  root -> event_type;
-  root -> proof_ref;
-  root -> sphere_from;
-  root -> sphere_to;
-  root -> token_tier;
-  root -> delta_ep;
-  root -> quality;
-  root -> recipients;
-  root -> payload;
-
-  schema_version -> type_string;
-  event_id -> type_string;
-  scenario_id -> type_string;
-  epoch -> type_int;
-  event_type -> type_event_type;
-  proof_ref -> type_string;
-  sphere_from -> type_int;
-  sphere_to -> type_int;
-  token_tier -> type_token_tier;
-  delta_ep -> type_double;
-
-  quality -> quality_C;
-  quality -> quality_Q;
-  quality -> quality_S;
-  quality -> quality_P;
-  quality_C -> type_double;
-  quality_Q -> type_double;
-  quality_S -> type_double;
-  quality_P -> type_double;
-
-  recipients -> recipients_items;
-  recipients_items -> recipient_id;
-  recipients_items -> recipient_weight;
-  recipient_id -> type_string;
-  recipient_weight -> type_double;
-
-  payload -> payload_amount;
-  payload -> payload_class_id;
-  payload -> payload_denomination;
-  payload -> payload_exposure_id;
-  payload -> payload_metadata_uri;
-  payload -> payload_reason;
-  payload_amount -> type_double;
-  payload_class_id -> type_string;
-  payload_denomination -> type_denomination_union;
-  payload_exposure_id -> type_null_string;
-  payload_metadata_uri -> type_null_string;
-  payload_reason -> type_null_string;
-
-  type_string -> value_placeholder;
-  type_int -> value_placeholder;
-  type_double -> value_placeholder;
-  type_event_type -> value_placeholder;
-  type_token_tier -> value_placeholder;
-  type_denomination_union -> value_placeholder;
-  type_null_string -> value_placeholder;
+  socioprophet_heller_v1_HellerEventEnvelope_0 -> socioprophet_heller_v1_HellerEventEnvelope_schema_version_1;
+  socioprophet_heller_v1_HellerEventEnvelope_schema_version_1 -> socioprophet_heller_v1_HellerEventEnvelope_schema_version_datatype_2;
+  socioprophet_heller_v1_HellerEventEnvelope_schema_version_1 -> socioprophet_heller_v1_HellerEventEnvelope_schema_version_value_3;
+  socioprophet_heller_v1_HellerEventEnvelope_0 -> socioprophet_heller_v1_HellerEventEnvelope_event_id_4;
+  socioprophet_heller_v1_HellerEventEnvelope_event_id_4 -> socioprophet_heller_v1_HellerEventEnvelope_event_id_datatype_5;
+  socioprophet_heller_v1_HellerEventEnvelope_event_id_4 -> socioprophet_heller_v1_HellerEventEnvelope_event_id_value_6;
+  socioprophet_heller_v1_HellerEventEnvelope_0 -> socioprophet_heller_v1_HellerEventEnvelope_scenario_id_7;
+  socioprophet_heller_v1_HellerEventEnvelope_scenario_id_7 -> socioprophet_heller_v1_HellerEventEnvelope_scenario_id_datatype_8;
+  socioprophet_heller_v1_HellerEventEnvelope_scenario_id_7 -> socioprophet_heller_v1_HellerEventEnvelope_scenario_id_value_9;
+  socioprophet_heller_v1_HellerEventEnvelope_0 -> socioprophet_heller_v1_HellerEventEnvelope_epoch_10;
+  socioprophet_heller_v1_HellerEventEnvelope_epoch_10 -> socioprophet_heller_v1_HellerEventEnvelope_epoch_datatype_11;
+  socioprophet_heller_v1_HellerEventEnvelope_epoch_10 -> socioprophet_heller_v1_HellerEventEnvelope_epoch_value_12;
+  socioprophet_heller_v1_HellerEventEnvelope_0 -> socioprophet_heller_v1_HellerEventEnvelope_event_type_13;
+  socioprophet_heller_v1_HellerEventEnvelope_event_type_13 -> socioprophet_heller_v1_HellerEventEnvelope_event_type_datatype_14;
+  socioprophet_heller_v1_HellerEventEnvelope_event_type_13 -> socioprophet_heller_v1_HellerEventEnvelope_event_type_value_15;
+  socioprophet_heller_v1_HellerEventEnvelope_0 -> socioprophet_heller_v1_HellerEventEnvelope_proof_ref_16;
+  socioprophet_heller_v1_HellerEventEnvelope_proof_ref_16 -> socioprophet_heller_v1_HellerEventEnvelope_proof_ref_datatype_17;
+  socioprophet_heller_v1_HellerEventEnvelope_proof_ref_16 -> socioprophet_heller_v1_HellerEventEnvelope_proof_ref_value_18;
+  socioprophet_heller_v1_HellerEventEnvelope_0 -> socioprophet_heller_v1_HellerEventEnvelope_sphere_from_19;
+  socioprophet_heller_v1_HellerEventEnvelope_sphere_from_19 -> socioprophet_heller_v1_HellerEventEnvelope_sphere_from_datatype_20;
+  socioprophet_heller_v1_HellerEventEnvelope_sphere_from_19 -> socioprophet_heller_v1_HellerEventEnvelope_sphere_from_value_21;
+  socioprophet_heller_v1_HellerEventEnvelope_0 -> socioprophet_heller_v1_HellerEventEnvelope_sphere_to_22;
+  socioprophet_heller_v1_HellerEventEnvelope_sphere_to_22 -> socioprophet_heller_v1_HellerEventEnvelope_sphere_to_datatype_23;
+  socioprophet_heller_v1_HellerEventEnvelope_sphere_to_22 -> socioprophet_heller_v1_HellerEventEnvelope_sphere_to_value_24;
+  socioprophet_heller_v1_HellerEventEnvelope_0 -> socioprophet_heller_v1_HellerEventEnvelope_token_tier_25;
+  socioprophet_heller_v1_HellerEventEnvelope_token_tier_25 -> socioprophet_heller_v1_HellerEventEnvelope_token_tier_datatype_26;
+  socioprophet_heller_v1_HellerEventEnvelope_token_tier_25 -> socioprophet_heller_v1_HellerEventEnvelope_token_tier_value_27;
+  socioprophet_heller_v1_HellerEventEnvelope_0 -> socioprophet_heller_v1_HellerEventEnvelope_delta_ep_28;
+  socioprophet_heller_v1_HellerEventEnvelope_delta_ep_28 -> socioprophet_heller_v1_HellerEventEnvelope_delta_ep_datatype_29;
+  socioprophet_heller_v1_HellerEventEnvelope_delta_ep_28 -> socioprophet_heller_v1_HellerEventEnvelope_delta_ep_value_30;
+  socioprophet_heller_v1_HellerEventEnvelope_0 -> socioprophet_heller_v1_HellerEventEnvelope_quality_31;
+  socioprophet_heller_v1_HellerEventEnvelope_quality_31 -> socioprophet_heller_v1_HellerEventEnvelope_quality_datatype_32;
+  socioprophet_heller_v1_HellerEventEnvelope_quality_31 -> socioprophet_heller_v1_HellerEventEnvelope_quality_value_33;
+  socioprophet_heller_v1_HellerEventEnvelope_0 -> socioprophet_heller_v1_HellerEventEnvelope_recipients_34;
+  socioprophet_heller_v1_HellerEventEnvelope_recipients_34 -> socioprophet_heller_v1_HellerEventEnvelope_recipients_datatype_35;
+  socioprophet_heller_v1_HellerEventEnvelope_recipients_34 -> socioprophet_heller_v1_HellerEventEnvelope_recipients_value_36;
+  socioprophet_heller_v1_HellerEventEnvelope_0 -> socioprophet_heller_v1_HellerEventEnvelope_payload_37;
+  socioprophet_heller_v1_HellerEventEnvelope_payload_37 -> socioprophet_heller_v1_HellerEventEnvelope_payload_datatype_38;
+  socioprophet_heller_v1_HellerEventEnvelope_payload_37 -> socioprophet_heller_v1_HellerEventEnvelope_payload_value_39;
 }

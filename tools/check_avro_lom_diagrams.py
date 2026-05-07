@@ -34,6 +34,11 @@ DIAGRAMS: Tuple[DiagramSpec, ...] = (
         diagram="docs/diagrams/heller_event_envelope_lom.dot",
         max_depth=1,
     ),
+    DiagramSpec(
+        schema="fixtures/descriptors/heller/v1/heller_state_snapshot.avsc",
+        diagram="docs/diagrams/heller_state_snapshot_lom.dot",
+        max_depth=1,
+    ),
 )
 
 

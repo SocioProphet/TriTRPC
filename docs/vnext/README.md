@@ -16,6 +16,7 @@ TriTRPC vNext is the current design pack for:
 - `PERFORMANCE_AND_TESTING.md`
 - `braided_semantic_cadence_note.md`
 - `braided_cadence_impl_v4.md`
+- `control-plane-substrate-recovery-v0.md` — recovery/placement note for TriTRPC as a typed control-plane substrate candidate; not a normative wire-format change.
 
 ## Codebooks
 

@@ -1,0 +1,15 @@
+{
+  "type": "record",
+  "name": "PROVENANCE_RECORD",
+  "namespace": "io.socioprophet.prophet.v1",
+  "doc": "Minimal provenance receipt for a submitted evidence object.",
+  "fields": [
+    {"name": "provenance_id", "type": "string"},
+    {"name": "source_system", "type": "string"},
+    {"name": "ingest_method", "type": "string"},
+    {"name": "ingested_by", "type": "string"},
+    {"name": "ingested_at", "type": "string"},
+    {"name": "source_locator", "type": "string"},
+    {"name": "attestation_refs", "type": {"type": "array", "items": "string"}, "default": []}
+  ]
+}

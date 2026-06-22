@@ -1,0 +1,16 @@
+{
+  "type": "record",
+  "name": "FAIR_OBJECT",
+  "namespace": "io.socioprophet.prophet.v1",
+  "doc": "Canonical object descriptor for evidence-bearing content.",
+  "fields": [
+    {"name": "object_id", "type": "string"},
+    {"name": "object_type", "type": "string"},
+    {"name": "media_type", "type": "string"},
+    {"name": "title", "type": ["null", "string"], "default": null},
+    {"name": "sha256", "type": "string"},
+    {"name": "canonical_uri", "type": "string"},
+    {"name": "created_at", "type": "string"},
+    {"name": "labels", "type": {"type": "array", "items": "string"}, "default": []}
+  ]
+}

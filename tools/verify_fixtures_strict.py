@@ -102,6 +102,7 @@ def main():
         ("vectors_hex_stream_avronested.txt","vectors_hex_stream_avronested.txt.nonces"),
         ("vectors_hex_pathB.txt","vectors_hex_pathB.txt.nonces"),
         ("vectors_hex_pathB_stream.txt","vectors_hex_pathB_stream.txt.nonces"),
+        ("vectors_hex_prophet_lane1.txt", "vectors_hex_prophet_lane1.txt.nonces"),
     ]
     for f,n in sets: verify_file(f,n)
     print("[OK] All fixture AEAD tags verified under BLAKE2b-MAC.")

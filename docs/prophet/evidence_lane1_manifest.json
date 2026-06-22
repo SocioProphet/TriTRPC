@@ -1,0 +1,68 @@
+{
+  "lane1_submit_request": {
+    "service": "evidence.v1",
+    "method": "SubmitEvidence.REQ",
+    "payload_len": 638,
+    "frame_len": 781,
+    "frame_sha256": "69ad1b126d9f40087856a7141af8ae16c90b7a1ec648bc4a182d283c10ee4285",
+    "tag_hex": "58a62c29f0a29b9b097983c66e5b372a",
+    "tag_algorithm": "BLAKE2b-MAC-16",
+    "schema_id_sha3_256_hex": "d9242e82cc40704bef88147ddd2d36f2692a4d0d6e7e3c1eb8ff43175a34cf84",
+    "context_id_sha3_256_hex": "169e96ef5438b146c4fc18af142d3ecb5fab99e8da18106944f4d7302ee2901d"
+  },
+  "lane1_submit_response": {
+    "service": "evidence.v1",
+    "method": "SubmitEvidence.RSP",
+    "payload_len": 82,
+    "frame_len": 225,
+    "frame_sha256": "22a7adcb726d04365002729497aff786e156ed191612eec7d8b2209ec703baf1",
+    "tag_hex": "ca972a6716c8eeac4b3520527afe99db",
+    "tag_algorithm": "BLAKE2b-MAC-16",
+    "schema_id_sha3_256_hex": "d9242e82cc40704bef88147ddd2d36f2692a4d0d6e7e3c1eb8ff43175a34cf84",
+    "context_id_sha3_256_hex": "169e96ef5438b146c4fc18af142d3ecb5fab99e8da18106944f4d7302ee2901d"
+  },
+  "lane1_verify_request": {
+    "service": "evidence.v1",
+    "method": "VerifyEvidence.REQ",
+    "payload_len": 88,
+    "frame_len": 231,
+    "frame_sha256": "1edb92c879ed63ad06df042b93d4bb5453d0df529112ae7c1e0fb8043d9ecc88",
+    "tag_hex": "031544bd04c1e1a9ee4c8a86ab452be8",
+    "tag_algorithm": "BLAKE2b-MAC-16",
+    "schema_id_sha3_256_hex": "d9242e82cc40704bef88147ddd2d36f2692a4d0d6e7e3c1eb8ff43175a34cf84",
+    "context_id_sha3_256_hex": "169e96ef5438b146c4fc18af142d3ecb5fab99e8da18106944f4d7302ee2901d"
+  },
+  "lane1_verify_response": {
+    "service": "evidence.v1",
+    "method": "VerifyEvidence.RSP",
+    "payload_len": 136,
+    "frame_len": 279,
+    "frame_sha256": "995c977b6c05c2a1ad3232e07583abc6a8eb2dac2f38c09788b8e56072d67ef7",
+    "tag_hex": "0a78a3f9e1e9cb34708b88ddee22bb59",
+    "tag_algorithm": "BLAKE2b-MAC-16",
+    "schema_id_sha3_256_hex": "d9242e82cc40704bef88147ddd2d36f2692a4d0d6e7e3c1eb8ff43175a34cf84",
+    "context_id_sha3_256_hex": "169e96ef5438b146c4fc18af142d3ecb5fab99e8da18106944f4d7302ee2901d"
+  },
+  "lane1_promote_request": {
+    "service": "evidence.v1",
+    "method": "PromoteEvidence.REQ",
+    "payload_len": 216,
+    "frame_len": 360,
+    "frame_sha256": "516737629b807fd6f6f8a0b42f00042e765804574a8f559c234a549c8d0d8137",
+    "tag_hex": "96755a59f5c4e960e01151533f07ca7c",
+    "tag_algorithm": "BLAKE2b-MAC-16",
+    "schema_id_sha3_256_hex": "d9242e82cc40704bef88147ddd2d36f2692a4d0d6e7e3c1eb8ff43175a34cf84",
+    "context_id_sha3_256_hex": "169e96ef5438b146c4fc18af142d3ecb5fab99e8da18106944f4d7302ee2901d"
+  },
+  "lane1_promote_response": {
+    "service": "evidence.v1",
+    "method": "PromoteEvidence.RSP",
+    "payload_len": 204,
+    "frame_len": 348,
+    "frame_sha256": "1271b574f614eb2ae9a85306d98c846cec856979a6c7aefbd155229f49bc8d84",
+    "tag_hex": "a1c4669974816d140e857d9615780891",
+    "tag_algorithm": "BLAKE2b-MAC-16",
+    "schema_id_sha3_256_hex": "d9242e82cc40704bef88147ddd2d36f2692a4d0d6e7e3c1eb8ff43175a34cf84",
+    "context_id_sha3_256_hex": "169e96ef5438b146c4fc18af142d3ecb5fab99e8da18106944f4d7302ee2901d"
+  }
+}

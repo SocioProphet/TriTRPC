@@ -1,0 +1,35 @@
+name: validate-heller-frame-vector
+
+on:
+  pull_request:
+    paths:
+      - "fixtures/heller/v1/**"
+      - "fixtures/descriptors/heller/v1/encoded_payload_manifest_v8.json"
+      - "fixtures/descriptors/heller/v1/transport_admission_manifest_v0.1.json"
+      - "tools/generate_heller_frame_vector.py"
+      - "tools/verify_heller_frame_vector.py"
+      - ".github/workflows/validate-heller-frame-vector.yml"
+  push:
+    branches: [ main ]
+    paths:
+      - "fixtures/heller/v1/**"
+      - "fixtures/descriptors/heller/v1/encoded_payload_manifest_v8.json"
+      - "fixtures/descriptors/heller/v1/transport_admission_manifest_v0.1.json"
+      - "tools/generate_heller_frame_vector.py"
+      - "tools/verify_heller_frame_vector.py"
+      - ".github/workflows/validate-heller-frame-vector.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify Heller frame vector
+        run: python tools/verify_heller_frame_vector.py

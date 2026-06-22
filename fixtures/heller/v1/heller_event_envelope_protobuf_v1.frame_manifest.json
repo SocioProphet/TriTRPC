@@ -1,0 +1,17 @@
+{
+  "fixture_name": "heller_event_envelope_protobuf_v1",
+  "binding_id": "heller.event_envelope.protobuf.v1",
+  "service": "heller.v1.Transport",
+  "method": "EventEnvelope.Protobuf",
+  "payload_codec": "protobuf-binary",
+  "payload_sha256": "4c7faf0e8ce2b71d2d71c238872d1cb057e76c02382976cdcdd436cb442fd261",
+  "frame_size_bytes": 472,
+  "frame_sha256": "f32e20c1c129846502145a6ee81ad28847ef32853b3940ac09c8ad5174ec5853",
+  "tag_hex": "c656d32948a75e601cbec02b55a849cc",
+  "schema_id_hex": "b2ab814588f99c875d37bb7546d0df4369c28bc5f60ce38a6607dac468034352",
+  "context_id_hex": "e6572c0e618f18d572d4c2969db4909659f09eaef32ec66fbb804bad9d89aacd",
+  "aead_tag_algorithm": "BLAKE2b-MAC-128",
+  "aead_key": "zero-32-byte-fixture-key",
+  "source_payload_manifest": "fixtures/descriptors/heller/v1/encoded_payload_manifest_v8.json",
+  "source_admission_manifest": "fixtures/descriptors/heller/v1/transport_admission_manifest_v0.1.json"
+}

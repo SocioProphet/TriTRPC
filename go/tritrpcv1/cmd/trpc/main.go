@@ -10,7 +10,7 @@ import (
 	"os"
 	"strings"
 
-	tr "github.com/example/tritrpcv1"
+	tr "github.com/SocioProphet/TriTRPC/go/tritrpcv1"
 	"golang.org/x/crypto/blake2b"
 )
 

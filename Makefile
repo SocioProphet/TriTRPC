@@ -5,16 +5,16 @@ verify: fmt rust-test go-test fixtures
 fmt: rust-fmt go-fmt
 
 rust-fmt:
-	cd rust/tritrpc_v1 && cargo fmt --check
+	cd rust/tritrpc && cargo fmt --check
 
 go-fmt:
-	cd go/tritrpcv1 && test -z "$$(gofmt -l .)"
+	cd go/tritrpc && test -z "$$(gofmt -l .)"
 
 rust-test:
-	cd rust/tritrpc_v1 && cargo test
+	cd rust/tritrpc && cargo test
 
 go-test:
-	cd go/tritrpcv1 && go test
+	cd go/tritrpc && go test ./...
 
 fixtures:
 	python tools/verify_fixtures_strict.py

@@ -115,11 +115,11 @@ The experimental v4 package covers:
 
 Generated evidence lives in:
 
-- `docs/vnext/generated/sample_vectors_v4.json`
-- `docs/vnext/generated/sample_audit_chain_v4.json`
-- `docs/vnext/generated/test_report_v4.txt`
-- `docs/vnext/reports/transport_comparison_v4.json`
-- `docs/vnext/reports/braid_cadence_comparison_v4.json`
+- `docs/design/generated/sample_vectors_v4.json`
+- `docs/design/generated/sample_audit_chain_v4.json`
+- `docs/design/generated/test_report_v4.txt`
+- `docs/design/reports/transport_comparison_v4.json`
+- `docs/design/reports/braid_cadence_comparison_v4.json`
 
 ## How to speak about the project publicly
 

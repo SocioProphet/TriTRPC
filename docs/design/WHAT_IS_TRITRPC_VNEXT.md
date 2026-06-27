@@ -29,8 +29,8 @@ TriTRPC vNext tries to make transport intelligence a first-class protocol featur
 
 ## Where to start
 
-- `docs/vnext/README.md`
-- `docs/vnext/PERFORMANCE_AND_TESTING.md`
-- `docs/vnext/braided_cadence_impl_v4.md`
+- `docs/design/README.md`
+- `docs/design/PERFORMANCE_AND_TESTING.md`
+- `docs/design/braided_cadence_impl_v4.md`
 - `spec/drafts/tritrpc_vnext_mini_spec.md`
-- `reference/experimental/tritrpc_requirements_impl_v4/`
+- `reference/experimental/tritrpc/`

@@ -10,7 +10,7 @@ import (
 	"os"
 	"strings"
 
-	tr "github.com/example/tritrpcv1"
+	tr "github.com/SocioProphet/TriTRPC/go/tritrpc"
 	"golang.org/x/crypto/chacha20poly1305"
 )
 

@@ -28,13 +28,13 @@ This runs:
 ## ✅ Per-language commands (if running manually)
 
 ```bash
-cd rust/tritrpc_v1
+cd rust/tritrpc
 cargo fmt --check
 cargo test
 ```
 
 ```bash
-cd go/tritrpcv1
+cd go/tritrpc
 gofmt -l .
 go test
 ```

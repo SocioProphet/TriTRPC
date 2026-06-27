@@ -117,5 +117,5 @@ semantic input.
 ## Further reading
 
 - Full specification: `spec/README-full-spec.md`
-- Reference implementation: `reference/tritrpc_v1.py`
+- Reference implementation: `reference/tritrpc.py`
 - Fixtures: `fixtures/`

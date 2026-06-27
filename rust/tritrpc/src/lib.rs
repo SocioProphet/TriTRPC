@@ -76,8 +76,8 @@ pub mod tleb3 {
             let p1 = d / 3;
             let p0 = d % 3;
             trits.push(c);
-            trits.push(*p1);
-            trits.push(*p0);
+            trits.push(p1);
+            trits.push(p0);
         }
         tritpack243::pack(&trits)
     }
@@ -995,7 +995,7 @@ pub mod tritrpc_v1_tests {
                     .unwrap();
                 let computed = &ct[ct.len() - 16..];
                 assert!(
-                    computed.ct_eq(tag.as_slice()).into(),
+                    bool::from(computed.ct_eq(tag.as_slice())),
                     "tag mismatch {}",
                     name
                 );
@@ -1080,9 +1080,10 @@ pub mod avroenc_json {
     pub fn enc_HGResponse_json(v: &Value) -> Vec<u8> {
         let ok = v["ok"].as_bool().unwrap_or(true);
         let err = v.get("err").and_then(|e| e.as_str());
+        let empty_vertices = Vec::new();
         let vertices = v["vertices"]
             .as_array()
-            .unwrap_or(&vec![])
+            .unwrap_or(&empty_vertices)
             .iter()
             .map(|x| {
                 (
@@ -1091,9 +1092,10 @@ pub mod avroenc_json {
                 )
             })
             .collect::<Vec<_>>();
+        let empty_edges = Vec::new();
         let edges = v["edges"]
             .as_array()
-            .unwrap_or(&vec![])
+            .unwrap_or(&empty_edges)
             .iter()
             .map(|x| {
                 let eid = x["eid"].as_str().unwrap();

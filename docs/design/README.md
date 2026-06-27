@@ -50,4 +50,4 @@ TriTRPC vNext is the current design pack for:
 
 ## Experimental package
 
-- `../../reference/experimental/tritrpc_requirements_impl_v4/`
+- `../../reference/experimental/tritrpc/`

@@ -4,7 +4,7 @@ This file mirrors the **full spec** provided in chat (Status: Draft 1.0). It enu
 the normative requirements for envelope layout, TritPack243, TLEB3, AEAD, Profiles, Kafka,
 Strict-Initial (PoE), and the reference hypergraph service.
 
-For convenience, the **reference implementation** in `reference/tritrpc_v1.py` adheres to:
+For convenience, the **reference implementation** in `reference/tritrpc.py` adheres to:
 - Path-A (Avro Binary Encoding) for payloads,
 - AEAD lane (XChaCha20-Poly1305),
 - HELLO/CHOOSE negotiation examples,

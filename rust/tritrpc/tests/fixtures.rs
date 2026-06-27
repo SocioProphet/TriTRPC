@@ -2,8 +2,15 @@ use chacha20poly1305::aead::{Aead, KeyInit};
 use chacha20poly1305::XChaCha20Poly1305;
 use std::collections::HashMap;
 use std::fs;
+use std::path::PathBuf;
 use subtle::ConstantTimeEq;
 use tritrpc_v1::{avrodec, avroenc, envelope, tleb3, tritpack243};
+fn repo_fixture(rel: &str) -> String {
+    let mut p = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    p.push("../../");
+    p.push(rel);
+    p.to_string_lossy().into_owned()
+}
 
 fn read_pairs(path: &str) -> Vec<(String, Vec<u8>)> {
     let txt = fs::read_to_string(path).expect("read fixtures");
@@ -125,7 +132,7 @@ fn verify_all_frames_and_payloads() {
                     )
                     .unwrap();
                 let computed = &ct[ct.len() - 16..];
-                let matches = computed.ct_eq(tag.as_slice()).into();
+                let matches = bool::from(computed.ct_eq(tag.as_slice()));
                 assert!(matches, "tag mismatch for {}", name);
                 if strict {
                     assert!(matches, "strict tag mismatch for {}", name);

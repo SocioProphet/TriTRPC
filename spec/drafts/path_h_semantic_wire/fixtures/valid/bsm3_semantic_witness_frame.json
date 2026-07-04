@@ -1,0 +1,38 @@
+{
+  "fixture_name": "valid_path_h_bsm3_semantic_witness_frame",
+  "kind": "TELEPORT.BSM3",
+  "epoch_id": "epoch:path-h-semantic-wire:2026-05-12T00:00:00Z",
+  "codebook_version": "sem243-control-path-h-v0.1.0",
+  "ctrl243": {
+    "profile": 2,
+    "lane": 1,
+    "evidence": 1,
+    "fallback": 1,
+    "routefmt": 1
+  },
+  "route_h": "handle:route-path-h-bsm3-semantic-witness-v1",
+  "payload": {
+    "seq": 1843,
+    "ttl_ms": 1000,
+    "ts_ns": 1778709000100000000,
+    "pair_id": "pair:path-h-qutrit-001",
+    "basis_id": 3,
+    "bsm3_code": "12",
+    "projection_id": "wire-projection-path-h-bsm3-witness-001",
+    "sem243_ref": "sem243:qutrit.teleport.witness",
+    "state243_ref": "state243:qutrit-bsm3:v0.1",
+    "schema_h": "handle:schema-path-h-bsm3-v0.1",
+    "context_h": "handle:context-qutrit-link-001",
+    "bundle_h": "handle:bundle-bsm3-witness-001",
+    "semantic_projection_mode": "OPAQUE_HANDLE_ONLY",
+    "truth_class": "OBSERVED",
+    "control_evidence": "sampled",
+    "sensitive_off_hot_path": true,
+    "defer_ok": true
+  },
+  "receipt": {
+    "semantic_receipt_h": "handle:receipt-path-h-bsm3-witness-001",
+    "replay_required": true,
+    "projection_loss_report_ref": null
+  }
+}

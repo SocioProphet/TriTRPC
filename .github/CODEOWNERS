@@ -1,0 +1,15 @@
+# TriTRPC transport and agent-sandbox control-plane ownership.
+# This file protects workflow, transport-profile, schema, fixture, and verifier surfaces.
+
+.github/workflows/* @mdheller
+.github/CODEOWNERS @mdheller
+.github/copilot-instructions.md @mdheller
+
+README.md @mdheller
+Makefile @mdheller
+
+docs/CAPABILITY_FABRIC_SEMANTIC_SOURCE.md @mdheller
+docs/AGENT_SANDBOX_TRANSPORT_PROFILE.md @mdheller
+schemas/jsonschema/agent-sandbox-transport.v0.schema.json @mdheller
+fixtures/agent_sandbox_transport/* @mdheller
+tools/verify_agent_sandbox_transport.py @mdheller

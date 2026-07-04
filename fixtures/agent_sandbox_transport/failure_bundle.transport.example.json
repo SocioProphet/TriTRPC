@@ -1,0 +1,22 @@
+{
+  "schema_version": "tritrpc-agent-sandbox-transport.v0",
+  "blob_id": "blob_agent_failure_bundle_0001",
+  "media_type": "application/vnd.socioprophet.agent-failure-bundle+json;v=0",
+  "semantic_schema_ref": "capability-fabric:agent-sandbox-lifecycle.v0#/AgentFailureBundle",
+  "payload_digest": "sha256:bc7bf0ac87b530c1c64543511fd07ede7509684a0cc2fb18cda9c64e2c72351b",
+  "payload": {
+    "schema_version": "agent-sandbox-lifecycle.v0",
+    "sandbox_id": "sandbox_tritrpc_pr_comment_0001",
+    "failure_kind": "model_rate_limited",
+    "failure_class": "INFRASTRUCTURE",
+    "retry_after_seconds": 1094,
+    "allow_partial_push": false,
+    "allow_push_after_infra_failure": false,
+    "evidence_refs": [
+      "github-actions-log://SocioProphet/TriTRPC/actions/runs/copilot-example#user_model_rate_limited"
+    ],
+    "sealed_at": "2026-05-04T00:00:00Z"
+  },
+  "attestation_ref": "github-attestation://example/failure-bundle/0001",
+  "parent_ref": "sandbox_tritrpc_pr_comment_0001"
+}

@@ -1,0 +1,35 @@
+{
+  "fixture_name": "valid_path_h_permission_claim_frame",
+  "kind": "SEMANTIC.CONTROL",
+  "epoch_id": "epoch:path-h-semantic-wire:2026-05-12T00:00:00Z",
+  "codebook_version": "sem243-control-path-h-v0.1.0",
+  "ctrl243": {
+    "profile": 2,
+    "lane": 2,
+    "evidence": 2,
+    "fallback": 1,
+    "routefmt": 1
+  },
+  "route_h": "handle:route-path-h-permission-claim-v1",
+  "payload": {
+    "seq": 1842,
+    "ttl_ms": 5000,
+    "ts_ns": 1778709000000000000,
+    "basis_id": 7,
+    "projection_id": "wire-projection-path-h-permission-claim-001",
+    "sem243_ref": "sem243:policy.permission.claim",
+    "state243_ref": "state243:allow-mid-deny:v0.1",
+    "schema_h": "handle:schema-shir-assertion-v0.1",
+    "context_h": "handle:context-actor-action-resource-condition",
+    "bundle_h": "handle:bundle-permission-claim-001",
+    "semantic_projection_mode": "OPAQUE_HANDLE_ONLY",
+    "truth_class": "ASSERTED",
+    "control_evidence": "verified",
+    "sensitive_off_hot_path": true
+  },
+  "receipt": {
+    "semantic_receipt_h": "handle:receipt-path-h-permission-claim-001",
+    "replay_required": true,
+    "projection_loss_report_ref": null
+  }
+}

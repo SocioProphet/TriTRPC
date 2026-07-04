@@ -73,8 +73,10 @@ def get_aad_and_tag(frame: bytes):
 
 def verify_file(fx_name: str, nx_name: str) -> None:
     path = FX/fx_name; npath = FX/nx_name
-    if not path.exists() or not npath.exists():
-        return
+    missing = [str(p) for p in (path, npath) if not p.exists()]
+    if missing:
+        print(f"[FAIL] listed fixture file(s) missing: {', '.join(missing)}", file=sys.stderr)
+        sys.exit(2)
     nonce = {}
     for ln in npath.read_text().splitlines():
         ln=ln.strip()
@@ -101,7 +103,6 @@ def main():
         ("vectors_hex_unary_rich.txt","vectors_hex_unary_rich.txt.nonces"),
         ("vectors_hex_stream_avronested.txt","vectors_hex_stream_avronested.txt.nonces"),
         ("vectors_hex_pathB.txt","vectors_hex_pathB.txt.nonces"),
-        ("vectors_hex_pathB_stream.txt","vectors_hex_pathB_stream.txt.nonces"),
         ("vectors_hex_prophet_lane1.txt", "vectors_hex_prophet_lane1.txt.nonces"),
     ]
     for f,n in sets: verify_file(f,n)

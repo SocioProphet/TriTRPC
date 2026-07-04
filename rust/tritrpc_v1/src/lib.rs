@@ -434,7 +434,7 @@ pub mod avroenc {
         out.extend(enc_string(comp));
         out
     }
-    pub fn enc_Error(code: i32, msg: &str, details: Option<&[u8]>) -> Vec<u8> {
+    pub fn enc_error(code: i32, msg: &str, details: Option<&[u8]>) -> Vec<u8> {
         let mut out = Vec::new();
         out.extend(enc_int(code));
         out.extend(enc_string(msg));

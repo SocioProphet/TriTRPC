@@ -1,0 +1,23 @@
+name: agent-sandbox-transport
+
+on:
+  pull_request:
+    paths:
+      - 'docs/AGENT_SANDBOX_TRANSPORT_PROFILE.md'
+      - 'schemas/jsonschema/agent-sandbox-transport.v0.schema.json'
+      - 'fixtures/agent_sandbox_transport/**'
+      - 'tools/verify_agent_sandbox_transport.py'
+      - '.github/workflows/agent-sandbox-transport.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-agent-sandbox-transport:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - name: Verify agent sandbox transport fixtures
+        run: python tools/verify_agent_sandbox_transport.py

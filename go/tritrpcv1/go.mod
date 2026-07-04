@@ -1,4 +1,4 @@
-module github.com/example/tritrpcv1
+module github.com/SocioProphet/TriTRPC/go/tritrpcv1
 
 go 1.21
 

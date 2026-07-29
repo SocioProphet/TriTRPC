@@ -60,8 +60,12 @@ def regex(path: str, pattern: str, message: str) -> None:
 # markdown setext underlines and ASCII rules — and CRITICAL_PATHS carries a .md
 # file, so the substring form reports a merge conflict for ordinary prose.
 # git writes markers at column zero: '<<<<<<< ref', '=======' alone, '>>>>>>> ref'.
+# '|||||||' is written only under merge.conflictStyle=diff3/zdiff3, which is not
+# the default — so a repo that opts into it would have had its residue sail past
+# a three-marker check.
 CONFLICT_MARKERS = (
     r"^<<<<<<< ",
+    r"^\|\|\|\|\|\|\|",
     r"^=======$",
     r"^>>>>>>> ",
 )

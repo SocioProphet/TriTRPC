@@ -55,12 +55,24 @@ def regex(path: str, pattern: str, message: str) -> None:
     require(path, re.search(pattern, body, flags=re.DOTALL | re.MULTILINE) is not None, message)
 
 
+# Conflict markers are matched line-anchored, not as bare substrings. A plain
+# `"=======" in body` fires on any run of seven or more '=', which includes
+# markdown setext underlines and ASCII rules — and CRITICAL_PATHS carries a .md
+# file, so the substring form reports a merge conflict for ordinary prose.
+# git writes markers at column zero: '<<<<<<< ref', '=======' alone, '>>>>>>> ref'.
+CONFLICT_MARKERS = (
+    r"^<<<<<<< ",
+    r"^=======$",
+    r"^>>>>>>> ",
+)
+
+
 def audit_no_conflict_markers() -> None:
-    markers = ("<<<<<<<", "=======", ">>>>>>>")
     for path in CRITICAL_PATHS:
         body = read(path)
-        for marker in markers:
-  require(path, marker not in body, f"contains unresolved merge marker {marker!r}")
+        for marker in CONFLICT_MARKERS:
+            found = re.search(marker, body, flags=re.MULTILINE) is not None
+            require(path, not found, f"contains unresolved merge marker {marker!r}")
 
 
 def audit_go_runtime_shape() -> None:
@@ -132,7 +144,7 @@ def main() -> int:
     if errors:
         print("current runtime static audit failed:", file=sys.stderr)
         for err in errors:
-  print(f"- {err}", file=sys.stderr)
+            print(f"- {err}", file=sys.stderr)
         return 1
 
     print("current runtime static audit passed")

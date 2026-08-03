@@ -98,8 +98,6 @@ def validate_schema(schema: Any) -> None:
     if not isinstance(schema, dict) or schema.get("additionalProperties") is not False:
         fail("schema root must be strict")
     props = schema.get("properties", {})
-    if props.get("title") is not None:  # noqa: SIM102 (title is a top-level key, not a property)
-        pass
     tx = props.get("transport", {})
     if tx.get("additionalProperties") is not False:
         fail("schema transport must be strict")

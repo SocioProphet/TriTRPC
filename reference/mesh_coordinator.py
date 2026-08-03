@@ -27,7 +27,12 @@ touch the tritrpc v4/vNext wire format.
 """
 from __future__ import annotations
 
+import os
+import sys
 from typing import Any
+
+sys.path.insert(0, os.path.dirname(__file__))
+import suite_gate  # noqa: E402  (the coordinator ENFORCES the suite gate — not just declares it)
 
 PROOF_MODES = {"redundant", "spot_check", "tee", "zk"}
 # The material each proof mode's result MUST carry to be admissible (beyond schema shape).
@@ -80,6 +85,14 @@ def verify_result(pack: dict, result: dict, trusted: list) -> None:
     policy = pack.get("policy") or {}
     if not _residency_ok(policy.get("residency", "any"), result.get("region", "")):
         _fail(f"residency violation: pack requires {policy.get('residency')!r}, node in {result.get('region')!r}")
+
+    # Enforce the workload's required assurance suite against the executing node (fabric, not a patch):
+    # a suite-N workload MUST NOT settle on a node whose crypto profile suite is below N.
+    if int(policy.get("requiredSuite", 0)) > 0:
+        try:
+            suite_gate.require_suite(pack, node)
+        except suite_gate.SuiteError as exc:
+            _fail(str(exc))
 
     proof = result.get("proof") or {}
     if proof.get("mode") != mode:

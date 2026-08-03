@@ -1,0 +1,7 @@
+{
+  "profileId": "fedcrypto://fips/ecdsa",
+  "mode": "fips",
+  "contentHash": "SHA-256",
+  "signature": "ECDSA-P256",
+  "contentAddressing": "merkle-dag"
+}

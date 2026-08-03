@@ -1,0 +1,7 @@
+{
+  "minTrust": 0.5,
+  "maxSelfOrientation": 0.4,
+  "minObservations": 30,
+  "minCivility": 0.5,
+  "requireAttestation": true
+}

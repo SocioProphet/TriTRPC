@@ -1,0 +1,41 @@
+name: validate-node-admission
+
+on:
+  pull_request:
+    paths:
+      - "reference/node_admission.py"
+      - "reference/mesh_coordinator.py"
+      - "tools/verify_node_admission.py"
+      - "schemas/jsonschema/node-reputation.v0.schema.json"
+      - "schemas/jsonschema/admission-policy.v0.schema.json"
+      - "examples/mesh/node_reputation.example.json"
+      - "examples/mesh/admission_policy.example.json"
+      - "spec/orchestration/node_reputation.md"
+      - ".github/workflows/validate-node-admission.yml"
+  push:
+    branches: [ main ]
+    paths:
+      - "reference/node_admission.py"
+      - "reference/mesh_coordinator.py"
+      - "tools/verify_node_admission.py"
+      - "schemas/jsonschema/node-reputation.v0.schema.json"
+      - "schemas/jsonschema/admission-policy.v0.schema.json"
+      - "examples/mesh/node_reputation.example.json"
+      - "examples/mesh/admission_policy.example.json"
+      - "spec/orchestration/node_reputation.md"
+      - ".github/workflows/validate-node-admission.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate node-admission gate (mesh trust, fail-closed + loop-closure)
+        run: python tools/verify_node_admission.py

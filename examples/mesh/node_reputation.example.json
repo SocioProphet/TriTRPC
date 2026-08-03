@@ -1,0 +1,21 @@
+{
+  "node_ref": "node://eu-1",
+  "attestationRef": "att://tpm/eu-1#quote",
+  "region": "EU",
+  "trust": {
+    "credibility": 0.9,
+    "reliability": 0.85,
+    "intimacy": 0.7,
+    "selfOrientation": 0.2
+  },
+  "energy": {
+    "knowledge": 0.8,
+    "creativity": 0.6,
+    "civility": 0.8
+  },
+  "history": {
+    "observations": 40,
+    "decayHalfLifeDays": 30
+  },
+  "sentiment": 0.3
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.socioprophet.dev/tritrpc/admission-policy.v0.schema.json",
+  "title": "AdmissionPolicy v0",
+  "description": "The fail-closed thresholds a NodeReputation must clear to be admitted to the mesh trusted set. Every gate must pass; any failure refuses admission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["minTrust", "maxSelfOrientation", "minObservations", "minCivility", "requireAttestation"],
+  "properties": {
+    "minTrust": { "type": "number", "minimum": 0, "maximum": 1 },
+    "maxSelfOrientation": { "type": "number", "minimum": 0, "maximum": 1 },
+    "minObservations": { "type": "integer", "minimum": 1, "description": "statistical-significance floor (estate default >= 30)." },
+    "minCivility": { "type": "number", "minimum": 0, "maximum": 1, "description": "hard abuse floor — a low-civility node is refused regardless of trust." },
+    "requireAttestation": { "type": "boolean" }
+  }
+}

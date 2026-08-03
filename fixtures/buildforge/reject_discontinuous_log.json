@@ -1,0 +1,9 @@
+{
+  "forge_task_id": "ft-discontinuous-001",
+  "note": "Edge 1 starts from a state that is not edge 0's target; the log is discontinuous.",
+  "expect": {"reject": {"code": "BF-INT-004", "at": 1}},
+  "transitions": [
+    {"from": "CREATED", "to": "AUTHORIZED"},
+    {"from": "MOUNTED", "to": "BRANCHED"}
+  ]
+}

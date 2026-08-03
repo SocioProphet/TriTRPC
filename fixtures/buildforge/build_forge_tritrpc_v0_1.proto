@@ -1,0 +1,317 @@
+syntax = "proto3";
+
+package tritrpc.buildforge.v1;
+
+message Empty {}
+
+enum RunState {
+  RUN_STATE_UNSPECIFIED = 0;
+  CREATED = 1;
+  AUTHORIZED = 2;
+  MOUNTED = 3;
+  BRANCHED = 4;
+  PATCHED = 5;
+  PUSHED = 6;
+  PR_OPEN = 7;
+  CHECKS_PENDING = 8;
+  REVIEW_PENDING = 9;
+  READY_TO_MERGE = 10;
+  MERGED = 11;
+  REJECTED = 12;
+  ABORTED = 13;
+  EXPIRED = 14;
+  FAILED = 15;
+}
+
+enum ReviewState {
+  REVIEW_STATE_UNSPECIFIED = 0;
+  COMMENTED = 1;
+  APPROVED = 2;
+  CHANGES_REQUESTED = 3;
+  DISMISSED = 4;
+  PENDING = 5;
+}
+
+enum CheckState {
+  CHECK_STATE_UNSPECIFIED = 0;
+  QUEUED = 1;
+  IN_PROGRESS = 2;
+  SUCCESS = 3;
+  FAILURE = 4;
+  CANCELLED = 5;
+  NEUTRAL = 6;
+  SKIPPED = 7;
+  TIMED_OUT = 8;
+  ACTION_REQUIRED = 9;
+}
+
+message DelegationGrant {
+  string grant_id = 1;
+  string grantor_principal_id = 2;
+  string grantee_agent_id = 3;
+  string purpose = 4;
+  repeated string scope = 5;
+  repeated string context_mount_refs = 6;
+  string approval_mode = 7;
+  string valid_from = 8;
+  string valid_until = 9;
+  bool revocable = 10;
+  string signature = 11;
+}
+
+message ContextMount {
+  string context_mount_id = 1;
+  string subject_principal_id = 2;
+  string resource_uri = 3;
+  string access_mode = 4;
+  repeated string allow_paths = 5;
+  repeated string deny_paths = 6;
+  string redaction_policy = 7;
+  int32 ttl_seconds = 8;
+  string audit_tag = 9;
+  string status = 10;
+}
+
+message ForgeTask {
+  string forge_task_id = 1;
+  string principal_id = 2;
+  string agent_id = 3;
+  string repo_ref = 4;
+  string base_ref = 5;
+  string intent = 6;
+  repeated string issue_refs = 7;
+  repeated string constraints = 8;
+  string acceptance_policy_ref = 9;
+  string deadline = 10;
+  RunState status = 11;
+}
+
+message BranchLease {
+  string branch_lease_id = 1;
+  string repo_ref = 2;
+  string base_ref = 3;
+  string head_ref = 4;
+  string lease_owner = 5;
+  bool force_push_allowed = 6;
+  string created_at = 7;
+  string expires_at = 8;
+  string status = 9;
+}
+
+message PatchsetProposal {
+  string patchset_id = 1;
+  string forge_task_id = 2;
+  string branch_lease_id = 3;
+  repeated string changed_files = 4;
+  string diff_hash = 5;
+  double risk_score = 6;
+  repeated string policy_findings = 7;
+  repeated string generated_commit_shas = 8;
+  string status = 9;
+}
+
+message ForgeCheck {
+  string check_id = 1;
+  string provider_check_ref = 2;
+  string forge_task_id = 3;
+  string name = 4;
+  CheckState state = 5;
+  string details_url = 6;
+  int32 annotation_count = 7;
+}
+
+message ForgeReview {
+  string review_id = 1;
+  string provider_review_ref = 2;
+  string forge_task_id = 3;
+  string reviewer_ref = 4;
+  ReviewState review_state = 5;
+  string body = 6;
+  string submitted_at = 7;
+}
+
+message Proof {
+  string proof_id = 1;
+  string proof_type = 2;
+  string forge_task_id = 3;
+  repeated string artifact_refs = 4;
+  repeated string artifact_hashes = 5;
+  repeated string witness_refs = 6;
+  string outcome = 7;
+  string timestamp = 8;
+  string signature = 9;
+}
+
+message Cairn {
+  string cairn_id = 1;
+  string parent_cairn_id = 2;
+  repeated string event_refs = 3;
+  string state_root = 4;
+  repeated string signers = 5;
+  string replay_class = 6;
+  string timestamp = 7;
+}
+
+message NormalizedWebhook {
+  string envelope_id = 1;
+  string provider = 2;
+  string provider_delivery_id = 3;
+  string provider_event = 4;
+  string provider_action = 5;
+  string provider_instance = 6;
+  string received_at = 7;
+  bool verified = 8;
+  string verification_method = 9;
+  string installation_ref = 10;
+  string project_ref = 11;
+  string repository_ref = 12;
+  string actor_ref = 13;
+  string target_ref = 14;
+  string source_ref = 15;
+  string head_sha = 16;
+  string base_sha = 17;
+  string normalized_kind = 18;
+  string raw_body_sha256 = 19;
+  bytes raw_payload = 20;
+}
+
+message ProviderAuthRequest {
+  string provider = 1;
+  string project_ref = 2;
+  string acting_principal_id = 3;
+  string auth_mode = 4;
+  repeated string requested_permissions = 5;
+}
+
+message ProviderCredential {
+  string credential_id = 1;
+  string provider = 2;
+  string auth_mode = 3;
+  string expires_at = 4;
+  repeated string project_refs = 5;
+}
+
+message RepoSnapshotRequest {
+  string provider = 1;
+  string project_ref = 2;
+}
+
+message RepoSnapshot {
+  string repo_ref = 1;
+  string default_branch = 2;
+  bool archived = 3;
+  bool fork = 4;
+  string visibility = 5;
+  string web_url = 6;
+}
+
+message PolicySnapshotRequest {
+  string provider = 1;
+  string project_ref = 2;
+  string target_ref = 3;
+}
+
+message ProtectionSnapshot {
+  string project_ref = 1;
+  string target_ref = 2;
+  repeated string required_checks = 3;
+  int32 required_reviews = 4;
+  bool require_up_to_date = 5;
+  bool merge_queue_required = 6;
+  bool code_owner_required = 7;
+  repeated string bypass_actors = 8;
+  string captured_at = 9;
+  string raw_ref = 10;
+}
+
+message CreateBranchRequest {
+  string provider = 1;
+  string project_ref = 2;
+  string base_ref = 3;
+  string head_ref = 4;
+}
+
+message ChangeRequestRef {
+  string provider = 1;
+  string project_ref = 2;
+  string number_or_iid = 3;
+  string url = 4;
+  string head_ref = 5;
+  string base_ref = 6;
+  string head_sha = 7;
+  string state = 8;
+  string mergeable_state = 9;
+  bool draft = 10;
+}
+
+message PushPatchsetRequest {
+  string provider = 1;
+  string project_ref = 2;
+  string head_ref = 3;
+  string diff_hash = 4;
+}
+
+message PushResult {
+  string project_ref = 1;
+  string head_ref = 2;
+  string head_sha = 3;
+  string url = 4;
+}
+
+message CreateChangeRequestRequest {
+  string provider = 1;
+  string project_ref = 2;
+  string base_ref = 3;
+  string head_ref = 4;
+  string title = 5;
+  string body = 6;
+}
+
+message RequestReviewersRequest {
+  string provider = 1;
+  string project_ref = 2;
+  string number_or_iid = 3;
+  repeated string reviewer_refs = 4;
+}
+
+message MergeRequest {
+  string provider = 1;
+  string project_ref = 2;
+  string number_or_iid = 3;
+  string expected_head_sha = 4;
+  string merge_method = 5;
+}
+
+message MergeResult {
+  bool merged = 1;
+  string merge_commit_sha = 2;
+  string message = 3;
+  string provider_status = 4;
+  string merged_at = 5;
+}
+
+service ForgeProviderAdapter {
+  rpc MintContextCredential(ProviderAuthRequest) returns (ProviderCredential);
+  rpc GetRepoSnapshot(RepoSnapshotRequest) returns (RepoSnapshot);
+  rpc GetProtectionSnapshot(PolicySnapshotRequest) returns (ProtectionSnapshot);
+  rpc CreateBranch(CreateBranchRequest) returns (BranchLease);
+  rpc PushPatchset(PushPatchsetRequest) returns (PushResult);
+  rpc CreateChangeRequest(CreateChangeRequestRequest) returns (ChangeRequestRef);
+  rpc RequestReviewers(RequestReviewersRequest) returns (Empty);
+  rpc MergeChangeRequest(MergeRequest) returns (MergeResult);
+  rpc NormalizeWebhook(NormalizedWebhook) returns (NormalizedWebhook);
+}
+
+service BuildForge {
+  rpc CreateTask(ForgeTask) returns (ForgeTask);
+  rpc AuthorizeTask(DelegationGrant) returns (ForgeTask);
+  rpc MountRepoContext(ContextMount) returns (ContextMount);
+  rpc OpenBranchLease(CreateBranchRequest) returns (BranchLease);
+  rpc ProposePatchset(PatchsetProposal) returns (PatchsetProposal);
+  rpc PushPatchset(PushPatchsetRequest) returns (PushResult);
+  rpc OpenChangeRequest(CreateChangeRequestRequest) returns (ChangeRequestRef);
+  rpc RequestReviewers(RequestReviewersRequest) returns (Empty);
+  rpc AttachCheck(ForgeCheck) returns (ForgeCheck);
+  rpc EmitProof(Proof) returns (Proof);
+  rpc CloseCairn(Cairn) returns (Cairn);
+}

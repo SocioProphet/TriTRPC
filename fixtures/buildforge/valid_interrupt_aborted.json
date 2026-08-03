@@ -1,0 +1,10 @@
+{
+  "forge_task_id": "ft-abort-001",
+  "note": "An active run may be interrupted to ABORTED from any active state.",
+  "expect": "accept",
+  "transitions": [
+    {"from": "CREATED", "to": "AUTHORIZED"},
+    {"from": "AUTHORIZED", "to": "MOUNTED"},
+    {"from": "MOUNTED", "to": "ABORTED"}
+  ]
+}

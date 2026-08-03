@@ -1,6 +1,6 @@
-.PHONY: verify fmt rust-fmt go-fmt rust-test go-test fixtures descriptor-manifest-refs aux-shape avro-lom-diagrams integration-audit
+.PHONY: verify fmt rust-fmt go-fmt rust-test go-test fixtures descriptor-manifest-refs aux-shape avro-lom-diagrams build-forge integration-audit
 
-verify: fmt rust-test go-test fixtures aux-shape avro-lom-diagrams
+verify: fmt rust-test go-test fixtures aux-shape avro-lom-diagrams build-forge
 
 fmt: rust-fmt go-fmt
 
@@ -27,6 +27,9 @@ aux-shape:
 
 avro-lom-diagrams:
 	python tools/check_avro_lom_diagrams.py
+
+build-forge:
+	python tools/verify_build_forge_state_machine.py
 
 integration-audit:
 	./tools/audit_branch_pr_integration.sh main HEAD

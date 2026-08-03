@@ -1,0 +1,11 @@
+{
+  "forge_task_id": "ft-workflow-mutation-001",
+  "note": "Mutating workflow files during PATCHED under an ordinary authoring grant is refused.",
+  "expect": {"reject": {"code": "BF-POL-001", "at": 3}},
+  "transitions": [
+    {"from": "CREATED", "to": "AUTHORIZED"},
+    {"from": "AUTHORIZED", "to": "MOUNTED"},
+    {"from": "MOUNTED", "to": "BRANCHED"},
+    {"from": "BRANCHED", "to": "PATCHED", "ctx": {"workflow_file_mutation": true, "workflow_mutation_capability": false}}
+  ]
+}

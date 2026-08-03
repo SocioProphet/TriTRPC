@@ -1,0 +1,29 @@
+name: validate-suite-gate
+on:
+  pull_request:
+    paths:
+      - "reference/suite_gate.py"
+      - "tools/verify_suite_gate.py"
+      - "schemas/jsonschema/work-unit-pack.v0.schema.json"
+      - "spec/orchestration/mesh_work_unit.md"
+      - ".github/workflows/validate-suite-gate.yml"
+  push:
+    branches: [ main ]
+    paths:
+      - "reference/suite_gate.py"
+      - "tools/verify_suite_gate.py"
+      - "schemas/jsonschema/work-unit-pack.v0.schema.json"
+      - "spec/orchestration/mesh_work_unit.md"
+      - ".github/workflows/validate-suite-gate.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Validate suite gate (workload meets-or-exceeds profile suite)
+        run: python tools/verify_suite_gate.py

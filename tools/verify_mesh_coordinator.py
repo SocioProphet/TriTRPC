@@ -136,6 +136,19 @@ def main() -> int:
     else:
         FAILURES.append("reduce is not deterministic")
 
+    # 9. FABRIC: the coordinator ENFORCES pack.policy.requiredSuite via suite_gate (not just declares it).
+    #    A suite-2 (CNSA) workload must NOT settle on suite-1 (FIPS) nodes, but settles on suite-2 nodes.
+    cnsa_pack = copy.deepcopy(pack)
+    cnsa_pack["policy"]["requiredSuite"] = 2
+    fips_nodes = [{"node_ref": n["node_ref"], "attestationRef": n["attestationRef"], "region": n["region"], "suite": 1} for n in trusted]
+    cnsa_nodes = [{"node_ref": n["node_ref"], "attestationRef": n["attestationRef"], "region": n["region"], "suite": 2} for n in trusted]
+    on_fips = mc.reduce(cnsa_pack, results, fips_nodes)
+    on_cnsa = mc.reduce(cnsa_pack, results, cnsa_nodes)
+    if not on_fips["settled"] and len(on_fips["rejected"]) == len(results) and on_cnsa["settled"]:
+        CHECKS["fabric:coordinator-enforces-required-suite"] = True
+    else:
+        FAILURES.append(f"coordinator did not enforce requiredSuite: on_fips={on_fips['settled']} on_cnsa={on_cnsa['settled']}")
+
     for m in FAILURES:
         print(f"FAIL: {m}", file=sys.stderr)
     ok = not FAILURES and all(CHECKS.values())

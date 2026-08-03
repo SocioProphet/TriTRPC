@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.socioprophet.dev/tritrpc/q3-ecc-profile.v0.schema.json",
+  "title": "Q3ECCProfile v0",
+  "description": "Declares the Q3 (qutrit / ternary) error-correction profile so multi-vendor interop on the ternary rail is real day-one (the whitepaper's owed default). Two rails: classical-ternary uses Reed-Solomon over GF(3^m); qutrit-quantum uses a ternary [[n,k,d]]_3 stabilizer code. Parameters are self-consistency-checked so a declared code is a valid code. Additive: this selects the ECC for the ternary rail; it does NOT change the TritPack243/TLEB3 wire (v1/v4/vNext unaffected). FIPS-neutral (error-correction, not cryptography).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profileId", "rail", "code"],
+  "properties": {
+    "profileId": { "type": "string", "minLength": 1 },
+    "default": { "type": "boolean", "description": "true for the single canonical default profile" },
+    "rail": { "type": "string", "enum": ["classical-ternary", "qutrit-quantum"] },
+    "code": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": { "type": "string", "enum": ["RS-GF3m", "ternary-stabilizer"] },
+        "m": { "type": "integer", "minimum": 1, "description": "RS: field is GF(3^m)" },
+        "n": { "type": "integer", "minimum": 1, "description": "code block length (symbols / qutrits)" },
+        "k": { "type": "integer", "minimum": 0, "description": "message symbols / logical qutrits" },
+        "t": { "type": "integer", "minimum": 0, "description": "RS: correctable symbol errors" },
+        "d": { "type": "integer", "minimum": 1, "description": "stabilizer: code distance" }
+      }
+    }
+  }
+}

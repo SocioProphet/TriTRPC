@@ -1,0 +1,10 @@
+{
+  "profileId": "q3ecc://bad2",
+  "rail": "qutrit-quantum",
+  "code": {
+    "kind": "ternary-stabilizer",
+    "n": 5,
+    "k": 4,
+    "d": 3
+  }
+}

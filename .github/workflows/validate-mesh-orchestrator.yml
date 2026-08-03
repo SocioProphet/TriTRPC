@@ -1,0 +1,19 @@
+name: validate-mesh-orchestrator
+on:
+  pull_request:
+    paths: ["reference/mesh_orchestrator.py","reference/mesh_coordinator.py","reference/mesh_scheduler.py","reference/mesh_runtime.py","reference/node_admission.py","reference/suite_gate.py","reference/proof_envelope.py","reference/attestation_verifier.py","tools/verify_mesh_orchestrator.py","spec/orchestration/mesh_orchestrator.md",".github/workflows/validate-mesh-orchestrator.yml"]
+  push:
+    branches: [ main ]
+    paths: ["reference/mesh_orchestrator.py","reference/mesh_coordinator.py","reference/mesh_scheduler.py","reference/mesh_runtime.py","reference/node_admission.py","reference/suite_gate.py","reference/proof_envelope.py","reference/attestation_verifier.py","tools/verify_mesh_orchestrator.py","spec/orchestration/mesh_orchestrator.md",".github/workflows/validate-mesh-orchestrator.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Validate mesh orchestrator (every stage composed, fail-closed)
+        run: python tools/verify_mesh_orchestrator.py

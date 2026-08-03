@@ -33,6 +33,8 @@ from typing import Any
 
 sys.path.insert(0, os.path.dirname(__file__))
 import suite_gate  # noqa: E402  (the coordinator ENFORCES the suite gate — not just declares it)
+import proof_envelope  # noqa: E402  (tee/zk results are ROUTED through the envelope + verifier)
+import attestation_verifier  # noqa: E402
 
 PROOF_MODES = {"redundant", "spot_check", "tee", "zk"}
 # The material each proof mode's result MUST carry to be admissible (beyond schema shape).
@@ -97,9 +99,27 @@ def verify_result(pack: dict, result: dict, trusted: list) -> None:
     proof = result.get("proof") or {}
     if proof.get("mode") != mode:
         _fail(f"proof.mode {proof.get('mode')!r} != pack.proof_mode {mode!r} (mode mismatch)")
-    for field in REQUIRED_PROOF_FIELDS[mode]:
-        if not str(proof.get(field) or "").strip() and proof.get(field) != 0:
-            _fail(f"proof for mode {mode!r} is missing required material: {field!r}")
+
+    if mode in ("tee", "zk"):
+        # Route through the proof envelope (anti-replay binding) + the attestation verifier (decidable
+        # checks + abstain). This is the FABRIC wiring: the coordinator does not settle a tee/zk result
+        # on structural presence alone — it binds the proof to THIS result and demands a non-reject verdict.
+        binding = {"wu_id": result.get("wu_id"), "result_cid": result.get("result_cid")}
+        material = dict(proof)
+        if mode == "zk" and "proof" not in material and material.get("proof_blob"):
+            material["proof"] = material["proof_blob"]
+        try:
+            proof_envelope.precheck({"mode": mode, "binding": binding, "material": material}, pack, result)
+        except proof_envelope.ProofEnvelopeError as exc:
+            _fail(f"proof envelope refused the {mode} result: {exc}")
+        verdict = attestation_verifier.verify_tee(material, binding) if mode == "tee" \
+            else attestation_verifier.verify_zk(material, binding)
+        if verdict["verdict"] == "reject":
+            _fail(f"attestation verifier rejected the {mode} result: {verdict.get('reason')}")
+    else:
+        for field in REQUIRED_PROOF_FIELDS[mode]:
+            if not str(proof.get(field) or "").strip() and proof.get(field) != 0:
+                _fail(f"proof for mode {mode!r} is missing required material: {field!r}")
 
 
 def reduce(pack: dict, results: list, trusted: list) -> dict:

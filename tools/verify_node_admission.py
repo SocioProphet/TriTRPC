@@ -79,9 +79,14 @@ def main() -> int:
     pack = {"wu_id": "wu-x", "proof_mode": "tee", "sandbox": "wasm",
             "policy": {"residency": "EU", "isolation": "strong", "slo_ms": 1000},
             "replication": 1}
+    import hashlib as _hl
+    _rc = "sha256:" + "a" * 64
+    _nonce = "n-adm-1"
+    _rd = "sha256:" + _hl.sha256(f"{_nonce}|{_rc}".encode()).hexdigest()
     result = {"wu_id": "wu-x", "node_ref": rep["node_ref"], "region": rep["region"],
-              "result_cid": "sha256:" + "a" * 64,
-              "proof": {"mode": "tee", "quote": "q", "measurement": "sha256:" + "b" * 64}}
+              "result_cid": _rc,
+              "proof": {"mode": "tee", "quote": "q", "measurement": "sha256:" + "e" * 64,
+                        "nonce": _nonce, "report_data": _rd}}
     rec = mc.reduce(pack, [result], trusted)
     if rec["settled"] and rec["rlc_credit"] == [rep["node_ref"]]:
         CHECKS["loop:admitted-node-settles-in-coordinator"] = True

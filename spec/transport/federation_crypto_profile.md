@@ -19,3 +19,12 @@ deployment that must run only CMVP-certified algorithms may further restrict sig
 That is a deployment posture on top of 186-5, not a change to the standard.
 
 `tools/verify_federation_crypto_profile.py` is the gate; ties the transport `CryptoProfile`.
+
+## v4 suite selector alignment
+
+The federation profile now carries the v4 suite selector (§13.4), mirroring the transport CryptoProfile:
+`mode` stays (back-compat; `suite` derives when absent), suite↔mode consistency is enforced, `suite 3`
+is reserved/refused. **suite ≥ 1** requires a FIPS hash + FIPS 186-5 signature **and** the approved-mode
+assertions (sign the canonical bytes only, self-tests complete). **suite 2 (CNSA 2.0)** requires
+SHA-384/512 and an **ML-DSA-87** signature — an Ed25519/ECDSA feed claiming suite 2 is refused as
+under-assured, closing the federation side of the silent-under-assurance gap.

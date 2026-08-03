@@ -1,0 +1,12 @@
+{
+  "profileId": "fedcrypto://tritrpc/bad-res",
+  "mode": "fips",
+  "suite": 3,
+  "contentHash": "SHA-384",
+  "signature": "ML-DSA-87",
+  "approvedMode": {
+    "encodeBeforeAuth": true,
+    "canonicalOnly": true,
+    "selfTests": true
+  }
+}

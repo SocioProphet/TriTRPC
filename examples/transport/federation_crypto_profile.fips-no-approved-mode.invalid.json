@@ -1,0 +1,7 @@
+{
+  "profileId": "fedcrypto://tritrpc/bad-am",
+  "mode": "fips",
+  "suite": 1,
+  "contentHash": "SHA-256",
+  "signature": "ECDSA-P256"
+}

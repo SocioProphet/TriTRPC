@@ -1,9 +1,9 @@
 {
-  "profileId": "fedcrypto://tritrpc/fips-ecdsa",
+  "profileId": "fedcrypto://tritrpc/cnsa",
   "mode": "fips",
-  "suite": 1,
-  "contentHash": "SHA-256",
-  "signature": "ECDSA-P256",
+  "suite": 2,
+  "contentHash": "SHA-384",
+  "signature": "ML-DSA-87",
   "approvedMode": {
     "encodeBeforeAuth": true,
     "canonicalOnly": true,

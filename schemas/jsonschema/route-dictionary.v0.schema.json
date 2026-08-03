@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.socioprophet.dev/tritrpc/route-dictionary.v0.schema.json",
+  "title": "RouteDictionary v0",
+  "description": "The handle->route agreement that gives a hot frame's 1-byte Handle243 its meaning. A peer advertises a dictionary (via a Beacon-A capability); a hot frame carrying route_handle=h is resolvable only if h is in the AGREED dictionary. Two peers agree iff their dictionaryId (SHA-256 of the canonical entries) matches. Fail-closed: an unknown handle, a duplicate handle, or a mismatched dictionary is refused — closing gap #3 of the vNext hot-path list. Additive: it explains the existing route_handle byte; it does not change the frame wire.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["dictionaryId", "entries"],
+  "properties": {
+    "dictionaryId": { "type": "string", "pattern": "^sha256:", "description": "SHA-256 of the canonical (sorted, compact) entries — the agreement token." },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["handle", "route"],
+        "properties": {
+          "handle": { "type": "integer", "minimum": 0, "maximum": 242, "description": "direct Handle243 value." },
+          "route": { "type": "string", "minLength": 1, "description": "the full route URI the handle abbreviates." }
+        }
+      }
+    }
+  }
+}

@@ -59,3 +59,12 @@ deployment, never XChaCha20-Poly1305. This module does not touch the tritrpc v4/
 Every settled WU carries an attested node + a residency-checked region + a proof for its declared
 mode — the same fail-closed doctrine the `ProjectComputeSetting` validator enforces at declaration
 time ("no ungoverned compute"). No attestation, no residency match, or no majority ⇒ no settlement.
+
+## Required assurance suite (v4 §13.4)
+
+A `WorkUnitPack` may declare `policy.requiredSuite` (0 research / 1 fips-classical / 2 cnsa2-ready).
+The executing node's resolved crypto profile carries a suite (explicit, or derived `fips→1`/
+`standard→0`). `reference/suite_gate.py:require_suite` refuses, fail-closed, to place a workload on a
+profile whose suite is **below** the required one — a suite-2 (CNSA) workload cannot settle on a
+suite-1 (FIPS) node. This is the cross-consumer meet-or-exceed check that ties the mesh to the
+CryptoProfile suite selector; the profile's own correctness is checked by `verify_crypto_profile`.

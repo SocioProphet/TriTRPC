@@ -5,25 +5,100 @@
   "description": "A federated-mesh Work-Unit pack (Dual-Orchestration plane B): the TriTRPC-enveloped descriptor a Mesh Coordinator hands to a volunteer node. Header carries the Avro SCHEMA-ID (SHA3), governance POLICY (residency/isolation/SLO), a PROOF_MODE, and a SANDBOX; the body is content-addressed (SHA-256 CID, per the FederationCryptoProfile). This is the request half; a WorkUnitResult is the returned half. Settlement is decided by reference/mesh_coordinator.py, fail-closed.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["wu_id", "schema_id", "proof_mode", "sandbox", "policy", "body_cid", "replication", "context", "signature"],
+  "required": [
+    "wu_id",
+    "schema_id",
+    "proof_mode",
+    "sandbox",
+    "policy",
+    "body_cid",
+    "replication",
+    "context",
+    "signature"
+  ],
   "properties": {
-    "wu_id": { "type": "string", "minLength": 1 },
-    "schema_id": { "type": "string", "pattern": "^sha3-256:", "description": "SHA3-256 of the Avro canonical schema of the body (the SCHEMA-ID)." },
-    "proof_mode": { "type": "string", "enum": ["redundant", "spot_check", "tee", "zk"] },
-    "sandbox": { "type": "string", "enum": ["docker", "lightning", "wasm", "kata"] },
+    "wu_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_id": {
+      "type": "string",
+      "pattern": "^sha3-256:",
+      "description": "SHA3-256 of the Avro canonical schema of the body (the SCHEMA-ID)."
+    },
+    "proof_mode": {
+      "type": "string",
+      "enum": [
+        "redundant",
+        "spot_check",
+        "tee",
+        "zk"
+      ]
+    },
+    "sandbox": {
+      "type": "string",
+      "enum": [
+        "docker",
+        "lightning",
+        "wasm",
+        "kata"
+      ]
+    },
     "policy": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["residency", "isolation", "slo_ms"],
+      "required": [
+        "residency",
+        "isolation",
+        "slo_ms"
+      ],
       "properties": {
-        "residency": { "type": "string", "minLength": 1, "description": "required data-residency region, e.g. EU / US / any" },
-        "isolation": { "type": "string", "enum": ["strong", "standard"] },
-        "slo_ms": { "type": "integer", "minimum": 1 }
+        "residency": {
+          "type": "string",
+          "minLength": 1,
+          "description": "required data-residency region, e.g. EU / US / any"
+        },
+        "isolation": {
+          "type": "string",
+          "enum": [
+            "strong",
+            "standard"
+          ]
+        },
+        "slo_ms": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "requiredSuite": {
+          "type": "integer",
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "description": "v4 suite the executing node's crypto profile MUST meet or exceed (absent => 0). A suite-2 (CNSA) workload cannot settle on a merely suite-1 (FIPS) profile."
+        }
       }
     },
-    "body_cid": { "type": "string", "pattern": "^sha256:", "description": "content-addressed body (SHA-256 CID; FederationCryptoProfile)." },
-    "replication": { "type": "integer", "minimum": 1, "description": "number of independent nodes the WU is dispatched to (redundant mode needs >= 3 for a majority)." },
-    "context": { "type": "string", "minLength": 1, "description": "JSON-LD @context reference for the body." },
-    "signature": { "type": "string", "minLength": 1 }
+    "body_cid": {
+      "type": "string",
+      "pattern": "^sha256:",
+      "description": "content-addressed body (SHA-256 CID; FederationCryptoProfile)."
+    },
+    "replication": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "number of independent nodes the WU is dispatched to (redundant mode needs >= 3 for a majority)."
+    },
+    "context": {
+      "type": "string",
+      "minLength": 1,
+      "description": "JSON-LD @context reference for the body."
+    },
+    "signature": {
+      "type": "string",
+      "minLength": 1
+    }
   }
 }

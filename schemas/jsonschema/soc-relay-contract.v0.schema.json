@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.socioprophet.dev/tritrpc/soc-relay-contract.v0.schema.json",
+  "title": "SocRelayContract v0",
+  "description": "A Semantic-Obfuscation-Chain relay contract (the Obfuscation-Manifesto relay_contract) BOUND to the TriTRPC Receipt Transport Binding SOC profile. Each hop's contract carries an owner-sealed transport{} block using the binding's route://peer:// URI shapes, so the SOC receipt is complete-to-owner and cloaked-to-observers. This is the conformance fix: a relay contract is SOC-conformant only if its transport is owner-sealed and URI-addressed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract_id", "sender", "relay", "task", "trust_min", "transport", "signature"],
+  "properties": {
+    "contract_id": { "type": "string", "minLength": 1 },
+    "sender": { "type": "string", "minLength": 1, "description": "pseudonymous sender anchor" },
+    "relay": { "type": "string", "minLength": 1, "description": "pseudonymous relay anchor" },
+    "task": { "type": "string", "enum": ["schema_transform", "opaque_compute", "dag_commit", "braid", "relay"] },
+    "trust_min": { "type": "integer", "minimum": 0 },
+    "token_bid": { "type": "string" },
+    "privacy_required": { "type": "boolean" },
+    "transport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocol", "route_id", "peer_id", "envelope_hash", "chain_id", "chain_position", "sealed", "sealed_to"],
+      "properties": {
+        "protocol": { "const": "tritrpc" },
+        "route_id": { "type": "string", "pattern": "^route://" },
+        "peer_id": { "type": "string", "pattern": "^node://" },
+        "envelope_hash": { "type": "string", "pattern": "^sha256:" },
+        "chain_id": { "type": "string", "pattern": "^soc://" },
+        "chain_position": { "type": "integer", "minimum": 0 },
+        "sealed": { "const": true },
+        "sealed_to": { "type": "string", "pattern": "^owner://" },
+        "retry_count": { "type": "integer", "minimum": 0 },
+        "timeout_count": { "type": "integer", "minimum": 0 },
+        "failure_class": { "type": "string", "enum": ["upstream_unreachable", "deadline_exceeded", "sabotage", "refused_by_policy"] }
+      }
+    },
+    "signature": { "type": "string", "minLength": 1 }
+  }
+}

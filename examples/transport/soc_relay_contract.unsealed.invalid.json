@@ -1,0 +1,21 @@
+{
+  "contract_id": "soc-relay-0481",
+  "sender": "agent~alice-pseudo",
+  "relay": "relay~morpheus-pseudo",
+  "task": "opaque_compute",
+  "trust_min": 4,
+  "token_bid": "0.00083 OBF",
+  "privacy_required": true,
+  "transport": {
+    "protocol": "tritrpc",
+    "route_id": "route://relay/opaque@v1",
+    "peer_id": "node://relay-pseudo-7f",
+    "envelope_hash": "sha256:envelope01",
+    "chain_id": "soc://alice/fed-hr/001",
+    "chain_position": 1,
+    "sealed": false,
+    "sealed_to": "owner://anchor-alice-pseudo",
+    "retry_count": 0
+  },
+  "signature": "sig(agent~alice-pseudo)"
+}

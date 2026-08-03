@@ -1,0 +1,14 @@
+{
+  "profileId": "obf://alice/soc-default",
+  "kFold": 3,
+  "decoyEntropyRatio": 0.6,
+  "braiding": {
+    "enabled": true,
+    "minParticipants": 3
+  },
+  "jitterMs": {
+    "min": 200,
+    "max": 50
+  },
+  "paddingBytes": 512
+}

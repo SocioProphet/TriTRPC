@@ -9,7 +9,6 @@ package tritrpcv1
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"encoding/binary"
 	"errors"
 )
 
@@ -53,11 +52,12 @@ func demoTag(key, prefix []byte, seq uint64) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	nonce := make([]byte, 0, 12)
-	nonce = append(nonce, demoNoncePrefix...)
-	var seqb [8]byte
-	binary.BigEndian.PutUint64(seqb[:], seq)
-	nonce = append(nonce, seqb[:]...)
+	// FABRIC: the frame AEAD lane derives its nonce via the formalized DeriveNonce (nonce.go),
+	// not an ad-hoc inline construction — bounds-checked, one canonical derivation.
+	nonce, err := DeriveNonce([]byte(demoNoncePrefix), seq)
+	if err != nil {
+		return nil, err
+	}
 	return gcm.Seal(nil, nonce, nil, prefix), nil // empty plaintext -> 16-byte tag
 }
 

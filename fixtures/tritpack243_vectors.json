@@ -1,0 +1,162 @@
+{
+  "codec": "TritPack243",
+  "alphabet": "unbalanced-ternary {0,1,2}, 5 trits/byte (3^5=243)",
+  "digest": "SHA3-256 (FIPS 202) over the packed bytes",
+  "aeadNote": "AEAD suite is selected by the CryptoProfile; not baked into these primitive vectors",
+  "vectors": [
+    {
+      "name": "empty",
+      "trits": [],
+      "tritpack243_hex": "",
+      "sha3_256": "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"
+    },
+    {
+      "name": "single-zero",
+      "trits": [
+        0
+      ],
+      "tritpack243_hex": "f300",
+      "sha3_256": "2244146992720ffd1ef3fc80eb76ed130873a3180e9a36ae10e3fb801aadde81"
+    },
+    {
+      "name": "single-max",
+      "trits": [
+        2
+      ],
+      "tritpack243_hex": "f302",
+      "sha3_256": "834f1891cb544ce34545038dc7363c06627466c7368e3943a79dc488977e1e47"
+    },
+    {
+      "name": "one-byte-mixed",
+      "trits": [
+        0,
+        1,
+        2,
+        0,
+        1
+      ],
+      "tritpack243_hex": "2e",
+      "sha3_256": "6890427a1f51a3e7e1dfb1f57449c5f2a24a9bed6b5d82973df1d78e765ea227"
+    },
+    {
+      "name": "all-max-7",
+      "trits": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "tritpack243_hex": "f2f408",
+      "sha3_256": "a6de734cb6b02703bb6c59d9af6d249342c09d72916237bfaf969e7c38f30688"
+    },
+    {
+      "name": "ascending-9",
+      "trits": [
+        0,
+        1,
+        2,
+        0,
+        1,
+        2,
+        0,
+        1,
+        2
+      ],
+      "tritpack243_hex": "2ef63b",
+      "sha3_256": "9547b8f0f33fd263cce9f8e49f5e48ab67c7f5f80c628137da757b13726d9284"
+    },
+    {
+      "name": "boundary-5",
+      "trits": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "tritpack243_hex": "f2",
+      "sha3_256": "eb7b0f0e00f494f261fb79fae36dfb1ec0d2a5a1906bf394bfe6f1a52f97d707"
+    },
+    {
+      "name": "boundary-6",
+      "trits": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        0
+      ],
+      "tritpack243_hex": "f2f300",
+      "sha3_256": "d8af52e437c341e5bbb57d6fafaf32344b6e060cb3a3e7772013265f77cdba17"
+    },
+    {
+      "name": "long-zeros-20",
+      "trits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "tritpack243_hex": "00000000",
+      "sha3_256": "8b0a2385d83c8bf7be27e59996f7d881d3bf1fc6606f81ce600b753ad94192a2"
+    },
+    {
+      "name": "pattern-31",
+      "trits": [
+        1,
+        0,
+        2,
+        1,
+        0,
+        2,
+        1,
+        0,
+        2,
+        1,
+        0,
+        2,
+        1,
+        0,
+        2,
+        1,
+        0,
+        2,
+        1,
+        0,
+        2,
+        1,
+        0,
+        2,
+        1,
+        0,
+        2,
+        1,
+        0,
+        2,
+        1
+      ],
+      "tritpack243_hex": "66c44166c441f301",
+      "sha3_256": "e059b49734b170a8715f59f6b6ed46e3d6a551bfcdd1b6b1fdaf6869204a2670"
+    }
+  ]
+}

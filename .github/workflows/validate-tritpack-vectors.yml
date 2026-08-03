@@ -1,0 +1,33 @@
+name: validate-tritpack-vectors
+
+on:
+  pull_request:
+    paths:
+      - "fixtures/tritpack243_vectors.json"
+      - "tools/verify_tritpack_vectors.py"
+      - "tools/generate_tritpack_vectors.py"
+      - "reference/tritrpc_v1.py"
+      - ".github/workflows/validate-tritpack-vectors.yml"
+  push:
+    branches: [ main ]
+    paths:
+      - "fixtures/tritpack243_vectors.json"
+      - "tools/verify_tritpack_vectors.py"
+      - "tools/generate_tritpack_vectors.py"
+      - "reference/tritrpc_v1.py"
+      - ".github/workflows/validate-tritpack-vectors.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify TritPack243 canonical vectors
+        run: python tools/verify_tritpack_vectors.py

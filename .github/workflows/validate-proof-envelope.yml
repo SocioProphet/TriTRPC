@@ -1,0 +1,31 @@
+name: validate-proof-envelope
+on:
+  pull_request:
+    paths:
+      - "reference/proof_envelope.py"
+      - "tools/verify_proof_envelope.py"
+      - "schemas/jsonschema/proof-envelope.v0.schema.json"
+      - "examples/mesh/proof_envelope.*.json"
+      - "spec/orchestration/proof_envelope.md"
+      - ".github/workflows/validate-proof-envelope.yml"
+  push:
+    branches: [ main ]
+    paths:
+      - "reference/proof_envelope.py"
+      - "tools/verify_proof_envelope.py"
+      - "schemas/jsonschema/proof-envelope.v0.schema.json"
+      - "examples/mesh/proof_envelope.*.json"
+      - "spec/orchestration/proof_envelope.md"
+      - ".github/workflows/validate-proof-envelope.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Validate proof-envelope pre-check (tee/zk bind + route, fail-closed)
+        run: python tools/verify_proof_envelope.py

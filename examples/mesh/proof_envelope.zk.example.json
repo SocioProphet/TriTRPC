@@ -1,0 +1,15 @@
+{
+  "mode": "zk",
+  "binding": {
+    "wu_id": "wu-x",
+    "result_cid": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "material": {
+    "scheme": "groth16",
+    "statement": "result==f(inputs)",
+    "proof": "BASE64PROOF",
+    "publicInputs": [
+      "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ]
+  }
+}

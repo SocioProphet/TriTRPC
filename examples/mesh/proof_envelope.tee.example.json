@@ -1,0 +1,12 @@
+{
+  "mode": "tee",
+  "binding": {
+    "wu_id": "wu-x",
+    "result_cid": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "material": {
+    "quote": "BASE64QUOTE",
+    "measurement": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "nonce": "n-2026-08-03"
+  }
+}

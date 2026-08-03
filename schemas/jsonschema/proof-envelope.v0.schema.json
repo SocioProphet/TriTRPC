@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.socioprophet.dev/tritrpc/proof-envelope.v0.schema.json",
+  "title": "ProofEnvelope v0",
+  "description": "The envelope a tee/zk WorkUnitResult proof must satisfy so the Mesh Coordinator can BIND it to a specific result and ROUTE it to the right verifier. The coordinator does not verify the cryptography itself (delegated); it enforces the envelope shape and the anti-replay binding (a proof is bound to wu_id + result_cid, so it cannot be replayed against a different result), then hands the proof to the named verifier.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["mode", "binding", "material"],
+  "properties": {
+    "mode": { "type": "string", "enum": ["tee", "zk"] },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["wu_id", "result_cid"],
+      "properties": {
+        "wu_id": { "type": "string", "minLength": 1 },
+        "result_cid": { "type": "string", "pattern": "^sha256:" }
+      }
+    },
+    "material": {
+      "type": "object",
+      "properties": {
+        "quote": { "type": "string" },
+        "measurement": { "type": "string", "pattern": "^sha256:" },
+        "nonce": { "type": "string", "minLength": 1 },
+        "scheme": { "type": "string", "enum": ["groth16", "plonk", "stark"] },
+        "statement": { "type": "string" },
+        "proof": { "type": "string" },
+        "publicInputs": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

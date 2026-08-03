@@ -1,9 +1,11 @@
 {
-  "profileId": "crypto://tritrpc/fips",
+  "profileId": "crypto://tritrpc/cnsa",
   "mode": "fips",
-  "suite": 1,
+  "suite": 2,
   "aead": "AES-256-GCM",
   "hash": "SHA-384",
+  "kem": "ML-KEM-1024",
+  "sig": "ML-DSA-87",
   "approvedMode": {
     "encodeBeforeAuth": true,
     "canonicalOnly": true,

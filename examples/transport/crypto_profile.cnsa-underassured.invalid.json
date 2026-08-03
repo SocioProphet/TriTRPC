@@ -1,15 +1,14 @@
 {
-  "profileId": "crypto://tritrpc/fips",
+  "profileId": "crypto://tritrpc/bad-cnsa",
   "mode": "fips",
-  "suite": 1,
-  "aead": "AES-256-GCM",
-  "hash": "SHA-384",
+  "suite": 2,
+  "aead": "AES-128-GCM",
+  "hash": "SHA-256",
   "approvedMode": {
     "encodeBeforeAuth": true,
     "canonicalOnly": true,
     "noncePolicy": "module-gcm",
     "rngSource": "module",
     "selfTests": true
-  },
-  "wireFormat": "tritrpc-v1"
+  }
 }

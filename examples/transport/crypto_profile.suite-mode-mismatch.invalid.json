@@ -1,6 +1,6 @@
 {
-  "profileId": "crypto://tritrpc/fips",
-  "mode": "fips",
+  "profileId": "crypto://tritrpc/bad-mm",
+  "mode": "standard",
   "suite": 1,
   "aead": "AES-256-GCM",
   "hash": "SHA-384",
@@ -10,6 +10,5 @@
     "noncePolicy": "module-gcm",
     "rngSource": "module",
     "selfTests": true
-  },
-  "wireFormat": "tritrpc-v1"
+  }
 }

@@ -1,0 +1,7 @@
+{
+  "profileId": "crypto://tritrpc/bad-am",
+  "mode": "fips",
+  "suite": 1,
+  "aead": "AES-256-GCM",
+  "hash": "SHA-384"
+}

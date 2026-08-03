@@ -1,7 +1,7 @@
 {
-  "profileId": "crypto://tritrpc/fips",
+  "profileId": "crypto://tritrpc/bad-res",
   "mode": "fips",
-  "suite": 1,
+  "suite": 3,
   "aead": "AES-256-GCM",
   "hash": "SHA-384",
   "approvedMode": {
@@ -10,6 +10,5 @@
     "noncePolicy": "module-gcm",
     "rngSource": "module",
     "selfTests": true
-  },
-  "wireFormat": "tritrpc-v1"
+  }
 }

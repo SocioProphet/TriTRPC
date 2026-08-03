@@ -1,13 +1,12 @@
 {
-  "profileId": "fedcrypto://tritrpc/fips-eddsa",
+  "profileId": "fedcrypto://tritrpc/bad-cnsa",
   "mode": "fips",
-  "suite": 1,
-  "contentHash": "SHA-512",
+  "suite": 2,
+  "contentHash": "SHA-256",
   "signature": "Ed25519",
   "approvedMode": {
     "encodeBeforeAuth": true,
     "canonicalOnly": true,
     "selfTests": true
-  },
-  "contentAddressing": "ssb"
+  }
 }

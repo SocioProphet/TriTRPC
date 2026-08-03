@@ -2,15 +2,26 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://schemas.socioprophet.dev/tritrpc/federation-crypto-profile.v0.schema.json",
   "title": "FederationCryptoProfile v0",
-  "description": "Gates the crypto of the Merkle-log P2P federation layer (the Symbolic-AI/KG + Dual-Orchestration docs' SSB/Hypercore/IPFS-style signed append-only knowledge logs). Companion to the transport CryptoProfile. Two surfaces: the CONTENT HASH (Merkle content addressing / CIDs) and the feed SIGNATURE. mode:fips requires a FIPS-approved hash (SHA-2/SHA-3) and a FIPS 186-5 signature (ECDSA / RSA / EdDSA). The genuine non-FIPS default in those stacks is the HASH — BLAKE2b (SSB/Hypercore) and BLAKE3 (IPFS option) are refused in fips mode; Ed25519/Ed448 are OK under FIPS 186-5.",
+  "description": "Gates the crypto of the Merkle-log P2P federation layer (SSB/Hypercore/IPFS-style signed append-only logs). Two surfaces: the CONTENT HASH (Merkle CIDs) and the feed SIGNATURE. Aligned to the v4 suite selector (§13.4): mode stays for back-compat, suite (absent => standard->0, fips->1) must be consistent. suite>=1 requires a FIPS hash (SHA-2/3; BLAKE refused) + a FIPS 186-5 signature (ECDSA/RSA/EdDSA) + the approved-mode assertions (sign the canonical bytes only, self-tests). suite 2 (CNSA 2.0) requires SHA-384/512 and an ML-DSA-87 signature — an Ed25519/ECDSA feed claiming suite 2 is refused (under-assured).",
   "type": "object",
   "additionalProperties": false,
   "required": ["profileId", "mode", "contentHash", "signature"],
   "properties": {
     "profileId": { "type": "string", "minLength": 1 },
     "mode": { "type": "string", "enum": ["fips", "standard"] },
+    "suite": { "type": "integer", "enum": [0, 1, 2, 3], "description": "v4 §13.4 suite selector; absent => derived from mode." },
     "contentHash": { "type": "string", "enum": ["SHA-256", "SHA-384", "SHA-512", "SHA3-256", "SHA3-512", "BLAKE2b", "BLAKE3"] },
-    "signature": { "type": "string", "enum": ["ECDSA-P256", "ECDSA-P384", "ECDSA-P521", "RSA-3072", "RSA-4096", "Ed25519", "Ed448"] },
-    "contentAddressing": { "type": "string", "enum": ["merkle-dag", "ipfs", "hypercore", "ssb"], "description": "informational: the federation scheme this profile secures. The hash algorithm — not the scheme — is what FIPS gates." }
+    "signature": { "type": "string", "enum": ["ECDSA-P256", "ECDSA-P384", "ECDSA-P521", "RSA-3072", "RSA-4096", "Ed25519", "Ed448", "ML-DSA-65", "ML-DSA-87"] },
+    "approvedMode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["encodeBeforeAuth", "canonicalOnly", "selfTests"],
+      "properties": {
+        "encodeBeforeAuth": { "type": "boolean" },
+        "canonicalOnly": { "type": "boolean" },
+        "selfTests": { "type": "boolean" }
+      }
+    },
+    "contentAddressing": { "type": "string", "enum": ["merkle-dag", "ipfs", "hypercore", "ssb"], "description": "informational: the federation scheme this profile secures. The hash/signature — not the scheme — is what the suite gates." }
   }
 }

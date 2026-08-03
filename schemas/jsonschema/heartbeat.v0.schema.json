@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.socioprophet.dev/tritrpc/heartbeat.v0.schema.json",
+  "title": "Heartbeat v0",
+  "description": "A mesh node's liveness+capacity heartbeat (node -> coordinator). Applying it refreshes the node's NodeRegistration lastSeenMs and capacity so the scheduler's liveness/capacity filters stay current. Only an already-trusted node may heartbeat (fail-closed). The transport that carries the bytes is out of scope (delegated to the mesh transport); this pins the message + its effect on the registry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["node_ref", "attestationRef", "sentMs", "capacity"],
+  "properties": {
+    "node_ref": { "type": "string", "pattern": "^node://" },
+    "attestationRef": { "type": "string", "minLength": 1 },
+    "sentMs": { "type": "integer", "minimum": 0 },
+    "capacity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["freeSlots", "sandboxes"],
+      "properties": {
+        "freeSlots": { "type": "integer", "minimum": 0 },
+        "sandboxes": { "type": "array", "items": { "type": "string", "enum": ["docker", "lightning", "wasm", "kata"] }, "minItems": 1 }
+      }
+    }
+  }
+}

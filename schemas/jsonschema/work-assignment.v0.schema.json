@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.socioprophet.dev/tritrpc/work-assignment.v0.schema.json",
+  "title": "WorkAssignment v0",
+  "description": "A coordinator's dispatch of one Work-Unit to one scheduled node (coordinator -> node). Binds wu_id to node_ref with a deadline. A dispatch is valid only to a node the scheduler actually assigned, that is currently live, before the deadline (fail-closed). The transport is delegated; this pins the dispatch message + its admissibility.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["wu_id", "node_ref", "deadlineMs", "packRef"],
+  "properties": {
+    "wu_id": { "type": "string", "minLength": 1 },
+    "node_ref": { "type": "string", "pattern": "^node://" },
+    "deadlineMs": { "type": "integer", "minimum": 1 },
+    "packRef": { "type": "string", "pattern": "^sha3-256:", "description": "the WorkUnitPack SCHEMA-ID this dispatch carries." }
+  }
+}

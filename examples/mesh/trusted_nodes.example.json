@@ -1,0 +1,17 @@
+[
+  {
+    "node_ref": "node://eu-1",
+    "attestationRef": "att://tpm/eu-1#quote",
+    "region": "EU"
+  },
+  {
+    "node_ref": "node://eu-2",
+    "attestationRef": "att://tpm/eu-2#quote",
+    "region": "EU"
+  },
+  {
+    "node_ref": "node://eu-3",
+    "attestationRef": "att://tpm/eu-3#quote",
+    "region": "EU"
+  }
+]

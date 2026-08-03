@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.socioprophet.dev/tritrpc/attestation-verdict.v0.schema.json",
+  "title": "AttestationVerdict v0",
+  "description": "The verdict the tee/zk verifier emits for a proof the coordinator delegated to it (via the ProofEnvelope delegation ticket). It records the DECIDABLE checks a software verifier can make — the SHA-256 result-binding, measurement allow-list, nonce freshness (tee); public-input binding + supported scheme (zk) — and then either REJECTs (a decidable check failed, fail-closed) or REFERs (decidable checks pass; the hardware/cryptographic root — Intel DCAP quote signature / zk pairing — is delegated to the named root verifier). It never emits a bare 'accept' for tee/zk: the crypto root is always deferred, never rubber-stamped.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["mode", "verdict", "checks"],
+  "properties": {
+    "mode": { "type": "string", "enum": ["tee", "zk"] },
+    "verdict": { "type": "string", "enum": ["reject", "refer"] },
+    "checks": { "type": "object", "additionalProperties": { "type": "boolean" } },
+    "reason": { "type": "string" },
+    "referTo": { "type": "string", "description": "the hardware/crypto root verifier the coordinator must still call (e.g. dcap-quote-verifier / zk-groth16-vk-verifier)." }
+  }
+}

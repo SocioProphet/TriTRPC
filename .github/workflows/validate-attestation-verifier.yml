@@ -1,0 +1,33 @@
+name: validate-attestation-verifier
+on:
+  pull_request:
+    paths:
+      - "reference/attestation_verifier.py"
+      - "tools/verify_attestation_verifier.py"
+      - "schemas/jsonschema/attestation-verdict.v0.schema.json"
+      - "examples/mesh/tee_quote.example.json"
+      - "examples/mesh/zk_proof.example.json"
+      - "spec/orchestration/attestation_verifier.md"
+      - ".github/workflows/validate-attestation-verifier.yml"
+  push:
+    branches: [ main ]
+    paths:
+      - "reference/attestation_verifier.py"
+      - "tools/verify_attestation_verifier.py"
+      - "schemas/jsonschema/attestation-verdict.v0.schema.json"
+      - "examples/mesh/tee_quote.example.json"
+      - "examples/mesh/zk_proof.example.json"
+      - "spec/orchestration/attestation_verifier.md"
+      - ".github/workflows/validate-attestation-verifier.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Validate tee/zk attestation verifier (decidable checks + abstain)
+        run: python tools/verify_attestation_verifier.py

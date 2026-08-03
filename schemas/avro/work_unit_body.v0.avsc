@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "WorkUnitBody",
+  "namespace": "socioprophet.mesh.v0",
+  "doc": "The Avro body a WorkUnitPack references by SCHEMA-ID (SHA3-256 of this schema's Parsing Canonical Form) and by body_cid (SHA-256 of the canonical body). A concrete map/compute unit dispatched to a volunteer node.",
+  "fields": [
+    { "name": "wu_id", "type": "string" },
+    { "name": "op", "type": { "type": "enum", "name": "WorkUnitOp", "symbols": ["map", "reduce", "embed", "score"] } },
+    { "name": "inputs", "type": { "type": "array", "items": "string" }, "doc": "input CIDs" },
+    { "name": "params", "type": { "type": "map", "values": "string" } },
+    { "name": "deadline_ms", "type": "long" },
+    { "name": "checksum", "type": ["null", "string"], "default": null }
+  ]
+}

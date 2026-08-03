@@ -1,0 +1,19 @@
+{
+  "avro_schema": "schemas/avro/work_unit_body.v0.avsc",
+  "pcf": "{\"name\":\"socioprophet.mesh.v0.WorkUnitBody\",\"type\":\"record\",\"fields\":[{\"name\":\"wu_id\",\"type\":\"string\"},{\"name\":\"op\",\"type\":{\"name\":\"socioprophet.mesh.v0.WorkUnitOp\",\"type\":\"enum\",\"symbols\":[\"map\",\"reduce\",\"embed\",\"score\"]}},{\"name\":\"inputs\",\"type\":{\"type\":\"array\",\"items\":\"string\"}},{\"name\":\"params\",\"type\":{\"type\":\"map\",\"values\":\"string\"}},{\"name\":\"deadline_ms\",\"type\":\"long\"},{\"name\":\"checksum\",\"type\":[\"null\",\"string\"]}]}",
+  "schema_id": "sha3-256:723a9cb044d097f4d6173938d119748039230ce0c52cbd9bc8ad98f6bce07a03",
+  "body": {
+    "wu_id": "wu-2026-08-03-0001",
+    "op": "embed",
+    "inputs": [
+      "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "params": {
+      "model": "bge-small",
+      "dim": "384"
+    },
+    "deadline_ms": 30000,
+    "checksum": null
+  },
+  "body_cid": "sha256:353d9f1b495af4525974eed6c3ae40c5bfb3170a9bd8724fc01a7cbf7705960b"
+}

@@ -4,12 +4,13 @@ Description: TriTRPC is a deterministic, ternary-native RPC protocol repository.
 
 Topics: ternary, rpc, protocol, deterministic-encoding, fixtures, rust, go, avro, aead, agentic-transport, braided-semantics
 
-This repository contains two layers of work:
+This repository contains three layers of work:
 
 1. **Stable TritRPC v1** — deterministic, byte-for-byte reproducible fixtures, normative spec material, and Go/Rust ports.
-2. **Experimental TriTRPC vNext** — a public design pack for route handles, compact control words, braided semantic cadence, standards-inspired hardening, and transport comparisons.
+2. **Experimental TriTRPC vNext / v4** — a public design pack for route handles, compact control words, braided semantic cadence, standards-inspired hardening, and transport comparisons.
+3. **Governance, crypto profiles & orchestration contracts** — the schema-first, fail-closed layer built *over* the wire: FIPS/CNSA crypto-suite selection, the Semantic-Obfuscation-Chain transport, qutrit error-correction, and the federated mesh (Work-Unit dispatch → settlement → proof). Every contract ships a JSON Schema, `.valid`/`.invalid` fixtures, a stdlib self-testing reference/validator, and its own CI check.
 
-The repository focus remains deterministic reproducibility and cross-language parity for v1, while also publishing the current vNext direction in-repo so the design work is reviewable, testable, and easy to discuss publicly.
+The repository focus remains deterministic reproducibility and cross-language parity for v1, while publishing the vNext/v4 direction and the governance/orchestration contracts in-repo so the whole design is reviewable, testable, and easy to discuss publicly.
 
 ## Repository status
 
@@ -50,20 +51,59 @@ TritRPC v1 is built on these conceptual layers:
 - **Path-A** payloads are encoded with Avro Binary Encoding (used by the reference
   implementation and most fixtures).
 - **Path-B** payloads are ternary-native (toy subset fixtures demonstrate this).
-- **AEAD integrity** uses XChaCha20-Poly1305 with 24-byte nonces for authenticated frames.
+- **AEAD integrity** authenticates frames over an AEAD lane. The v1 lane is XChaCha20-Poly1305
+  (24-byte nonces); **FIPS is the standard** for approved deployments, so the sealing cipher is a
+  gated *choice* via the CryptoProfile suite selector (see *Governance & crypto profiles* below) —
+  XChaCha20 is `suite 0`, AES-256-GCM the FIPS/CNSA suites. The wire (TritPack243/TLEB3) is unchanged
+  by the cipher choice.
 
 For complete detail, read `docs/THEORY.md` and the full spec.
+
+## Governance, crypto profiles & orchestration
+
+Layered *over* the wire, each of these is a fail-closed contract — a JSON Schema + `.valid`/`.invalid`
+fixtures + a stdlib self-testing reference/validator + a dedicated CI check. All are additive: they
+never change the v1/v4/vNext wire.
+
+**Crypto & security profiles** (`spec/transport/`, `schemas/jsonschema/`):
+
+- **CryptoProfile** — the AEAD/hash sealing choice, aligned to the v4 **suite selector** (§13.4):
+  `0` research · `1` fips-classical · `2` cnsa2-ready · `3` reserved. suite ≥ 1 enforces the
+  approved-mode assertions (encode-before-authenticate, canonical-only, nonce/RNG/self-tests); suite 2
+  requires AES-256-GCM + SHA-384/512 + ML-KEM-1024 / ML-DSA-87.
+- **FederationCryptoProfile** — FIPS hash + signature gate for the Merkle-log P2P layer (BLAKE refused;
+  Ed25519 approved under FIPS 186-5).
+- **SOC relay-contract / ObfuscationProfile** — the owner-sealed Semantic-Obfuscation-Chain transport
+  (complete-to-owner, cloaked-to-observers) + traffic-analysis resistance.
+- **Q3 ECC profile** — ternary error correction (RS over GF(3^m) / ternary stabilizer codes).
+
+**Federated mesh — Dual-Orchestration plane B** (`spec/orchestration/`):
+
+The volunteer-compute mesh, contract-first, `admission → dispatch → settle → prove`:
+
+| Stage | Contract / reference |
+| --- | --- |
+| Who may join | `NodeReputation` + `node_admission` (bounded Trust Equation, fail-closed gates) |
+| What runs | `WorkUnitPack` / `WorkUnitResult` + Avro body with a reproducible **SCHEMA-ID** (SHA3-256 of the Avro canonical form) |
+| Placement | `NodeRegistration` + `mesh_scheduler` (residency / sandbox / liveness / capacity, redundancy-aware) |
+| Settlement | `mesh_coordinator` (strict-majority redundancy, RLC credit) |
+| Proof | `proof_envelope` (tee/zk bind + anti-replay) → `attestation_verifier` (decidable checks, abstains on the crypto root) |
+
+FIPS throughout: content addresses are SHA-256, SCHEMA-IDs SHA3-256; no non-FIPS primitive is used.
 
 ## Repository layout
 
 A more detailed guide lives in `docs/REPOSITORY_GUIDE.md`. At a glance:
 
 - `docs/`: Theory and repository guide.
-- `spec/`: Full specification (normative requirements).
-- `reference/`: Python reference implementation and fixture generator.
-- `fixtures/`: Canonical hex fixtures and their nonce files.
-- `rust/`, `go/`: Language implementations.
-- `scripts/`, `tools/`: Utility scripts and regeneration tooling.
+- `spec/`: Full specification (normative requirements), incl. `spec/transport/` (crypto/SOC profiles)
+  and `spec/orchestration/` (the federated mesh contracts).
+- `schemas/jsonschema/`: the fail-closed contract schemas (crypto profiles, mesh Work-Unit family, …).
+- `reference/`: Python reference implementations — the v1 codec plus the mesh reference executors
+  (`mesh_coordinator`, `node_admission`, `mesh_scheduler`, `proof_envelope`, `attestation_verifier`, …).
+- `fixtures/`, `examples/`: Canonical hex fixtures + contract `.valid`/`.invalid` examples.
+- `rust/`, `go/`: Language implementations (stable v1).
+- `scripts/`, `tools/`: Utility scripts, regeneration tooling, and the `verify_*` contract validators.
 
 ## Build and test (ports)
 

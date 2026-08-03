@@ -6,7 +6,9 @@ import (
 )
 
 // ctrlA is the shared control byte used by the CLI stream frames (path_a/classical/exact/none/handle).
-func ctrlA() Control243 { return Control243{Profile: 0, Lane: 0, Evidence: 0, Fallback: 0, RouteFmt: 1} }
+func ctrlA() Control243 {
+	return Control243{Profile: 0, Lane: 0, Evidence: 0, Fallback: 0, RouteFmt: 1}
+}
 
 // TestStreamOpenInheritedMatchesOracle: default semantic pair (braid 101, state 136), seq 2.
 func TestStreamOpenInheritedMatchesOracle(t *testing.T) {

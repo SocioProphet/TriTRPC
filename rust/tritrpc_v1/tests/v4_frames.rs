@@ -260,6 +260,10 @@ fn v4_frames_stream_open_positive_cases_match_fixture() {
         let suite = CryptoSuite::from_byte(suite_byte)
             .unwrap_or_else(|e| panic!("case {}: bad suite: {e}", case.id));
 
+        let default_semantic = input
+            .get("default_semantic")
+            .and_then(|v| v.as_array())
+            .map(|a| (a[0].as_u64().unwrap() as u8, a[1].as_u64().unwrap() as u8));
         let frame = StreamOpenFrame {
             control,
             suite,
@@ -267,7 +271,7 @@ fn v4_frames_stream_open_positive_cases_match_fixture() {
             route_handle,
             stream_id,
             payload,
-            default_semantic: None,
+            default_semantic,
             tag,
         };
 

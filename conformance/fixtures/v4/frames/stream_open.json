@@ -16,17 +16,21 @@
           "fallback": 0,
           "routefmt": 1
         },
-        "suite": 0,
-        "epoch": 0,
+        "suite": 1,
+        "epoch": 18,
         "route_handle": {
           "type": "direct",
-          "value": 5
+          "value": 7
         },
-        "stream_id": 1,
-        "payload_hex": "",
-        "tag_hex": "00000000000000000000000000000000"
+        "stream_id": 9,
+        "payload_hex": "7b22637572736f72223a227374617274227d",
+        "tag_hex": "5dd481a66529abe7d508f921b15ea4d7",
+        "default_semantic": [
+          101,
+          136
+        ]
       },
-      "expected_frame_hex": "f32a0102000005010000000000000000000000000000000000",
+      "expected_frame_hex": "f32a010201120709127b22637572736f72223a227374617274227d65885dd481a66529abe7d508f921b15ea4d7",
       "expected_parse": {
         "control": {
           "profile": 0,
@@ -35,16 +39,21 @@
           "fallback": 0,
           "routefmt": 1
         },
-        "suite": 0,
-        "epoch": 0,
+        "suite": 1,
+        "epoch": 18,
         "route_handle": {
           "type": "direct",
-          "value": 5
+          "value": 7
         },
-        "stream_id": 1,
-        "payload_hex": "",
-        "tag_hex": "00000000000000000000000000000000"
-      }
+        "stream_id": 9,
+        "payload_hex": "7b22637572736f72223a227374617274227d",
+        "tag_hex": "5dd481a66529abe7d508f921b15ea4d7",
+        "default_semantic": [
+          101,
+          136
+        ]
+      },
+      "oracle_ref": "generated/sample_vectors_v4.json#stream_open_inherited"
     },
     {
       "id": "stream-open-utf8-handle-with-payload",

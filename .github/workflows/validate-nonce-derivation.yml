@@ -1,0 +1,19 @@
+name: validate-nonce-derivation
+on:
+  pull_request:
+    paths: ["reference/nonce_derivation.py","tools/verify_nonce_derivation.py","spec/transport/nonce_derivation.md",".github/workflows/validate-nonce-derivation.yml"]
+  push:
+    branches: [ main ]
+    paths: ["reference/nonce_derivation.py","tools/verify_nonce_derivation.py","spec/transport/nonce_derivation.md",".github/workflows/validate-nonce-derivation.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Validate nonce/session derivation
+        run: python tools/verify_nonce_derivation.py

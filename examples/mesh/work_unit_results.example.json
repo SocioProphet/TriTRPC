@@ -1,0 +1,32 @@
+[
+  {
+    "wu_id": "wu-2026-08-03-0001",
+    "node_ref": "node://eu-1",
+    "region": "EU",
+    "result_cid": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "proof": {
+      "mode": "redundant"
+    },
+    "signature": "ed25519:11"
+  },
+  {
+    "wu_id": "wu-2026-08-03-0001",
+    "node_ref": "node://eu-2",
+    "region": "EU",
+    "result_cid": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "proof": {
+      "mode": "redundant"
+    },
+    "signature": "ed25519:22"
+  },
+  {
+    "wu_id": "wu-2026-08-03-0001",
+    "node_ref": "node://eu-3",
+    "region": "EU",
+    "result_cid": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "proof": {
+      "mode": "redundant"
+    },
+    "signature": "ed25519:33"
+  }
+]

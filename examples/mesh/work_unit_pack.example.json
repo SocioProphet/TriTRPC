@@ -1,0 +1,15 @@
+{
+  "wu_id": "wu-2026-08-03-0001",
+  "schema_id": "sha3-256:1111111111111111111111111111111111111111111111111111111111111111",
+  "proof_mode": "redundant",
+  "sandbox": "wasm",
+  "policy": {
+    "residency": "EU",
+    "isolation": "strong",
+    "slo_ms": 30000
+  },
+  "body_cid": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "replication": 3,
+  "context": "https://ctx.socioprophet.dev/mesh/wu.jsonld",
+  "signature": "ed25519:deadbeef"
+}

@@ -1,0 +1,37 @@
+name: validate-mesh-coordinator
+
+on:
+  pull_request:
+    paths:
+      - "reference/mesh_coordinator.py"
+      - "tools/verify_mesh_coordinator.py"
+      - "schemas/jsonschema/work-unit-pack.v0.schema.json"
+      - "schemas/jsonschema/work-unit-result.v0.schema.json"
+      - "examples/mesh/**"
+      - "spec/orchestration/mesh_work_unit.md"
+      - ".github/workflows/validate-mesh-coordinator.yml"
+  push:
+    branches: [ main ]
+    paths:
+      - "reference/mesh_coordinator.py"
+      - "tools/verify_mesh_coordinator.py"
+      - "schemas/jsonschema/work-unit-pack.v0.schema.json"
+      - "schemas/jsonschema/work-unit-result.v0.schema.json"
+      - "examples/mesh/**"
+      - "spec/orchestration/mesh_work_unit.md"
+      - ".github/workflows/validate-mesh-coordinator.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate reference Mesh Coordinator (WU settlement, fail-closed)
+        run: python tools/verify_mesh_coordinator.py

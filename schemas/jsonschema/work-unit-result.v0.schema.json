@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.socioprophet.dev/tritrpc/work-unit-result.v0.schema.json",
+  "title": "WorkUnitResult v0",
+  "description": "A volunteer node's returned result for a WorkUnitPack. Carries the content-addressed result (SHA-256 CID), the executing node anchor, its region (checked against pack.policy.residency), and a proof block whose mode MUST match the pack's proof_mode and MUST carry that mode's required material. The Mesh Coordinator collects these and settles fail-closed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["wu_id", "node_ref", "region", "result_cid", "proof", "signature"],
+  "properties": {
+    "wu_id": { "type": "string", "minLength": 1 },
+    "node_ref": { "type": "string", "pattern": "^node://" },
+    "region": { "type": "string", "minLength": 1 },
+    "result_cid": { "type": "string", "pattern": "^sha256:" },
+    "proof": {
+      "type": "object",
+      "required": ["mode"],
+      "properties": {
+        "mode": { "type": "string", "enum": ["redundant", "spot_check", "tee", "zk"] },
+        "challenge_index": { "type": "integer", "minimum": 0 },
+        "revealed_cid": { "type": "string", "pattern": "^sha256:" },
+        "quote": { "type": "string" },
+        "measurement": { "type": "string", "pattern": "^sha256:" },
+        "statement": { "type": "string" },
+        "proof_blob": { "type": "string" }
+      }
+    },
+    "signature": { "type": "string", "minLength": 1 }
+  }
+}

@@ -153,3 +153,71 @@ A TriTRPC-integrated receipt path is acceptable for v0.1 when:
 2. the receipt shows a deterministic transport identity,
 3. retry behavior is visible if it occurred,
 4. the receipt builder can consume TriTRPC events without custom per-case hacks.
+
+---
+
+## SOC / Chain Profile (v0.2, additive)
+
+A **Semantic Obfuscation Chain (SOC)** is a governed **multi-hop** RPC: a request is pulled through
+a chain of trust-bound relays/enclaves, each performing one transform (schema resolution, opaque
+compute, braiding). Its privacy model requires that **no single relay observes the whole path** —
+yet §"Normative statements" requires that **the transport path is not invisible**. These reconcile
+through **owner-sealing**: the receipt is complete *to the owner* and cloaked *to observers*.
+
+### Chain shape
+A SOC is exactly one TriTRPC **trace**. Each hop is a **span**, parent-linked to the previous hop's
+span (`parent_span_id`). The ordered spans are the route. Per-hop transport additions:
+- `transport.chain_id` — the SOC identity (stable across all hops).
+- `transport.chain_position` — 0-based hop index.
+- `transport.sealed` — MUST be `true` for a SOC hop: the hop's `transport.*` block is AEAD-sealed
+  (the v1 XChaCha20-Poly1305 lane) to the OWNER, not to the relay.
+- `transport.sealed_to` — the pseudonymous owner anchor the block is sealed to.
+
+### Owner-sealed visibility rule (NORMATIVE)
+1. In a SOC, each hop's `transport.*` metadata MUST be sealed to the owner (`sealed: true`). A relay
+   MUST NOT be able to read the transport metadata of a hop it is not a party to.
+2. `route_id` and `peer_id` MAY be pseudonymous (Identity-is-Contextual), but MUST be stable within
+   the trace so the owner can reassemble the route.
+3. The full ordered route MUST be reconstructable by the **owner** (whose cloud-twin holds every
+   hop's sealed block) and MUST NOT be reconstructable by any single relay (each relay sees only its
+   own span and its parent link).
+4. A SOC receipt is **complete** (satisfies "invisible transport is incomplete") iff every hop
+   carries a `sealed` transport block AND the owner can assemble the full trace. Governance sees
+   everything owner-side; observers see noise.
+
+### `failure_class` extension
+SOC introduces adversarial hops, so `transport.failure_class` adds:
+- `sabotage` — a relay/enclave returned a well-formed but adversarially-corrupted result (detected
+  by proof mismatch); the hop is refused, not actuated.
+- `refused_by_policy` — the hop was refused by the local policy gate (trust below `trust_min`, or a
+  purpose/consent gate) before execution.
+A `sabotage`/`refused_by_policy` hop MUST **fail closed**: the chain aborts at that span, downstream
+spans MUST NOT run, and the receipt records the terminal `failure_class`.
+
+### New event: `rpc.hop.sealed`
+Emitted once per SOC hop when its transport block is sealed to the owner.
+```json
+{
+  "event_type": "rpc.hop.sealed",
+  "payload": {
+    "protocol": "tritrpc",
+    "chain_id": "soc://alice/fed-hr/001",
+    "chain_position": 1,
+    "route_id": "route://relay/opaque@v1",
+    "peer_id": "node://relay-pseudo-7f",
+    "envelope_hash": "sha256:...",
+    "sealed": true,
+    "sealed_to": "owner://anchor-alice-pseudo"
+  }
+}
+```
+
+### Acceptance gate for the SOC profile
+A SOC path is acceptable when:
+1. all hop events share one `trace_id`, and spans form a parent-linked chain;
+2. every hop transport block is `sealed: true` with a `sealed_to`;
+3. `route_id`/`peer_id` are stable within the trace;
+4. any `sabotage`/`refused_by_policy` hop terminates the chain (no downstream spans);
+5. the owner can assemble the full ordered route from the sealed blocks; no single relay can.
+
+`tools/verify_receipt_soc_profile.py` is the self-testing gate for this profile.

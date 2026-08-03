@@ -1,0 +1,33 @@
+name: validate-receipt-soc-profile
+
+on:
+  pull_request:
+    paths:
+      - "spec/transport/receipt_binding.md"
+      - "examples/transport/receipt_events.soc.example.json"
+      - "examples/transport/receipt_events.soc.*.invalid.json"
+      - "tools/verify_receipt_soc_profile.py"
+      - ".github/workflows/validate-receipt-soc-profile.yml"
+  push:
+    branches: [ main ]
+    paths:
+      - "spec/transport/receipt_binding.md"
+      - "examples/transport/receipt_events.soc.example.json"
+      - "examples/transport/receipt_events.soc.*.invalid.json"
+      - "tools/verify_receipt_soc_profile.py"
+      - ".github/workflows/validate-receipt-soc-profile.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate SOC / chain profile
+        run: python tools/verify_receipt_soc_profile.py

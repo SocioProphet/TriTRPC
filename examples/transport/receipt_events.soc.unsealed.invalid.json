@@ -1,0 +1,85 @@
+{
+  "trace_id": "trace_soc_fed_hr_001",
+  "chain_id": "soc://alice/fed-hr/001",
+  "events": [
+    {
+      "event_id": "evt_soc_000",
+      "trace_id": "trace_soc_fed_hr_001",
+      "span_id": "span_send",
+      "parent_span_id": "span_intent",
+      "event_type": "rpc.request.sent",
+      "ts": "2026-08-03T02:00:00.000Z",
+      "producer": "tritrpc",
+      "payload": {
+        "protocol": "tritrpc",
+        "chain_id": "soc://alice/fed-hr/001",
+        "chain_position": 0,
+        "route_id": "route://planner/soc-entry@v1",
+        "peer_id": "node://alice-pseudo",
+        "envelope_hash": "sha256:envelope00",
+        "sealed": true,
+        "sealed_to": "owner://anchor-alice-pseudo",
+        "request_bytes": 2048
+      }
+    },
+    {
+      "event_id": "evt_soc_001",
+      "trace_id": "trace_soc_fed_hr_001",
+      "span_id": "span_hop1",
+      "parent_span_id": "span_send",
+      "event_type": "rpc.hop.sealed",
+      "ts": "2026-08-03T02:00:01.000Z",
+      "producer": "tritrpc",
+      "payload": {
+        "protocol": "tritrpc",
+        "chain_id": "soc://alice/fed-hr/001",
+        "chain_position": 1,
+        "route_id": "route://relay/schema-xform@v1",
+        "peer_id": "node://relay-pseudo-7f",
+        "envelope_hash": "sha256:envelope01",
+        "sealed": false,
+        "sealed_to": "owner://anchor-alice-pseudo"
+      }
+    },
+    {
+      "event_id": "evt_soc_002",
+      "trace_id": "trace_soc_fed_hr_001",
+      "span_id": "span_hop2",
+      "parent_span_id": "span_hop1",
+      "event_type": "rpc.hop.sealed",
+      "ts": "2026-08-03T02:00:02.000Z",
+      "producer": "tritrpc",
+      "payload": {
+        "protocol": "tritrpc",
+        "chain_id": "soc://alice/fed-hr/001",
+        "chain_position": 2,
+        "route_id": "route://enclave/opaque-compute@v1",
+        "peer_id": "node://enclave-pseudo-3a",
+        "envelope_hash": "sha256:envelope02",
+        "sealed": true,
+        "sealed_to": "owner://anchor-alice-pseudo"
+      }
+    },
+    {
+      "event_id": "evt_soc_003",
+      "trace_id": "trace_soc_fed_hr_001",
+      "span_id": "span_recv",
+      "parent_span_id": "span_hop2",
+      "event_type": "rpc.response.received",
+      "ts": "2026-08-03T02:00:03.000Z",
+      "producer": "tritrpc",
+      "payload": {
+        "protocol": "tritrpc",
+        "chain_id": "soc://alice/fed-hr/001",
+        "chain_position": 3,
+        "route_id": "route://planner/soc-entry@v1",
+        "peer_id": "node://alice-pseudo",
+        "envelope_hash": "sha256:envelope03",
+        "sealed": true,
+        "sealed_to": "owner://anchor-alice-pseudo",
+        "response_bytes": 8192,
+        "latency_ms": 740
+      }
+    }
+  ]
+}

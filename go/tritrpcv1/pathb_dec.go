@@ -1,29 +1,50 @@
 package tritrpcv1
 
-// Minimal Path-B decoders for strings and union index (subset used in fixtures)
-func PBDecodeLen(buf []byte, off int) (int, int) {
-	// TLEB3 decode for length: reuse TLEB3 decoder by repacking; here we assume small inputs and just reuse TritUnpack on a byte-by-byte basis
-	// NOTE: For production, implement a proper scanner.
-	trits := []byte{}
+import (
+	"errors"
+	"fmt"
+)
+
+// Path-B (ternary-native) decoders. Hardened, fail-closed scanner (vNext gap #6): every read is
+// bounds-checked and every malformed input returns an error instead of panicking or reading out of
+// bounds, so Path-B can safely take larger wire responsibility. Subset used in fixtures: length,
+// string, union index.
+
+// maxPBLenTrits caps the scan so adversarial input without a terminator cannot loop unbounded.
+const maxPBLenTrits = 640 // >> any real length; a Path-B length that needs more is rejected
+
+// PBDecodeLen decodes a ternary-native length starting at off. Fail-closed: truncation, a missing
+// terminator, or an over-long run returns an error (never panics / reads out of bounds).
+func PBDecodeLen(buf []byte, off int) (val int, newOff int, err error) {
+	if off < 0 || off >= len(buf) {
+		return 0, 0, errors.New("path-b length: offset past end of buffer")
+	}
+	trits := make([]byte, 0, 16)
 	start := off
 	for {
+		if off >= len(buf) {
+			return 0, 0, errors.New("path-b length: truncated (no terminator before end of buffer)")
+		}
 		b := buf[off]
 		var ts []byte
-		var err error
+		var e error
 		if b >= 243 && b <= 246 {
 			if off+1 >= len(buf) {
-				panic("truncated tail marker")
+				return 0, 0, errors.New("path-b length: truncated tail marker")
 			}
-			ts, err = TritUnpack243(buf[off : off+2])
+			ts, e = TritUnpack243(buf[off : off+2])
 			off += 2
 		} else {
-			ts, err = TritUnpack243([]byte{b})
+			ts, e = TritUnpack243([]byte{b})
 			off++
 		}
-		if err != nil {
-			panic(err)
+		if e != nil {
+			return 0, 0, fmt.Errorf("path-b length: bad trit group: %w", e)
 		}
 		trits = append(trits, ts...)
+		if len(trits) > maxPBLenTrits {
+			return 0, 0, errors.New("path-b length: over-long run (no terminator) — refused")
+		}
 		if len(trits) >= 3 {
 			v := uint64(0)
 			used := 0
@@ -41,22 +62,27 @@ func PBDecodeLen(buf []byte, off int) (int, int) {
 				}
 			}
 			if used > 0 {
-				pack := TritPack243(trits[:used])
-				usedBytes := len(pack)
-				newOff := start + usedBytes
-				return int(v), newOff
+				usedBytes := len(TritPack243(trits[:used]))
+				return int(v), start + usedBytes, nil
 			}
 		}
 	}
 }
 
-func PBDecodeString(buf []byte, off int) (string, int) {
-	l, o2 := PBDecodeLen(buf, off)
-	s := string(buf[o2 : o2+l])
-	return s, o2 + l
+// PBDecodeString decodes a length-prefixed Path-B string. Fail-closed: a declared length that would
+// run past the buffer is rejected (no out-of-bounds slice).
+func PBDecodeString(buf []byte, off int) (string, int, error) {
+	l, o2, err := PBDecodeLen(buf, off)
+	if err != nil {
+		return "", 0, err
+	}
+	if l < 0 || o2 > len(buf) || l > len(buf)-o2 {
+		return "", 0, fmt.Errorf("path-b string: declared length %d exceeds %d remaining bytes", l, len(buf)-o2)
+	}
+	return string(buf[o2 : o2+l]), o2 + l, nil
 }
 
-func PBDecodeUnionIndex(buf []byte, off int) (int, int) {
-	l, o2 := PBDecodeLen(buf, off)
-	return l, o2
+// PBDecodeUnionIndex decodes a Path-B union index (a bare length), bounds-checked.
+func PBDecodeUnionIndex(buf []byte, off int) (int, int, error) {
+	return PBDecodeLen(buf, off)
 }

@@ -120,15 +120,30 @@ def main() -> int:
     else:
         FAILURES.append(f"below-replication WU must NOT settle: {rec_few}")
 
-    # 7. tee mode: present quote+measurement settles; missing measurement refused.
+    # 7. tee mode: a proof BOUND to the result (report_data==SHA256(nonce||result_cid), allow-listed
+    #    measurement) settles via the envelope + attestation verifier; a missing/unbound proof refused.
+    import hashlib as _hl
     tee_pack = copy.deepcopy(pack); tee_pack["proof_mode"] = "tee"; tee_pack["replication"] = 1
-    r_tee = copy.deepcopy(results[0]); r_tee["proof"] = {"mode": "tee", "quote": "q", "measurement": "sha256:" + "e" * 64}
+    _rc = results[0]["result_cid"]; _nonce = "n-tee-1"
+    _rd = "sha256:" + _hl.sha256(f"{_nonce}|{_rc}".encode()).hexdigest()
+    r_tee = copy.deepcopy(results[0])
+    r_tee["proof"] = {"mode": "tee", "quote": "q", "measurement": "sha256:" + "e" * 64, "nonce": _nonce, "report_data": _rd}
     rec_tee = mc.reduce(tee_pack, [r_tee], trusted)
     r_tee_bad = copy.deepcopy(r_tee); r_tee_bad["proof"] = {"mode": "tee", "quote": "q"}
     if rec_tee["settled"] and refused(lambda: mc.verify_result(tee_pack, r_tee_bad, trusted)):
         CHECKS["tee:present-settles-missing-refused"] = True
     else:
         FAILURES.append("tee: a valid quote+measurement must settle and a missing measurement be refused")
+
+    # FABRIC: tee/zk are routed through proof_envelope + attestation_verifier, so a proof bound to a
+    # DIFFERENT result (report_data for another result_cid) is refused at SETTLEMENT — anti-replay the
+    # old structural check let through.
+    r_replay = copy.deepcopy(r_tee)
+    r_replay["proof"]["report_data"] = "sha256:" + _hl.sha256(f"{_nonce}|sha256:{'b' * 64}".encode()).hexdigest()
+    if refused(lambda: mc.verify_result(tee_pack, r_replay, trusted)):
+        CHECKS["fabric:tee-replayed-proof-refused-at-settlement"] = True
+    else:
+        FAILURES.append("a tee proof bound to a different result must be refused at settlement (anti-replay)")
 
     # 8. Determinism.
     if mc.reduce(pack, results, trusted) == rec:

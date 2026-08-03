@@ -1,0 +1,7 @@
+{
+  "profileId": "fedcrypto://fips/eddsa",
+  "mode": "fips",
+  "contentHash": "SHA3-256",
+  "signature": "Ed25519",
+  "contentAddressing": "ipfs"
+}

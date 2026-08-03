@@ -1,0 +1,6 @@
+{
+  "profileId": "fedcrypto://bad",
+  "mode": "fips",
+  "contentHash": "BLAKE2b",
+  "signature": "ECDSA-P256"
+}

@@ -1,0 +1,7 @@
+{
+  "profileId": "fedcrypto://standard",
+  "mode": "standard",
+  "contentHash": "BLAKE2b",
+  "signature": "Ed25519",
+  "contentAddressing": "ssb"
+}

@@ -1,0 +1,33 @@
+name: validate-federation-crypto-profile
+
+on:
+  pull_request:
+    paths:
+      - "schemas/jsonschema/federation-crypto-profile.v0.schema.json"
+      - "spec/transport/federation_crypto_profile.md"
+      - "examples/transport/federation_crypto_profile.*.json"
+      - "tools/verify_federation_crypto_profile.py"
+      - ".github/workflows/validate-federation-crypto-profile.yml"
+  push:
+    branches: [ main ]
+    paths:
+      - "schemas/jsonschema/federation-crypto-profile.v0.schema.json"
+      - "spec/transport/federation_crypto_profile.md"
+      - "examples/transport/federation_crypto_profile.*.json"
+      - "tools/verify_federation_crypto_profile.py"
+      - ".github/workflows/validate-federation-crypto-profile.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate federation crypto profile (FIPS gate)
+        run: python tools/verify_federation_crypto_profile.py

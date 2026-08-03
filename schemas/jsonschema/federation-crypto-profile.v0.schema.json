@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.socioprophet.dev/tritrpc/federation-crypto-profile.v0.schema.json",
+  "title": "FederationCryptoProfile v0",
+  "description": "Gates the crypto of the Merkle-log P2P federation layer (the Symbolic-AI/KG + Dual-Orchestration docs' SSB/Hypercore/IPFS-style signed append-only knowledge logs). Companion to the transport CryptoProfile. Two surfaces: the CONTENT HASH (Merkle content addressing / CIDs) and the feed SIGNATURE. mode:fips requires a FIPS-approved hash (SHA-2/SHA-3) and a FIPS 186-5 signature (ECDSA / RSA / EdDSA). The genuine non-FIPS default in those stacks is the HASH — BLAKE2b (SSB/Hypercore) and BLAKE3 (IPFS option) are refused in fips mode; Ed25519/Ed448 are OK under FIPS 186-5.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profileId", "mode", "contentHash", "signature"],
+  "properties": {
+    "profileId": { "type": "string", "minLength": 1 },
+    "mode": { "type": "string", "enum": ["fips", "standard"] },
+    "contentHash": { "type": "string", "enum": ["SHA-256", "SHA-384", "SHA-512", "SHA3-256", "SHA3-512", "BLAKE2b", "BLAKE3"] },
+    "signature": { "type": "string", "enum": ["ECDSA-P256", "ECDSA-P384", "ECDSA-P521", "RSA-3072", "RSA-4096", "Ed25519", "Ed448"] },
+    "contentAddressing": { "type": "string", "enum": ["merkle-dag", "ipfs", "hypercore", "ssb"], "description": "informational: the federation scheme this profile secures. The hash algorithm — not the scheme — is what FIPS gates." }
+  }
+}

@@ -17,16 +17,16 @@
           "routefmt": 1
         },
         "kind": 0,
-        "suite": 0,
-        "epoch": 1,
+        "suite": 1,
+        "epoch": 18,
         "route_handle": {
           "type": "direct",
-          "value": 18
+          "value": 7
         },
         "payload_hex": "7b226f70223a226164642d766572746578222c226964223a2261227d",
         "tag_hex": "4bcf6e1b01f174e964b9d22dfc5195aa"
       },
-      "expected_frame_hex": "f32a01000001121c7b226f70223a226164642d766572746578222c226964223a2261227d4bcf6e1b01f174e964b9d22dfc5195aa",
+      "expected_frame_hex": "f32a01000112071c7b226f70223a226164642d766572746578222c226964223a2261227d4bcf6e1b01f174e964b9d22dfc5195aa",
       "expected_parse": {
         "control": {
           "profile": 0,
@@ -36,15 +36,16 @@
           "routefmt": 1
         },
         "kind": 0,
-        "suite": 0,
-        "epoch": 1,
+        "suite": 1,
+        "epoch": 18,
         "route_handle": {
           "type": "direct",
-          "value": 18
+          "value": 7
         },
         "payload_hex": "7b226f70223a226164642d766572746578222c226964223a2261227d",
         "tag_hex": "4bcf6e1b01f174e964b9d22dfc5195aa"
-      }
+      },
+      "oracle_ref": "reference/experimental/tritrpc_requirements_impl_v4/generated/sample_vectors_v4.json#hot_unary"
     },
     {
       "id": "hot-unary-unary-rsp-direct-handle-empty-payload",

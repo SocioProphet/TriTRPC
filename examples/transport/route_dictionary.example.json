@@ -1,0 +1,17 @@
+{
+  "dictionaryId": "sha256:b2351b7a6f88b9c52685b3289ee8da3916f47edf68f1b970a9c3292705aceca8",
+  "entries": [
+    {
+      "handle": 7,
+      "route": "route://agentplane/executor"
+    },
+    {
+      "handle": 9,
+      "route": "route://agentplane/planner"
+    },
+    {
+      "handle": 19,
+      "route": "route://identity/beacon"
+    }
+  ]
+}

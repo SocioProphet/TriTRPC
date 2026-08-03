@@ -1,0 +1,19 @@
+name: validate-route-dictionary
+on:
+  pull_request:
+    paths: ["reference/route_dictionary.py","tools/verify_route_dictionary.py","schemas/jsonschema/route-dictionary.v0.schema.json","examples/transport/route_dictionary.example.json","spec/transport/route_dictionary.md",".github/workflows/validate-route-dictionary.yml"]
+  push:
+    branches: [ main ]
+    paths: ["reference/route_dictionary.py","tools/verify_route_dictionary.py","schemas/jsonschema/route-dictionary.v0.schema.json","examples/transport/route_dictionary.example.json","spec/transport/route_dictionary.md",".github/workflows/validate-route-dictionary.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Validate route-handle dictionary negotiation
+        run: python tools/verify_route_dictionary.py

@@ -1,0 +1,70 @@
+[
+  {
+    "node_ref": "node://eu-1",
+    "attestationRef": "att://tpm/eu-1#q",
+    "region": "EU",
+    "trustScore": 0.9,
+    "capacity": {
+      "freeSlots": 2,
+      "sandboxes": [
+        "wasm",
+        "docker"
+      ]
+    },
+    "liveness": {
+      "lastSeenMs": 999000,
+      "ttlMs": 5000
+    }
+  },
+  {
+    "node_ref": "node://eu-2",
+    "attestationRef": "att://tpm/eu-2#q",
+    "region": "EU",
+    "trustScore": 0.82,
+    "capacity": {
+      "freeSlots": 2,
+      "sandboxes": [
+        "wasm",
+        "docker"
+      ]
+    },
+    "liveness": {
+      "lastSeenMs": 999000,
+      "ttlMs": 5000
+    }
+  },
+  {
+    "node_ref": "node://eu-3",
+    "attestationRef": "att://tpm/eu-3#q",
+    "region": "EU",
+    "trustScore": 0.75,
+    "capacity": {
+      "freeSlots": 2,
+      "sandboxes": [
+        "wasm",
+        "docker"
+      ]
+    },
+    "liveness": {
+      "lastSeenMs": 999000,
+      "ttlMs": 5000
+    }
+  },
+  {
+    "node_ref": "node://us-1",
+    "attestationRef": "att://tpm/us-1#q",
+    "region": "US",
+    "trustScore": 0.95,
+    "capacity": {
+      "freeSlots": 2,
+      "sandboxes": [
+        "wasm",
+        "docker"
+      ]
+    },
+    "liveness": {
+      "lastSeenMs": 999000,
+      "ttlMs": 5000
+    }
+  }
+]

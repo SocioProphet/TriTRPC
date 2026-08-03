@@ -1,0 +1,33 @@
+name: validate-mesh-scheduler
+on:
+  pull_request:
+    paths:
+      - "reference/mesh_scheduler.py"
+      - "reference/mesh_coordinator.py"
+      - "tools/verify_mesh_scheduler.py"
+      - "schemas/jsonschema/node-registration.v0.schema.json"
+      - "examples/mesh/node_registry.example.json"
+      - "spec/orchestration/mesh_scheduler.md"
+      - ".github/workflows/validate-mesh-scheduler.yml"
+  push:
+    branches: [ main ]
+    paths:
+      - "reference/mesh_scheduler.py"
+      - "reference/mesh_coordinator.py"
+      - "tools/verify_mesh_scheduler.py"
+      - "schemas/jsonschema/node-registration.v0.schema.json"
+      - "examples/mesh/node_registry.example.json"
+      - "spec/orchestration/mesh_scheduler.md"
+      - ".github/workflows/validate-mesh-scheduler.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Validate mesh scheduler/collector (fail-closed + end-to-end)
+        run: python tools/verify_mesh_scheduler.py

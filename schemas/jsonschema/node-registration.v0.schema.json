@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.socioprophet.dev/tritrpc/node-registration.v0.schema.json",
+  "title": "NodeRegistration v0",
+  "description": "A node's registry entry in the mesh: the admitted trusted-node record (from node_admission) plus the capacity and liveness the scheduler needs to place Work-Units. The registry is the set the scheduler draws from; a node absent, stale, or over capacity is simply not eligible (fail-closed).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["node_ref", "attestationRef", "region", "trustScore", "capacity", "liveness"],
+  "properties": {
+    "node_ref": { "type": "string", "pattern": "^node://" },
+    "attestationRef": { "type": "string", "minLength": 1 },
+    "region": { "type": "string", "minLength": 1 },
+    "trustScore": { "type": "number", "minimum": 0, "maximum": 1, "description": "from node_admission (#88) — used to rank eligible nodes." },
+    "capacity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["freeSlots", "sandboxes"],
+      "properties": {
+        "freeSlots": { "type": "integer", "minimum": 0 },
+        "sandboxes": { "type": "array", "items": { "type": "string", "enum": ["docker", "lightning", "wasm", "kata"] }, "minItems": 1 }
+      }
+    },
+    "liveness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lastSeenMs", "ttlMs"],
+      "properties": {
+        "lastSeenMs": { "type": "integer", "minimum": 0, "description": "epoch ms of last heartbeat." },
+        "ttlMs": { "type": "integer", "minimum": 1, "description": "a node is live only if now - lastSeenMs <= ttlMs." }
+      }
+    }
+  }
+}

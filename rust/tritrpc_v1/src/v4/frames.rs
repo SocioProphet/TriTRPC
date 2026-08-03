@@ -400,3 +400,108 @@ mod tests {
         assert_eq!(parsed, frame);
     }
 }
+
+/// Encode a (phase 1..7, topic 1..23) braided coordinate to one byte (Braid243).
+fn encode_braid243(phase: u8, topic: u8) -> Result<u8, V4Error> {
+    if !(1..=7).contains(&phase) {
+        return Err(V4Error::new("phase must be in 1..7 for Braid243"));
+    }
+    if !(1..=23).contains(&topic) {
+        return Err(V4Error::new("topic must be in 1..23 for Braid243"));
+    }
+    Ok((phase - 1) * 27 + (topic - 1))
+}
+
+/// A v4 Beacon frame (capability / intent / commit).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BeaconFrame {
+    pub control: Control243,
+    pub suite: CryptoSuite,
+    pub kind: FrameKind,
+    pub epoch: u64,
+    pub identity_handle: HandleValue,
+    pub phase: u8,
+    pub topic: u8,
+    pub payload: Vec<u8>,
+    pub tag: [u8; 16],
+}
+
+impl BeaconFrame {
+    /// Serialize this beacon frame to canonical wire bytes.
+    pub fn serialize(&self) -> Result<Vec<u8>, V4Error> {
+        let mut out = Vec::new();
+        out.extend_from_slice(&MAGIC);
+        out.push(self.control.encode()?);
+        out.push(self.kind.as_byte());
+        out.push(self.suite.as_byte());
+        out.extend(encode_s243(self.epoch));
+        out.extend(encode_handle243(&self.identity_handle)?);
+        out.push(encode_braid243(self.phase, self.topic)?);
+        out.extend(encode_s243(self.payload.len() as u64));
+        out.extend_from_slice(&self.payload);
+        out.extend_from_slice(&self.tag);
+        Ok(out)
+    }
+}
+
+/// A v4 StreamData frame (carries a chunk; optional override semantic tail).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct StreamDataFrame {
+    pub control: Control243,
+    pub suite: CryptoSuite,
+    pub epoch: u64,
+    pub stream_id: u64,
+    pub payload: Vec<u8>,
+    /// Optional 2-byte semantic tail: (braid243, state243).
+    pub override_semantic: Option<(u8, u8)>,
+    pub tag: [u8; 16],
+}
+
+impl StreamDataFrame {
+    /// Serialize this stream-data frame to canonical wire bytes.
+    pub fn serialize(&self) -> Result<Vec<u8>, V4Error> {
+        let mut out = Vec::new();
+        out.extend_from_slice(&MAGIC);
+        out.push(self.control.encode()?);
+        out.push(FrameKind::StreamData.as_byte());
+        out.push(self.suite.as_byte());
+        out.extend(encode_s243(self.epoch));
+        out.extend(encode_s243(self.stream_id));
+        out.extend(encode_s243(self.payload.len() as u64));
+        out.extend_from_slice(&self.payload);
+        if let Some((braid, state)) = self.override_semantic {
+            out.push(braid);
+            out.push(state);
+        }
+        out.extend_from_slice(&self.tag);
+        Ok(out)
+    }
+}
+
+/// A v4 StreamClose frame.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct StreamCloseFrame {
+    pub control: Control243,
+    pub suite: CryptoSuite,
+    pub epoch: u64,
+    pub stream_id: u64,
+    pub payload: Vec<u8>,
+    pub tag: [u8; 16],
+}
+
+impl StreamCloseFrame {
+    /// Serialize this stream-close frame to canonical wire bytes.
+    pub fn serialize(&self) -> Result<Vec<u8>, V4Error> {
+        let mut out = Vec::new();
+        out.extend_from_slice(&MAGIC);
+        out.push(self.control.encode()?);
+        out.push(FrameKind::StreamClose.as_byte());
+        out.push(self.suite.as_byte());
+        out.extend(encode_s243(self.epoch));
+        out.extend(encode_s243(self.stream_id));
+        out.extend(encode_s243(self.payload.len() as u64));
+        out.extend_from_slice(&self.payload);
+        out.extend_from_slice(&self.tag);
+        Ok(out)
+    }
+}

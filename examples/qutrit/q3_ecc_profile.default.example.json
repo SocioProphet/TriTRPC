@@ -1,0 +1,12 @@
+{
+  "profileId": "q3ecc://default/rs-gf9",
+  "default": true,
+  "rail": "classical-ternary",
+  "code": {
+    "kind": "RS-GF3m",
+    "m": 2,
+    "n": 8,
+    "k": 4,
+    "t": 2
+  }
+}

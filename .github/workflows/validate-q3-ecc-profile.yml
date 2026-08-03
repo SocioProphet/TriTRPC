@@ -1,0 +1,19 @@
+name: validate-q3-ecc-profile
+on:
+  pull_request:
+    paths: ["schemas/jsonschema/q3-ecc-profile.v0.schema.json","spec/qutrit/q3_ecc_profile.md","examples/qutrit/q3_ecc_profile.*.json","tools/verify_q3_ecc_profile.py",".github/workflows/validate-q3-ecc-profile.yml"]
+  push:
+    branches: [ main ]
+    paths: ["schemas/jsonschema/q3-ecc-profile.v0.schema.json","spec/qutrit/q3_ecc_profile.md","examples/qutrit/q3_ecc_profile.*.json","tools/verify_q3_ecc_profile.py",".github/workflows/validate-q3-ecc-profile.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Validate Q3 ECC profile
+        run: python tools/verify_q3_ecc_profile.py

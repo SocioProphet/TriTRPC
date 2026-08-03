@@ -1,0 +1,35 @@
+name: validate-obfuscation-profile
+
+on:
+  pull_request:
+    paths:
+      - "schemas/jsonschema/obfuscation-profile.v0.schema.json"
+      - "spec/transport/obfuscation_profile.md"
+      - "examples/transport/obfuscation_profile.example.json"
+      - "examples/transport/obfuscation_profile.*.invalid.json"
+      - "tools/verify_obfuscation_profile.py"
+      - ".github/workflows/validate-obfuscation-profile.yml"
+  push:
+    branches: [ main ]
+    paths:
+      - "schemas/jsonschema/obfuscation-profile.v0.schema.json"
+      - "spec/transport/obfuscation_profile.md"
+      - "examples/transport/obfuscation_profile.example.json"
+      - "examples/transport/obfuscation_profile.*.invalid.json"
+      - "tools/verify_obfuscation_profile.py"
+      - ".github/workflows/validate-obfuscation-profile.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate obfuscation profile
+        run: python tools/verify_obfuscation_profile.py

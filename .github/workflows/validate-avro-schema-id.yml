@@ -1,0 +1,31 @@
+name: validate-avro-schema-id
+on:
+  pull_request:
+    paths:
+      - "reference/avro_canonical.py"
+      - "tools/verify_avro_schema_id.py"
+      - "schemas/avro/work_unit_body.v0.avsc"
+      - "fixtures/mesh/work_unit_schema_id.vector.json"
+      - "spec/orchestration/schema_id.md"
+      - ".github/workflows/validate-avro-schema-id.yml"
+  push:
+    branches: [ main ]
+    paths:
+      - "reference/avro_canonical.py"
+      - "tools/verify_avro_schema_id.py"
+      - "schemas/avro/work_unit_body.v0.avsc"
+      - "fixtures/mesh/work_unit_schema_id.vector.json"
+      - "spec/orchestration/schema_id.md"
+      - ".github/workflows/validate-avro-schema-id.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Recompute + verify mesh SCHEMA-ID / body-CID
+        run: python tools/verify_avro_schema_id.py

@@ -1,0 +1,27 @@
+name: validate-holographic-stream
+on:
+  pull_request:
+    paths:
+      - "reference/holographic_stream.py"
+      - "tools/verify_holographic_stream.py"
+      - "spec/drafts/holographic_stream.md"
+      - ".github/workflows/validate-holographic-stream.yml"
+  push:
+    branches: [ main ]
+    paths:
+      - "reference/holographic_stream.py"
+      - "tools/verify_holographic_stream.py"
+      - "spec/drafts/holographic_stream.md"
+      - ".github/workflows/validate-holographic-stream.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Validate holographic message stream (exact / illegible-until-full / low-res whole)
+        run: python tools/verify_holographic_stream.py

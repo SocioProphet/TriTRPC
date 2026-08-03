@@ -2,15 +2,30 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://schemas.socioprophet.dev/tritrpc/crypto-profile.v0.schema.json",
   "title": "TriTRPC CryptoProfile v0",
-  "description": "Declares WHICH AEAD/hash a TriTRPC deployment uses, so 'AEAD-sealed canonical bytes' is a checkable, FIPS-gateable choice rather than a hardcoded cipher. mode:fips REQUIRES a FIPS-approved AEAD (AES-GCM/CCM, SP 800-38D) and hash (SHA-2/SHA-3, FIPS 180-4/202) and REFUSES XChaCha20/ChaCha20-Poly1305 and BLAKE. mode:standard permits the v1 XChaCha20-Poly1305 lane. Additive: it selects the cipher for the sealing lane; it does NOT change the v1/v4/vNext wire format (TritPack243/TLEB3 are unchanged).",
+  "description": "Declares WHICH AEAD/hash (and, for approved suites, KEM/signature + approved-mode assertions) a TriTRPC deployment uses, so 'AEAD-sealed canonical bytes' is a checkable, suite-gateable choice. Aligned to the v4 suite selector (§13.4): suite 0 research-nonapproved / 1 fips-classical / 2 cnsa2-ready / 3 reserved. `mode` stays for back-compat and is derived-consistent with `suite` (standard<->0, fips<->1|2). suite>=1 requires the §13.5/§5.3-5.6 approved-mode assertions; suite 2 (CNSA 2.0) additionally requires AES-256-GCM, SHA-384/512, and ML-KEM-1024 / ML-DSA-87 when a KEM/signature is declared. Additive: selects the sealing suite; does NOT change the v1/v4/vNext wire (TritPack243/TLEB3).",
   "type": "object",
   "additionalProperties": false,
   "required": ["profileId", "mode", "aead", "hash"],
   "properties": {
     "profileId": { "type": "string", "minLength": 1 },
     "mode": { "type": "string", "enum": ["fips", "standard"] },
+    "suite": { "type": "integer", "enum": [0, 1, 2, 3], "description": "v4 §13.4 suite selector. Absent => derived from mode (standard->0, fips->1)." },
     "aead": { "type": "string", "enum": ["AES-128-GCM", "AES-192-GCM", "AES-256-GCM", "AES-256-CCM", "ChaCha20-Poly1305", "XChaCha20-Poly1305"] },
     "hash": { "type": "string", "enum": ["SHA-256", "SHA-384", "SHA-512", "SHA3-256", "SHA3-512", "BLAKE3", "BLAKE2b"] },
+    "kem": { "type": "string", "enum": ["X25519", "ECDH-P256", "ECDH-P384", "ML-KEM-768", "ML-KEM-1024"] },
+    "sig": { "type": "string", "enum": ["Ed25519", "ECDSA-P256", "ECDSA-P384", "ML-DSA-65", "ML-DSA-87", "LMS", "XMSS"] },
+    "approvedMode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["encodeBeforeAuth", "canonicalOnly", "noncePolicy", "rngSource", "selfTests"],
+      "properties": {
+        "encodeBeforeAuth": { "type": "boolean", "description": "§5.6: authenticate/sign the canonical byte string only." },
+        "canonicalOnly": { "type": "boolean", "description": "§5.6: one canonical encoding; reject non-canonical." },
+        "noncePolicy": { "type": "string", "enum": ["module-gcm", "context-sequence"], "description": "§5.4 IV construction." },
+        "rngSource": { "type": "string", "enum": ["module", "approved-bound"], "description": "§5.5: RNG from the validated module boundary." },
+        "selfTests": { "type": "boolean", "description": "§5.3: module self-tests complete." }
+      }
+    },
     "wireFormat": { "type": "string", "description": "informational: the wire this profile seals (e.g. tritrpc-v1). MUST NOT be altered by the crypto profile." }
   }
 }

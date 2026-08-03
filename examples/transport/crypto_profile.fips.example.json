@@ -1,0 +1,7 @@
+{
+  "profileId": "crypto://tritrpc/fips",
+  "mode": "fips",
+  "aead": "AES-256-GCM",
+  "hash": "SHA-384",
+  "wireFormat": "tritrpc-v1"
+}

@@ -1,0 +1,6 @@
+{
+  "profileId": "crypto://tritrpc/bad2",
+  "mode": "fips",
+  "aead": "AES-256-GCM",
+  "hash": "BLAKE3"
+}

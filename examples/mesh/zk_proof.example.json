@@ -1,0 +1,15 @@
+{
+  "binding": {
+    "wu_id": "wu-x",
+    "result_cid": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "proof": {
+    "scheme": "groth16",
+    "statement": "result==f(inputs)",
+    "proof": "<delegated>",
+    "publicInputs": [
+      "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "sha256:fd9cf27c2a470b2731073e0eae75dc385a1f3e8b3ee5e48fa8f6c3613b993c01"
+    ]
+  }
+}

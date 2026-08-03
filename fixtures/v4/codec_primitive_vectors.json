@@ -1,0 +1,109 @@
+{
+  "s243": [
+    {
+      "v": 0,
+      "hex": "00"
+    },
+    {
+      "v": 1,
+      "hex": "01"
+    },
+    {
+      "v": 242,
+      "hex": "f2"
+    },
+    {
+      "v": 243,
+      "hex": "f3f500"
+    },
+    {
+      "v": 244,
+      "hex": "f3f501"
+    },
+    {
+      "v": 486,
+      "hex": "f3a8f603"
+    },
+    {
+      "v": 1000,
+      "hex": "f3b236f401"
+    },
+    {
+      "v": 65535,
+      "hex": "f3de47eaf501"
+    },
+    {
+      "v": 1000000,
+      "hex": "f3b3416be1f301"
+    }
+  ],
+  "handle243": [
+    {
+      "kind": "int",
+      "v": 0,
+      "hex": "00"
+    },
+    {
+      "kind": "int",
+      "v": 242,
+      "hex": "f2"
+    },
+    {
+      "kind": "ext",
+      "v": 5,
+      "hex": "f305"
+    },
+    {
+      "kind": "ext",
+      "v": 1000,
+      "hex": "f3f3b236f401"
+    },
+    {
+      "kind": "str",
+      "v": "agent.exec",
+      "hex": "f40a6167656e742e65786563"
+    },
+    {
+      "kind": "hash",
+      "v": "abababababababababababababababababababababababababababababababab",
+      "hex": "f5abababababababababababababababababababababababababababababababab"
+    },
+    {
+      "kind": "tombstone",
+      "v": null,
+      "hex": "f6"
+    }
+  ],
+  "braid243": [
+    {
+      "phase": 1,
+      "topic": 1,
+      "byte": 0
+    },
+    {
+      "phase": 1,
+      "topic": 23,
+      "byte": 22
+    },
+    {
+      "phase": 7,
+      "topic": 1,
+      "byte": 162
+    },
+    {
+      "phase": 7,
+      "topic": 23,
+      "byte": 184
+    },
+    {
+      "phase": 4,
+      "topic": 12,
+      "byte": 92
+    },
+    {
+      "phase": 3,
+      "topic": 7,
+      "byte": 60
+    }
+  ]
+}

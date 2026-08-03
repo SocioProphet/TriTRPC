@@ -1,0 +1,7 @@
+{
+  "profileId": "crypto://tritrpc/standard",
+  "mode": "standard",
+  "aead": "XChaCha20-Poly1305",
+  "hash": "BLAKE3",
+  "wireFormat": "tritrpc-v1"
+}

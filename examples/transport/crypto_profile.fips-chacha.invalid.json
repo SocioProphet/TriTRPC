@@ -1,0 +1,6 @@
+{
+  "profileId": "crypto://tritrpc/bad",
+  "mode": "fips",
+  "aead": "XChaCha20-Poly1305",
+  "hash": "SHA-256"
+}

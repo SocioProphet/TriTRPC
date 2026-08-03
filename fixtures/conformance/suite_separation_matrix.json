@@ -1,0 +1,59 @@
+{
+  "description": "v4 \u00a715.1 approved/non-approved suite-separation conformance matrix. A workload of requiredSuite r runs on a profile of suite p iff p>=r (monotone). Also anchors the canonical per-suite crypto-profile examples.",
+  "cryptoProfilesBySuite": {
+    "0": "examples/transport/crypto_profile.standard.example.json",
+    "1": "examples/transport/crypto_profile.fips.example.json",
+    "2": "examples/transport/crypto_profile.cnsa.example.json"
+  },
+  "federationProfilesBySuite": {
+    "1": "examples/transport/federation_crypto_profile.fips-eddsa.example.json",
+    "2": "examples/transport/federation_crypto_profile.cnsa.example.json"
+  },
+  "gateMatrix": [
+    {
+      "requiredSuite": 0,
+      "profileSuite": 0,
+      "accept": true
+    },
+    {
+      "requiredSuite": 0,
+      "profileSuite": 1,
+      "accept": true
+    },
+    {
+      "requiredSuite": 0,
+      "profileSuite": 2,
+      "accept": true
+    },
+    {
+      "requiredSuite": 1,
+      "profileSuite": 0,
+      "accept": false
+    },
+    {
+      "requiredSuite": 1,
+      "profileSuite": 1,
+      "accept": true
+    },
+    {
+      "requiredSuite": 1,
+      "profileSuite": 2,
+      "accept": true
+    },
+    {
+      "requiredSuite": 2,
+      "profileSuite": 0,
+      "accept": false
+    },
+    {
+      "requiredSuite": 2,
+      "profileSuite": 1,
+      "accept": false
+    },
+    {
+      "requiredSuite": 2,
+      "profileSuite": 2,
+      "accept": true
+    }
+  ]
+}

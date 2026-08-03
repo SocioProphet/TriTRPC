@@ -1,0 +1,29 @@
+name: validate-tleb3-roundtrip
+
+on:
+  pull_request:
+    paths:
+      - "reference/tritrpc_v1.py"
+      - "tools/verify_tleb3_roundtrip.py"
+      - ".github/workflows/validate-tleb3-roundtrip.yml"
+  push:
+    branches: [ main ]
+    paths:
+      - "reference/tritrpc_v1.py"
+      - "tools/verify_tleb3_roundtrip.py"
+      - ".github/workflows/validate-tleb3-roundtrip.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify TLEB3 round-trip
+        run: python tools/verify_tleb3_roundtrip.py

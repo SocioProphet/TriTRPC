@@ -76,42 +76,50 @@ def tleb3_len_encode(n: int) -> bytes:
     return tritpack243_pack(trits)
 
 def tleb3_len_decode(b: bytes, offset: int) -> Tuple[int, int]:
-    """Decode a TLEB3 length starting at offset; returns (value, new_offset)."""
-    # We need to parse packed trits out of the stream. We can consume bytes until we reach a trit with C=0.
-    # Because tritpack groups in 5-trit bundles, we decode incrementally.
-    # Simpler approach: decode progressively while buffering trits.
+    """Decode a TLEB3 length starting at offset; returns (value, new_offset).
+
+    Reads TritPack243 groups from the stream: a full group (byte 0..242) is 5 trits, and a TAIL
+    group (marker 243..246) is a TWO-BYTE sequence (marker + value byte). The previous
+    implementation unpacked one byte at a time, so a lone tail-marker byte always tripped
+    "trunc tail marker" and every length failed to decode. This reads the tail's value byte with
+    its marker so decode correctly inverts encode. `tleb3_len_encode` is UNCHANGED — the wire
+    format (TritPack243/TLEB3) is byte-identical; only the decoder is corrected.
+    """
     i = offset
     tritbuf: List[int] = []
-    # We don't know how many bytes; read at least 1 group
     while True:
-        if i >= len(b): raise ValueError("EOF in TLEB3")
-        chunk = b[i:i+1]
-        i += 1
-        ts = tritpack243_unpack(chunk)  # ok for single byte
-        tritbuf.extend(ts)
-        # scan tritlets
-        # tritlets = groups of 3
-        if len(tritbuf) < 3: 
-            continue
-        # Try to parse; continuation 2 except last 0
-        val = 0
-        ok = False
-        # parse all complete tritlets and stop at first C=0
-        for j in range(0, len(tritbuf)//3):
-            C,P1,P0 = tritbuf[3*j:3*j+3]
-            digit = P1*3 + P0
-            val += digit * (9**j)
+        if i >= len(b):
+            raise ValueError("EOF in TLEB3")
+        byte = b[i]
+        if byte <= 242:                       # full group: 5 trits, big-endian base-3
+            val = byte
+            group = [0, 0, 0, 0, 0]
+            for j in range(4, -1, -1):
+                group[j] = val % 3
+                val //= 3
+            tritbuf.extend(group)
+            i += 1
+        elif 243 <= byte <= 246:              # tail group: marker + value byte -> k trits
+            k = (byte - 243) + 1
+            if i + 1 >= len(b):
+                raise ValueError("trunc tail marker")
+            val = b[i + 1]
+            group = [0] * k
+            for j in range(k - 1, -1, -1):
+                group[j] = val % 3
+                val //= 3
+            tritbuf.extend(group)
+            i += 2
+        else:
+            raise ValueError("invalid byte in canonical output (247..255)")
+        # Parse tritlets (3 trits: continuation C, then digit P1*3+P0); stop at the final C=0.
+        value = 0
+        for j in range(len(tritbuf) // 3):
+            C, P1, P0 = tritbuf[3 * j:3 * j + 3]
+            value += (P1 * 3 + P0) * (9 ** j)
             if C == 0:
-                # we've consumed j+1 tritlets; but tritbuf may contain extra trits from the same packed byte.
-                # compute how many trits used:
-                trits_used = (j+1)*3
-                # compute how many bytes were actually needed for these trits:
-                # We can't easily reverse-pack; instead, re-encode just those trits and count bytes.
-                enc = tritpack243_pack(tritbuf[:trits_used])
-                used_bytes = len(enc)
-                # Step back to offset + used_bytes
-                return val, offset + used_bytes
-        # else need more bytes
+                return value, i
+        # else: need more bytes
 
 # ===== Avro subset encoders (Path-A) =====
 

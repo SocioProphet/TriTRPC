@@ -1,0 +1,8 @@
+{
+  "forge_task_id": "ft-skip-merge-001",
+  "note": "Skipping the lifecycle straight to MERGED is an event-order violation.",
+  "expect": {"reject": {"code": "BF-INT-004", "at": 0}},
+  "transitions": [
+    {"from": "CREATED", "to": "MERGED", "ctx": {"merge_grant_present": true, "policy_gates_passed": true}}
+  ]
+}

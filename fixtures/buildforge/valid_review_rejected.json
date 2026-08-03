@@ -1,0 +1,16 @@
+{
+  "forge_task_id": "ft-review-reject-001",
+  "note": "Reviewer requests rejection; run terminates at REJECTED. A legal terminal path.",
+  "expect": "accept",
+  "transitions": [
+    {"from": "CREATED", "to": "AUTHORIZED"},
+    {"from": "AUTHORIZED", "to": "MOUNTED"},
+    {"from": "MOUNTED", "to": "BRANCHED"},
+    {"from": "BRANCHED", "to": "PATCHED"},
+    {"from": "PATCHED", "to": "PUSHED"},
+    {"from": "PUSHED", "to": "PR_OPEN"},
+    {"from": "PR_OPEN", "to": "CHECKS_PENDING"},
+    {"from": "CHECKS_PENDING", "to": "REVIEW_PENDING"},
+    {"from": "REVIEW_PENDING", "to": "REJECTED"}
+  ]
+}

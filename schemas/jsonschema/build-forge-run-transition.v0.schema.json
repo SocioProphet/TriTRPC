@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://socioprophet.ai/schemas/tritrpc/build-forge-run-transition.v0.schema.json",
+  "title": "Build Forge run-lifecycle transition log (v0)",
+  "description": "A replayable log of RunState transitions for one Build Forge run. Each edge is asserted against the normative state machine in spec/drafts/build_forge_v0_1.md; the to of edge i must equal the from of edge i+1.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["forge_task_id", "expect", "transitions"],
+  "properties": {
+    "forge_task_id": {"type": "string", "minLength": 1},
+    "note": {"type": "string"},
+    "expect": {
+      "description": "accept => the whole log replays cleanly; otherwise the edge index and error code that MUST be raised.",
+      "oneOf": [
+        {"const": "accept"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["reject"],
+          "properties": {
+            "reject": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["code"],
+              "properties": {
+                "code": {"type": "string", "pattern": "^BF-[A-Z]+-[0-9]{3}$"},
+                "at": {"type": "integer", "minimum": 0}
+              }
+            }
+          }
+        }
+      ]
+    },
+    "transitions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["from", "to"],
+        "properties": {
+          "from": {"$ref": "#/$defs/run_state"},
+          "to": {"$ref": "#/$defs/run_state"},
+          "ctx": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "merge_grant_present": {"type": "boolean"},
+              "policy_gates_passed": {"type": "boolean"},
+              "workflow_file_mutation": {"type": "boolean"},
+              "workflow_mutation_capability": {"type": "boolean"}
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "run_state": {
+      "type": "string",
+      "enum": [
+        "CREATED",
+        "AUTHORIZED",
+        "MOUNTED",
+        "BRANCHED",
+        "PATCHED",
+        "PUSHED",
+        "PR_OPEN",
+        "CHECKS_PENDING",
+        "REVIEW_PENDING",
+        "READY_TO_MERGE",
+        "MERGED",
+        "REJECTED",
+        "ABORTED",
+        "EXPIRED",
+        "FAILED"
+      ]
+    }
+  }
+}

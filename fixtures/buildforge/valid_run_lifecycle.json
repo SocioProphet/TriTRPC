@@ -1,0 +1,17 @@
+{
+  "forge_task_id": "ft-happy-001",
+  "note": "Full happy path CREATED..MERGED with a distinct merge grant and green gates.",
+  "expect": "accept",
+  "transitions": [
+    {"from": "CREATED", "to": "AUTHORIZED"},
+    {"from": "AUTHORIZED", "to": "MOUNTED"},
+    {"from": "MOUNTED", "to": "BRANCHED"},
+    {"from": "BRANCHED", "to": "PATCHED"},
+    {"from": "PATCHED", "to": "PUSHED"},
+    {"from": "PUSHED", "to": "PR_OPEN"},
+    {"from": "PR_OPEN", "to": "CHECKS_PENDING"},
+    {"from": "CHECKS_PENDING", "to": "REVIEW_PENDING"},
+    {"from": "REVIEW_PENDING", "to": "READY_TO_MERGE"},
+    {"from": "READY_TO_MERGE", "to": "MERGED", "ctx": {"merge_grant_present": true, "policy_gates_passed": true}}
+  ]
+}

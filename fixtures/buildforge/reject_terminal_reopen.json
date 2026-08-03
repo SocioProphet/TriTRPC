@@ -1,0 +1,18 @@
+{
+  "forge_task_id": "ft-reopen-001",
+  "note": "Terminal states are absorbing; reopening a MERGED run is refused.",
+  "expect": {"reject": {"code": "BF-INT-004", "at": 10}},
+  "transitions": [
+    {"from": "CREATED", "to": "AUTHORIZED"},
+    {"from": "AUTHORIZED", "to": "MOUNTED"},
+    {"from": "MOUNTED", "to": "BRANCHED"},
+    {"from": "BRANCHED", "to": "PATCHED"},
+    {"from": "PATCHED", "to": "PUSHED"},
+    {"from": "PUSHED", "to": "PR_OPEN"},
+    {"from": "PR_OPEN", "to": "CHECKS_PENDING"},
+    {"from": "CHECKS_PENDING", "to": "REVIEW_PENDING"},
+    {"from": "REVIEW_PENDING", "to": "READY_TO_MERGE"},
+    {"from": "READY_TO_MERGE", "to": "MERGED", "ctx": {"merge_grant_present": true, "policy_gates_passed": true}},
+    {"from": "MERGED", "to": "PR_OPEN"}
+  ]
+}
